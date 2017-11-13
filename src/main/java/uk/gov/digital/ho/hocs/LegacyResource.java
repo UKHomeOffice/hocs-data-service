@@ -11,6 +11,8 @@ import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Slf4j
@@ -24,7 +26,7 @@ public class LegacyResource {
         this.legacyService = legacyService;
     }
 
-    @RequestMapping(value = {"/legacy/topic/DCU", "/legacy/topic/UKVI"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/legacy/topic/{name}", method = RequestMethod.POST)
     public ResponseEntity createTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("name") String name) {
         log.info("Parsing list \"TopicListDCU\"");
         if (!file.isEmpty()) {
@@ -47,8 +49,7 @@ public class LegacyResource {
             TopicRecord dcu = legacyService.getLegacyTopicListByName("DCU_Topics");
             TopicRecord ukvi = legacyService.getLegacyTopicListByName("UKVI_Topics");
 
-            List<TopicEntityRecord> retList = dcu.getTopics();
-            retList.addAll(ukvi.getTopics());
+            List<TopicEntityRecord> retList = Stream.concat(dcu.getTopics().stream(), ukvi.getTopics().stream()).collect(Collectors.toList());
             return ResponseEntity.ok(retList);
         } catch (ListNotFoundException e) {
             log.info("List \"Legacy TopicList\" not found");

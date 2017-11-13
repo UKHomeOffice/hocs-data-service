@@ -29,6 +29,11 @@ public class BusinessGroup {
     @Getter
     private String referenceName;
 
+    @Column(name = "parent_group_id", nullable = false)
+    @Getter
+    @Setter
+    private String parentGroup;
+
     @ManyToMany(mappedBy = "groups")
     @Getter
     @Setter

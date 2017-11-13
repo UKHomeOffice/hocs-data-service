@@ -14,7 +14,11 @@ public class UnitCreateRecord {
     private List<UnitCreateEntityRecord> manageGroups;
 
     public static UnitCreateRecord create(List<BusinessGroup> list) {
-        List<UnitCreateEntityRecord> groups = list.stream().map(UnitCreateEntityRecord::createGroups).flatMap(Collection::stream).collect(Collectors.toList());
+        List<UnitCreateEntityRecord> groups = list.stream()
+                .filter(m -> m.getParentGroup() == null)
+                .map(UnitCreateEntityRecord::createGroups)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         return new UnitCreateRecord(groups);
     }
 
