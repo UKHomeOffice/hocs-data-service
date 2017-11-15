@@ -180,9 +180,9 @@ public class ListConsumerService {
     private <T> DataListEntity createListEntity(String name, final String HOUSE) {
 
         String[] names = name.split(",");
-        String reference = String.join(" ", names);
+        String reference = String.join(" ", names).trim();
         Collections.reverse(Arrays.asList(names));
-        String displayName = String.join(" ", names);
+        String displayName = String.join(" ", names).trim();
 
         DataListEntity listEntity = new DataListEntity(displayName, reference);
         Set<DataListEntityProperty> properties = new HashSet<>();
