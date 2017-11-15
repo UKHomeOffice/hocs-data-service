@@ -7,8 +7,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.DataListRepository;
@@ -17,20 +18,22 @@ import uk.gov.digital.ho.hocs.model.DataList;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @RunWith(SpringRunner.class)
+@EnableAutoConfiguration
+@ComponentScan("uk.gov.digital.ho.hocs")
 public class ConsumerServiceIntTest {
 
     private static final int PORT = 9100;
 
     private WireMockServer mockServer = new WireMockServer(PORT);
 
-    @Mock
+    @Autowired
     private DataListRepository repository;
 
     private ListConsumerService service;
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    private ListConsumerConfiguration configuration = new ListConsumerConfiguration(
+    private ListConsumerConfigurator configuration = new ListConsumerConfigurator(
             "http://localhost:9100/membersdataplatform/services/mnis/members/query/House=%s",
             "https://localhost:9100/api/members/scottish",
             "http://localhost:9100/api/members/ni",
@@ -64,10 +67,11 @@ public class ConsumerServiceIntTest {
 
         DataList commons = repository.findDataListByName("commons_list");
 
+        Assert.assertNotNull(commons);
+        Assert.assertEquals(DataList.class, commons.getClass());
         Assert.assertEquals(3, commons.getEntities().size());
 
     }
-
 
     @After
     public void TearDown() {

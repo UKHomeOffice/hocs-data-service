@@ -1,10 +1,11 @@
 package uk.gov.digital.ho.hocs.api_lists;
 
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Component;
 
 @Component
-class ListConsumerConfiguration {
+class ListConsumerConfigurator {
 
     final String PROP_HOUSE = "house";
 
@@ -26,10 +27,10 @@ class ListConsumerConfiguration {
     final String LIST_EUROPEAN_PARLIAMENT = "european_parliament_list";
     final String LIST_WELSH_ASSEMBLY = "welsh_assembly_list";
 
-    ListConsumerConfiguration(@Value("${api.uk.parliament}") String apiUkParliament,
-                              @Value("${api.scottish.parliament") String apiScottishParliament,
-                              @Value("${api.ni.assembly}") String apiNorthernIrishAssembly,
-                              @Value("${api.european.parliament}") String apiEuropeanParliament) {
+    ListConsumerConfigurator(@Value("${api.uk.parliament}") String apiUkParliament,
+                             @Value("${api.scottish.parliament") String apiScottishParliament,
+                             @Value("${api.ni.assembly}") String apiNorthernIrishAssembly,
+                             @Value("${api.european.parliament}") String apiEuropeanParliament) {
 
         this.API_UK_PARLIAMENT = apiUkParliament;
         this.API_SCOTTISH_PARLIAMENT = apiScottishParliament;

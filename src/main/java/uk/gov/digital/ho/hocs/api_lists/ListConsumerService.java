@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.api_lists;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,12 +23,12 @@ public class ListConsumerService {
 
     private final RestTemplate restTemplate;
 
-    private final ListConsumerConfiguration configuration;
+    private final ListConsumerConfigurator configuration;
 
     @Autowired
     public ListConsumerService(DataListRepository listRepository,
                                RestTemplate restTemplate,
-                               ListConsumerConfiguration configuration) {
+                               ListConsumerConfigurator configuration) {
         this.listRepository = listRepository;
         this.restTemplate = restTemplate;
         this.configuration = configuration;
@@ -205,11 +204,6 @@ public class ListConsumerService {
 
     private String getFormattedUkEndpoint(final String HOUSE) {
         return String.format(configuration.API_UK_PARLIAMENT, HOUSE);
-    }
-
-    @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
     }
 
 }

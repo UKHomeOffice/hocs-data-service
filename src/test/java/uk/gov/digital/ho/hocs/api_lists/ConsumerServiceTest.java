@@ -32,7 +32,7 @@ public class ConsumerServiceTest {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    private ListConsumerConfiguration configuration = new ListConsumerConfiguration("",
+    private ListConsumerConfigurator configuration = new ListConsumerConfigurator("",
             "",
             "",
             "");
