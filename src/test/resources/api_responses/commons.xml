@@ -1,0 +1,17 @@
+<Members>
+    <Member>
+        <DisplayAs>Test Member</DisplayAs>
+        <ListAs>Member Test</ListAs>
+        <House>Commons</House>
+    </Member>
+    <Member>
+        <DisplayAs>Test Member</DisplayAs>
+        <ListAs>Member Test</ListAs>
+        <House>Commons</House>
+    </Member>
+    <Member>
+        <DisplayAs>Test Member</DisplayAs>
+        <ListAs>Member Test</ListAs>
+        <House>Commons</House>
+    </Member>
+</Members>

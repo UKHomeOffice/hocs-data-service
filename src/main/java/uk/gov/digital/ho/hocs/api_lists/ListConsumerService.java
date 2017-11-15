@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.api_lists;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,42 +20,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ListConsumerService {
 
-    private DataListRepository listRepository;
+    private final DataListRepository listRepository;
 
-    private final static String PROP_HOUSE = "house";
+    private final RestTemplate restTemplate;
 
-    private final static String API_UK_PARLIAMENT = "http://data.parliament.uk/membersdataplatform/services/mnis/members/query/House=%s";
-    private final static String API_SCOTTISH_PARLIAMENT = "https://data.parliament.scot/api/members";
-    private final static String API_IRISH_PARLIAMENT = "http://data.niassembly.gov.uk/api/members/";
-    private final static String API_EUROPEAN_PARLIAMENT = "http://www.europarl.europa.eu/meps/en/xml.html?query=full&filter=all";
-
-    private final static String HOUSE_LORDS = "lords";
-    private final static String HOUSE_COMMONS = "commons";
-    private final static String HOUSE_SCOTTISH_PARLIAMENT = "scottish_parliament";
-    private final static String HOUSE_IRISH_PARLIAMENT = "irish_parliament";
-    private final static String HOUSE_EUROPEAN_PARLIAMENT = "european_parliament";
-    private final static String HOUSE_WELSH_ASSEMBLY = "welsh_assembly";
-
-    private final static String LIST_LORDS = "lords_list";
-    private final static String LIST_COMMONS = "commons_list";
-    private final static String LIST_SCOTTISH_PARLIAMENT = "scottish_parliament_list";
-    private final static String LIST_IRISH_PARLIAMENT = "irish_parliament_list";
-    private final static String LIST_EUROPEAN_PARLIAMENT = "european_parliament_list";
-    private final static String LIST_WELSH_ASSEMBLY = "welsh_assembly_list";
+    private final ListConsumerConfiguration configuration;
 
     @Autowired
-    public ListConsumerService(DataListRepository listRepository) {
+    public ListConsumerService(DataListRepository listRepository,
+                               RestTemplate restTemplate,
+                               ListConsumerConfiguration configuration) {
         this.listRepository = listRepository;
-
-        refreshListsFromAPI();
+        this.restTemplate = restTemplate;
+        this.configuration = configuration;
     }
 
     public void refreshListsFromAPI() {
 
-        removeExisitingLists();
+        removeExistingLists();
 
-        createFromUKParliamentAPI(HOUSE_LORDS);
-        createFromUKParliamentAPI(HOUSE_COMMONS);
+        createFromUKParliamentAPI(configuration.HOUSE_COMMONS);
+        createFromUKParliamentAPI(configuration.HOUSE_LORDS);
         createFromScottishParliamentAPI();
         createFromIrishParliamentAPI();
         createFromEuropeanParliamentAPI();
@@ -62,14 +48,15 @@ public class ListConsumerService {
     }
 
     @Transactional
-    private void removeExisitingLists() {
+    void removeExistingLists() {
 
         List<String> listsToRemove = new ArrayList<>();
-        listsToRemove.add(LIST_LORDS);
-        listsToRemove.add(LIST_COMMONS);
-        listsToRemove.add(LIST_SCOTTISH_PARLIAMENT);
-        listsToRemove.add(LIST_EUROPEAN_PARLIAMENT);
-        listsToRemove.add(LIST_IRISH_PARLIAMENT);
+        listsToRemove.add(configuration.LIST_LORDS);
+        listsToRemove.add(configuration.LIST_COMMONS);
+        listsToRemove.add(configuration.LIST_SCOTTISH_PARLIAMENT);
+        listsToRemove.add(configuration.LIST_EUROPEAN_PARLIAMENT);
+        listsToRemove.add(configuration.LIST_NORTHERN_IRISH_ASSEMBLY);
+        listsToRemove.add(configuration.LIST_WELSH_ASSEMBLY);
 
         List<DataList> entitiesToRemove = new ArrayList<>();
 
@@ -85,102 +72,114 @@ public class ListConsumerService {
     }
 
     @Transactional
-    private void createFromEuropeanParliamentAPI() {
+    void createFromEuropeanParliamentAPI() {
 
-        ResponseEntity<EuropeMembers> response = getListFromApi(API_EUROPEAN_PARLIAMENT, MediaType.APPLICATION_XML, EuropeMembers.class);
+        ResponseEntity<EuropeMembers> response = getListFromApi(configuration.API_EUROPEAN_PARLIAMENT, MediaType.APPLICATION_XML, EuropeMembers.class);
 
-        List<EuropeMember> members = response.getBody().getMembers();
+        if (response != null) {
 
-        Set<DataListEntity> dataListEntities = members
-                .stream()
-                .filter(m -> m.getCountry().contains("United Kingdom") )
-                .map(m -> {
-                    String[] names = m.getName().split(" ");
-                    String lastName = names[names.length - 1];
-                    String[] otherNames = Arrays.copyOf(names, names.length - 1);
+            List<EuropeMember> members = response.getBody().getMembers();
 
-                    String reference = String.format("%s %s", lastName, String.join(" ", otherNames));
-                    String displayName = String.format("%s %s", String.join(" ", otherNames), lastName);
+            Set<DataListEntity> dataListEntities = members
+                    .stream()
+                    .filter(m -> m.getCountry().contains("United Kingdom") )
+                    .map(m -> {
+                        String[] names = m.getName().split(" ");
+                        String lastName = names[names.length - 1];
+                        String[] otherNames = Arrays.copyOf(names, names.length - 1);
 
-                    displayName = WordUtils.capitalizeFully(displayName.toLowerCase(), new char[]{' ', '\'', '-', '('});
+                        String reference = String.format("%s %s", lastName, String.join(" ", otherNames));
+                        String displayName = String.format("%s %s", String.join(" ", otherNames), lastName);
 
-                    DataListEntity listEntity = new DataListEntity(displayName, reference);
-                    Set<DataListEntityProperty> properties = new HashSet<>();
-                    properties.add(new DataListEntityProperty(PROP_HOUSE, HOUSE_EUROPEAN_PARLIAMENT));
-                    listEntity.setProperties(properties);
-                    return listEntity;
+                        displayName = WordUtils.capitalizeFully(displayName.toLowerCase(), new char[]{' ', '\'', '-', '('});
 
-                })
-                .collect(Collectors.toSet());
+                        DataListEntity listEntity = new DataListEntity(displayName, reference);
+                        Set<DataListEntityProperty> properties = new HashSet<>();
+                        properties.add(new DataListEntityProperty(configuration.PROP_HOUSE, configuration.HOUSE_EUROPEAN_PARLIAMENT));
+                        listEntity.setProperties(properties);
+                        return listEntity;
 
-        DataList dataList = new DataList(LIST_EUROPEAN_PARLIAMENT, dataListEntities);
+                    })
+                    .collect(Collectors.toSet());
 
-        listRepository.save(dataList);
+            DataList dataList = new DataList(configuration.LIST_EUROPEAN_PARLIAMENT, dataListEntities);
 
+            listRepository.save(dataList);
+
+        }
     }
 
     @Transactional
-    private void createFromIrishParliamentAPI() {
+    void createFromIrishParliamentAPI() {
 
-        ResponseEntity<IrishMembers> response = getListFromApi(API_IRISH_PARLIAMENT, MediaType.APPLICATION_XML, IrishMembers.class);
+        ResponseEntity<IrishMembers> response = getListFromApi(configuration.API_NORTHERN_IRISH_ASSEMBLY, MediaType.APPLICATION_XML, IrishMembers.class);
 
-        List<IrishMember> members = response.getBody().getMembers();
+        if (response != null) {
 
-        Set<DataListEntity> dataListEntities = members
-                .stream()
-                .map(m -> ListConsumerService.createListEntity(m.getName(), HOUSE_IRISH_PARLIAMENT))
-                .collect(Collectors.toSet());
+            List<IrishMember> members = response.getBody().getMembers();
 
-        DataList dataList = new DataList(LIST_IRISH_PARLIAMENT, dataListEntities);
+            Set<DataListEntity> dataListEntities = members
+                    .stream()
+                    .map(m -> createListEntity(m.getName(), configuration.HOUSE_NORTHERN_IRISH_ASSEMBLY))
+                    .collect(Collectors.toSet());
 
-        listRepository.save(dataList);
+            DataList dataList = new DataList(configuration.LIST_NORTHERN_IRISH_ASSEMBLY, dataListEntities);
 
+            listRepository.save(dataList);
+
+        }
     }
 
     @Transactional
-    private void createFromScottishParliamentAPI() {
+    void createFromScottishParliamentAPI() {
 
-        ResponseEntity<ScottishMember[]> response = getListFromApi(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMember[].class);
+        ResponseEntity<ScottishMember[]> response = getListFromApi(configuration.API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMember[].class);
 
-        List<ScottishMember> members = Arrays.asList(response.getBody());
+        if (response != null) {
 
-        Set<DataListEntity> dataListEntities = members
-                .stream()
-                .map(m -> ListConsumerService.createListEntity(m.getName(), HOUSE_SCOTTISH_PARLIAMENT))
-                .collect(Collectors.toSet());
+            List<ScottishMember> members = Arrays.asList(response.getBody());
 
-        DataList dataList = new DataList(LIST_SCOTTISH_PARLIAMENT, dataListEntities);
+            Set<DataListEntity> dataListEntities = members
+                    .stream()
+                    .map(m -> createListEntity(m.getName(), configuration.HOUSE_SCOTTISH_PARLIAMENT))
+                    .collect(Collectors.toSet());
 
-        listRepository.save(dataList);
+            DataList dataList = new DataList(configuration.LIST_SCOTTISH_PARLIAMENT, dataListEntities);
 
+            listRepository.save(dataList);
 
+        }
     }
 
     @Transactional
-    private void createFromUKParliamentAPI(final String HOUSE) {
+    void createFromUKParliamentAPI(final String HOUSE) {
 
         ResponseEntity<Members> response = getListFromApi(getFormattedUkEndpoint(HOUSE), MediaType.APPLICATION_XML, Members.class);
 
-        List<Member> members = response.getBody().getMembers();
+        if (response != null) {
 
-        Set<DataListEntity> dataListEntities = members
-                .stream()
-                .map(m -> {
-                    DataListEntity listEntity = new DataListEntity(m.getDisplayName(), m.getListName());
-                    Set<DataListEntityProperty> properties = new HashSet<>();
-                    properties.add(new DataListEntityProperty(PROP_HOUSE, m.getHouse()));
-                    listEntity.setProperties(properties);
-                    return listEntity;
-                })
-                .collect(Collectors.toSet());
+            List<Member> members = response.getBody().getMembers();
 
-        DataList dataList = new DataList(HOUSE + "_list", dataListEntities);
+            Set<DataListEntity> dataListEntities = members
+                    .stream()
+                    .map(m -> {
+                        DataListEntity listEntity = new DataListEntity(m.getDisplayName(), m.getListName());
+                        Set<DataListEntityProperty> properties = new HashSet<>();
+                        properties.add(new DataListEntityProperty(configuration.PROP_HOUSE, m.getHouse()));
+                        listEntity.setProperties(properties);
+                        return listEntity;
+                    })
+                    .collect(Collectors.toSet());
 
-        listRepository.save(dataList);
+            DataList dataList = new DataList(HOUSE + "_list", dataListEntities);
 
+            listRepository.save(dataList);
+
+        }
     }
 
-    private static <T> DataListEntity createListEntity(String name, final String HOUSE) {
+    private <T> DataListEntity createListEntity(String name, final String HOUSE) {
+
         String[] names = name.split(",");
         String reference = String.join(" ", names);
         Collections.reverse(Arrays.asList(names));
@@ -188,14 +187,13 @@ public class ListConsumerService {
 
         DataListEntity listEntity = new DataListEntity(displayName, reference);
         Set<DataListEntityProperty> properties = new HashSet<>();
-        properties.add(new DataListEntityProperty(PROP_HOUSE, HOUSE));
+        properties.add(new DataListEntityProperty(configuration.PROP_HOUSE, HOUSE));
         listEntity.setProperties(properties);
         return listEntity;
+
     }
 
-    private static <T> ResponseEntity<T> getListFromApi(String apiEndpoint, MediaType mediaType, Class<T> returnClass) {
-
-        RestTemplate restTemplate = new RestTemplate();
+    private <T> ResponseEntity<T> getListFromApi(String apiEndpoint, MediaType mediaType, Class<T> returnClass) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(mediaType));
@@ -205,8 +203,13 @@ public class ListConsumerService {
 
     }
 
-    private static String getFormattedUkEndpoint(final String HOUSE) {
-        return String.format(API_UK_PARLIAMENT, HOUSE);
+    private String getFormattedUkEndpoint(final String HOUSE) {
+        return String.format(configuration.API_UK_PARLIAMENT, HOUSE);
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 }
