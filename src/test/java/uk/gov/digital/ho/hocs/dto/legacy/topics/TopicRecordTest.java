@@ -1,31 +1,20 @@
 package uk.gov.digital.ho.hocs.dto.legacy.topics;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.model.DataList;
-import uk.gov.digital.ho.hocs.model.DataListEntity;
-
-import java.util.HashSet;
-import java.util.Set;
+import uk.gov.digital.ho.hocs.model.Topic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TopicRecordTest {
 
     @Test
-    public void createWithEntities() throws Exception {
-        Set<DataListEntity> topicList = new HashSet<>();
-        topicList.add(new DataListEntity());
-        DataList dataList = new DataList("TEST List", topicList);
-        TopicRecord record = TopicRecord.create(dataList);
-        assertThat(record.getTopics()).hasSize(1);
-    }
+    public void create() throws Exception {
+        Topic topic = new Topic("TopicName", "OwningUnit","OwningTeam");
 
-    @Test
-    public void createWithoutEntities() throws Exception {
-        Set<DataListEntity> topicList = new HashSet<>();
-        DataList dataList = new DataList("TEST List", topicList);
-        TopicRecord record = TopicRecord.create(dataList);
-        assertThat(record.getTopics()).hasSize(0);
-    }
+        TopicRecord topicRecord = TopicRecord.create(topic);
 
+        assertThat(topicRecord.getTopicName()).isEqualTo("TopicName");
+        assertThat(topicRecord.getTopicUnit()).isEqualTo("OwningUnit");
+        assertThat(topicRecord.getTopicTeam()).isEqualTo("OwningTeam");
+    }
 }

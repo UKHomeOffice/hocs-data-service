@@ -20,8 +20,4 @@ public class CSVTopicLine {
 
     @Getter
     private String topicTeam;
-
-    public String getTopicValue(String caseType) {
-        return String.format("%s_%s_%s", caseType, parentTopicName, topicName);
-    }
 }

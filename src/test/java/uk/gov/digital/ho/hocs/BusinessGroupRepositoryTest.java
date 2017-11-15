@@ -55,13 +55,13 @@ public class BusinessGroupRepositoryTest {
 
     @Test
     public void shouldRetrieveAllEntries() {
-        final Iterable<BusinessGroup> all = businessGroupRepository.findAllBy();
+        final Iterable<BusinessGroup> all = businessGroupRepository.findAll();
         assertThat(all).size().isEqualTo(4);
     }
 
     @Test
     public void shouldRetrieveEntriesProperties() {
-        final List<BusinessGroup> all = businessGroupRepository.findAllBy();
+        final List<BusinessGroup> all = businessGroupRepository.findAll();
         assertThat(all).size().isEqualTo(4);
         BusinessGroup businessGroup = all.get(0);
 

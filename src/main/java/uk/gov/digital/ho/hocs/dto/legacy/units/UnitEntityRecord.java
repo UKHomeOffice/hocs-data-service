@@ -20,7 +20,7 @@ public class UnitEntityRecord {
     private List<UnitEntityRecord> teams;
 
     public static UnitEntityRecord create(BusinessGroup unit) {
-        List<UnitEntityRecord> teams = unit.getSubGroups().stream().map(UnitEntityRecord::create).collect(Collectors.toList());
+        List<UnitEntityRecord> teams = unit.getSubGroups().stream().filter(m -> m.getParentGroup() == null).map(UnitEntityRecord::create).collect(Collectors.toList());
         return new UnitEntityRecord(unit.getReferenceName(), unit.getDisplayName(), teams);
     }
 }

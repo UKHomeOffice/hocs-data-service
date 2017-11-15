@@ -43,7 +43,7 @@ public class DataListResourceTest {
         DataListRecord dataList = new DataListRecord(TEST_REFERENCE, new ArrayList<>());
 
         when(dataListService.getListByName(TEST_REFERENCE)).thenReturn(dataList);
-        ResponseEntity<DataListRecord> httpResponse = dataListResource.getListByReference(TEST_REFERENCE);
+        ResponseEntity<DataListRecord> httpResponse = dataListResource.getListByName(TEST_REFERENCE);
 
         assertThat(httpResponse.getBody()).isEqualTo(dataList);
         assertThat(httpResponse.getBody().getName()).isEqualTo(TEST_REFERENCE);
@@ -54,7 +54,7 @@ public class DataListResourceTest {
     @Test
     public void shouldReturnNotFoundWhenUnableToFindEntity() throws ListNotFoundException {
         when(dataListService.getListByName(TEST_REFERENCE)).thenThrow(new ListNotFoundException());
-        ResponseEntity<DataListRecord> httpResponse = dataListResource.getListByReference(TEST_REFERENCE);
+        ResponseEntity<DataListRecord> httpResponse = dataListResource.getListByName(TEST_REFERENCE);
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(httpResponse.getBody()).isNull();
@@ -65,7 +65,7 @@ public class DataListResourceTest {
     public void shouldReturnBadRequestWhenUnableCreate() throws EntityCreationException {
         DataList emptyDataList = new DataList("", new HashSet<>());
         doThrow(new EntityCreationException("")).when(dataListService).createList(emptyDataList);
-        ResponseEntity httpResponse = dataListResource.createList(emptyDataList);
+        ResponseEntity httpResponse = dataListResource.postList(emptyDataList);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         verify(dataListService).createList(emptyDataList);
     }
@@ -73,7 +73,7 @@ public class DataListResourceTest {
     @Test
     public void shouldReturnOKtWhenAbleCreate() throws EntityCreationException {
         DataList emptyDataList = new DataList("", new HashSet<>());
-        ResponseEntity httpResponse = dataListResource.createList(emptyDataList);
+        ResponseEntity httpResponse = dataListResource.postList(emptyDataList);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(dataListService).createList(emptyDataList);
     }

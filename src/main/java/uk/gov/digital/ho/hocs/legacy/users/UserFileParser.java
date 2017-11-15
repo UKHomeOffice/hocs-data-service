@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.legacy.users;
 
-import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,17 +11,19 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserFileParser extends AbstractFilePasrer<CSVUserLine> {
 
     @Getter
-    private final List<CSVUserLine> lines;
+    private final Set<CSVUserLine> lines;
 
     public UserFileParser(MultipartFile file) {
         this.lines = parseUserTeamsFile(file);
     }
 
-    private static List<CSVUserLine> parseUserTeamsFile(MultipartFile file) {
+    private static Set<CSVUserLine> parseUserTeamsFile(MultipartFile file) {
         List<CSVUserLine> users = new ArrayList<>();
 
         // Build lines with user details then a truth table of which groups the user should be in
@@ -59,7 +61,7 @@ public class UserFileParser extends AbstractFilePasrer<CSVUserLine> {
         // Remove the heading.
         users.remove(0);
 
-        return users;
+        return users.stream().collect(Collectors.toSet());
     }
 
     private static void replaceGroupReferenceWithGroupName(CSVUserLine userLine, List<String> groupNames) {

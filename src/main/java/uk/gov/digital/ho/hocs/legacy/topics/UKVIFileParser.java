@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.legacy.topics;
 
-import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,13 +11,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
 public class UKVIFileParser extends AbstractFilePasrer<CSVTopicLine> {
 
     @Getter
-    private final List<CSVTopicLine> lines;
+    private final Set<CSVTopicLine> lines;
 
     public UKVIFileParser(MultipartFile file) {
         this.lines = parseUKVIFile(file);
@@ -25,7 +26,7 @@ public class UKVIFileParser extends AbstractFilePasrer<CSVTopicLine> {
 
     // This looks more convoluted than the DCU file parser, but we're trying to build an identical result structure to the
     // the DCU file parser in order to re-use the same code further on.
-    private static List<CSVTopicLine> parseUKVIFile(MultipartFile file) {
+    private static Set<CSVTopicLine> parseUKVIFile(MultipartFile file) {
         List<CSVTopicLine> result = new ArrayList<>();
 
         List<String> lines = new ArrayList<>();
@@ -83,7 +84,7 @@ public class UKVIFileParser extends AbstractFilePasrer<CSVTopicLine> {
 
         }
 
-        return result;
+        return result.stream().collect(Collectors.toSet());
     }
 
     private static String getColumn(String line, int column) {

@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
+import uk.gov.digital.ho.hocs.legacy.users.UserFileParser;
 
 @RestController
 @Slf4j
@@ -20,15 +22,15 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/users/{name}", method = RequestMethod.POST)
-    public ResponseEntity createUsers(@RequestParam("file") MultipartFile file, @PathVariable("name") String name) {
+    @RequestMapping(value = "/users/{group}", method = RequestMethod.POST)
+    public ResponseEntity postUsersByGroup(@PathVariable("group") String group, @RequestParam("file") MultipartFile file) throws ListNotFoundException {
         if (!file.isEmpty()) {
-            log.info("Parsing {} Users File", name);
+            log.info("Parsing \"{}\" Users File", group);
             try {
-                userService.createUsersFromCSV(file, name);
+                userService.createUsersFromCSV(new UserFileParser(file).getLines(), group);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
-                log.info("{} Users not created", name);
+                log.info("{} Users not created", group);
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
@@ -36,27 +38,37 @@ public class UserResource {
         return ResponseEntity.badRequest().build();
     }
 
-    //This is a create script, to be used once per new environment, maybe in the future this could just POST to alfresco directly.
-    @RequestMapping(value = "/legacy/users/{name}/export", method = RequestMethod.GET)
-    public ResponseEntity<UserCreateRecord> getLegacyUsersByReference(@PathVariable("name") String name) {
-        log.info("export \"Legacy Users\" requested");
+    @RequestMapping(value = "s/homeoffice/cts/teamUsers", method =  RequestMethod.GET)
+    public ResponseEntity<UserRecord> getUsersByGroupRequest(@RequestParam String group) {
+        return this.getUsersByGroup(group);
+    }
+
+    @RequestMapping(value = "/users/{group}", method = RequestMethod.GET)
+    public ResponseEntity<UserRecord> getUsersByGroup(@PathVariable String group) {
+        log.info("\"{}\" requested", group);
         try {
-            UserCreateRecord users = userService.getLegacyUsersByDepartment(name);
-            return ResponseEntity.ok(users);
+            return ResponseEntity.ok(userService.getUsersByGroupName(group));
         } catch (ListNotFoundException e) {
-            log.info("export \"Legacy Users\" failed");
+            log.info("\"{}\" not found", group);
+            log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
-    @RequestMapping(value = "s/homeoffice/cts/teamUsers", method = RequestMethod.GET)
-    public ResponseEntity<UserRecord> getLegacyTeamsByGroupReference(@RequestParam String group) {
-        log.info("List \"Legacy teamUsers\" requested");
+    @RequestMapping(value = "/users/{group}", method = RequestMethod.PUT)
+    public ResponseEntity<UserRecord> putUsersByGroup(@PathVariable("group") String group, @RequestParam("file") MultipartFile file) {
+        throw new NotImplementedException();
+    }
+
+    //This is a create script, to be used once per new environment, maybe in the future this could just POST to alfresco directly.
+    @RequestMapping(value = "/users/{group}/export", method = RequestMethod.GET)
+    public ResponseEntity<UserCreateRecord> getUsersByReference(@PathVariable("group") String group) {
+        log.info("export \"{}\" users requested", group);
         try {
-            return ResponseEntity.ok(userService.getLegacyTeamsByGroupName(group));
+            UserCreateRecord users = userService.getUsersByDepartmentName(group);
+            return ResponseEntity.ok(users);
         } catch (ListNotFoundException e) {
-            log.info("List \"Legacy teamUsers\" not found");
-            log.info(e.getMessage());
+            log.info("export \"{}\" users failed", group);
             return ResponseEntity.notFound().build();
         }
     }

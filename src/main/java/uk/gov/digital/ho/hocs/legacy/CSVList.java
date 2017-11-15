@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.legacy;
 
-import java.util.List;
+import java.util.Set;
 
 public interface CSVList<T> {
-    List<T> getLines();
+    Set<T> getLines();
 }

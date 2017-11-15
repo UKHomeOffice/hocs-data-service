@@ -1,27 +1,27 @@
 package uk.gov.digital.ho.hocs.legacy.units;
 
-import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UnitFileParser extends AbstractFilePasrer<CSVGroupLine> {
 
     @Getter
-    private final List<CSVGroupLine> lines;
+    private final Set<CSVGroupLine> lines;
 
     public UnitFileParser(MultipartFile file) {
         this.lines = parseUnitTeamsFile(file);
     }
 
-    private static List<CSVGroupLine> parseUnitTeamsFile(MultipartFile file) {
-        List<CSVGroupLine> groups = new ArrayList<>();
+    private static Set<CSVGroupLine> parseUnitTeamsFile(MultipartFile file) {
+        Set<CSVGroupLine> groups = new HashSet<>();
 
         BufferedReader br;
         try {

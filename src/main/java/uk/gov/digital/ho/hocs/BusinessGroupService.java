@@ -31,23 +31,25 @@ public class BusinessGroupService {
     @Cacheable(value = "groups")
     public UnitRecord getAllGroups() throws ListNotFoundException {
         try {
-            List<BusinessGroup> list = repo.findAllBy();
+            List<BusinessGroup> list = repo.findAll();
             return UnitRecord.create(list);
         } catch (NullPointerException e) {
             throw new ListNotFoundException();
         }
     }
 
-    @CacheEvict(value = "groups", key = "#businessGroup.referenceName()", beforeInvocation = true)
-    public void createGroup(BusinessGroup businessGroup) throws EntityCreationException {
-        Set<BusinessGroup> groups = new HashSet<>();
-        groups.add(businessGroup);
-        createGroups(groups);
+    public BusinessGroup getGroupByReference(String referenceName) throws ListNotFoundException {
+        try {
+            BusinessGroup businessGroup = repo.findByReferenceName(referenceName);
+            return businessGroup;
+        } catch (NullPointerException e) {
+            throw new ListNotFoundException();
+        }
     }
 
-    @CacheEvict(value = "groups", allEntries = true, beforeInvocation = true)
+    @CacheEvict(value = "groups", allEntries = true)
     public void createGroupsFromCSV(MultipartFile file) {
-        List<CSVGroupLine> lines = new UnitFileParser(file).getLines();
+        Set<CSVGroupLine> lines = new UnitFileParser(file).getLines();
 
         Map<String, Set<BusinessGroup>> groupMap = new HashMap<>();
         for (CSVGroupLine line : lines) {
@@ -65,9 +67,9 @@ public class BusinessGroupService {
         createGroups(groups);
     }
 
-    public UnitCreateRecord getLegacyUnitCreateList() throws ListNotFoundException {
+    public UnitCreateRecord getGroupsCreateList() throws ListNotFoundException {
         try {
-            List<BusinessGroup> list = repo.findAllBy();
+            List<BusinessGroup> list = repo.findAll();
             return UnitCreateRecord.create(list);
         } catch (NullPointerException e) {
             throw new ListNotFoundException();

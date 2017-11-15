@@ -1,14 +1,13 @@
 package uk.gov.digital.ho.hocs;
 
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
@@ -17,6 +16,7 @@ import uk.gov.digital.ho.hocs.model.DataList;
 @Slf4j
 public class DataListService {
     private final DataListRepository repo;
+    private Object List;
 
     @Autowired
     public DataListService(DataListRepository repo) {
@@ -33,9 +33,7 @@ public class DataListService {
         }
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "list", key = "#dataList.getName()", beforeInvocation = true),
-            @CacheEvict(value = "legacyList", key = "#dataList.getName()", beforeInvocation = true)})
+    @CacheEvict(value = "list", key = "#dataList.getName()")
     public void createList(DataList dataList) throws EntityCreationException {
         try {
             repo.save(dataList);

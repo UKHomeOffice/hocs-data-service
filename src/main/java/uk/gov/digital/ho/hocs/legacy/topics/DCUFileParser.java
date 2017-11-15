@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.legacy.topics;
 
-import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,17 +10,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DCUFileParser extends AbstractFilePasrer<CSVTopicLine> {
 
     @Getter
-    private final List<CSVTopicLine> lines;
+    private final Set<CSVTopicLine> lines;
 
     public DCUFileParser(MultipartFile file) {
         this.lines = parseDCUFile(file);
     }
 
-    private static List<CSVTopicLine> parseDCUFile(MultipartFile file) {
+    private static Set<CSVTopicLine> parseDCUFile(MultipartFile file) {
         List<CSVTopicLine> result = new ArrayList<>();
 
         BufferedReader br;
@@ -42,6 +44,6 @@ public class DCUFileParser extends AbstractFilePasrer<CSVTopicLine> {
 
         // Remove the heading.
         result.remove(0);
-        return result;
+        return result.stream().collect(Collectors.toSet());
     }
 }

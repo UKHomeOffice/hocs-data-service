@@ -8,7 +8,8 @@ import java.util.List;
 
 @Repository
 public interface BusinessGroupRepository extends CrudRepository<BusinessGroup, Long> {
-    List<BusinessGroup> findAllBy();
+    @Override
+    List<BusinessGroup> findAll();
 
     BusinessGroup findByReferenceName(String referenceName);
 }

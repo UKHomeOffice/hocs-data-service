@@ -76,19 +76,19 @@ public class UserRepositoryTest {
 
     @Test
     public void shouldRetrieveByBusinessGroupRef() {
-        final Iterable<User> all = userRepository.findAllByBusinessGroupReferenceName("GROUP_TEST");
+        final Iterable<User> all = userRepository.findAllByBusinessGroupReference("GROUP_TEST");
         assertThat(all).size().isEqualTo(1);
     }
 
     @Test
     public void shouldRetrieveByBusinessGroupRefNone() {
-        final Iterable<User> all = userRepository.findAllByBusinessGroupReferenceName("GROUP_TEST_NO_ENTRIES");
+        final Iterable<User> all = userRepository.findAllByBusinessGroupReference("GROUP_TEST_NO_ENTRIES");
         assertThat(all).isEmpty();
     }
 
     @Test
     public void shouldRetrieveEntriesByBusinessGroupProperties() {
-        final List<User> all = userRepository.findAllByBusinessGroupReferenceName("GROUP_TEST");
+        final List<User> all = userRepository.findAllByBusinessGroupReference("GROUP_TEST");
         assertThat(all).size().isEqualTo(1);
         User firstUser = all.get(0);
 

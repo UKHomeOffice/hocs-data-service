@@ -1,19 +1,29 @@
 package uk.gov.digital.ho.hocs.dto.legacy.topics;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.model.DataList;
+import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
+import uk.gov.digital.ho.hocs.model.Topic;
+import uk.gov.digital.ho.hocs.model.TopicGroup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
 public class TopicRecord {
-    private List<TopicEntityRecord> topics;
 
-    public static TopicRecord create(DataList list) {
-        List<TopicEntityRecord> topicList = list.getEntities().stream().map(TopicEntityRecord::create).collect(Collectors.toList());
-        return new TopicRecord(topicList);
+    private String topicName;
+
+    private String topicUnit;
+
+    private String topicTeam;
+
+    public static TopicRecord create(Topic topic) {
+
+        return new TopicRecord(topic.getName(), topic.getTopicUnit(), topic.getTopicTeam());
     }
+
 }

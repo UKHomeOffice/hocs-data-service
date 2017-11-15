@@ -15,5 +15,5 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Query("select u from User u " +
             "join u.groups g " +
             "where g.referenceName = :refName")
-    List<User> findAllByBusinessGroupReferenceName(@Param("refName") String refName);
+    List<User> findAllByBusinessGroupReference(@Param("refName") String refName);
 }

@@ -39,18 +39,6 @@ public class DataListServiceTest {
         service = new DataListService(mockRepo);
     }
 
-    public static DataList buildValidDataList() {
-        Set<DataListEntity> dataListEntities = new HashSet<>();
-        DataListEntityProperty property = new DataListEntityProperty("caseType", "CaseValue");
-        Set<DataListEntityProperty> properties = new HashSet<>();
-        properties.add(property);
-        DataListEntity dataListEntity = new DataListEntity("Text", "Value");
-        dataListEntity.setProperties(properties);
-
-        dataListEntities.add(dataListEntity);
-        return new DataList(TEST_LIST, dataListEntities);
-    }
-
     @Test
     public void testCollaboratorsGettingList() throws ListNotFoundException {
         when(mockRepo.findOneByName(TEST_LIST)).thenReturn(buildValidDataList());
@@ -73,7 +61,6 @@ public class DataListServiceTest {
         DataListRecord dataListRecord = service.getListByName(UNAVAILABLE_RESOURCE);
         verify(mockRepo).findOneByName(UNAVAILABLE_RESOURCE);
         assertThat(dataListRecord).isNull();
-
     }
 
     @Test
@@ -90,7 +77,7 @@ public class DataListServiceTest {
         when(mockRepo.save(dataList)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "list_name_idempotent")));
         service.createList(dataList);
 
-        verify(mockRepo).save(buildValidDataList());
+        verify(mockRepo).save(dataList);
     }
 
     @Test(expected = DataIntegrityViolationException.class)
@@ -101,7 +88,19 @@ public class DataListServiceTest {
         when(mockRepo.save(dataList)). thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
         service.createList(dataList);
 
-        verify(mockRepo).save(buildValidDataList());
+        verify(mockRepo).save(dataList);
+    }
+
+    private DataList buildValidDataList() {
+        Set<DataListEntity> dataListEntities = new HashSet<>();
+        DataListEntityProperty property = new DataListEntityProperty("caseType", "CaseValue");
+        Set<DataListEntityProperty> properties = new HashSet<>();
+        properties.add(property);
+        DataListEntity dataListEntity = new DataListEntity("Text", "Value");
+        dataListEntity.setProperties(properties);
+
+        dataListEntities.add(dataListEntity);
+        return new DataList(TEST_LIST, dataListEntities);
     }
 
 }
