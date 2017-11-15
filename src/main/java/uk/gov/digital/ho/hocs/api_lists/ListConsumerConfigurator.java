@@ -17,13 +17,13 @@ class ListConsumerConfigurator {
     final String HOUSE_LORDS = "lords";
     final String HOUSE_COMMONS = "commons";
     final String HOUSE_SCOTTISH_PARLIAMENT = "scottish_parliament";
-    final String HOUSE_NORTHERN_IRISH_ASSEMBLY = "irish_parliament";
+    final String HOUSE_NORTHERN_IRISH_ASSEMBLY = "northern_irish_assembly";
     final String HOUSE_EUROPEAN_PARLIAMENT = "european_parliament";
 
     final String LIST_LORDS = "lords_list";
     final String LIST_COMMONS = "commons_list";
     final String LIST_SCOTTISH_PARLIAMENT = "scottish_parliament_list";
-    final String LIST_NORTHERN_IRISH_ASSEMBLY = "irish_parliament_list";
+    final String LIST_NORTHERN_IRISH_ASSEMBLY = "northern_irish_assembly_list";
     final String LIST_EUROPEAN_PARLIAMENT = "european_parliament_list";
     final String LIST_WELSH_ASSEMBLY = "welsh_assembly_list";
 

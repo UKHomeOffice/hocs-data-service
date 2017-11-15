@@ -1,0 +1,18 @@
+<meps>
+    <mep>
+        <fullName>First MEMBER</fullName>
+        <country>United Kingdom</country>
+    </mep>
+    <mep>
+        <fullName>Second MEMBER</fullName>
+        <country>United Kingdom</country>
+    </mep>
+    <mep>
+        <fullName>Third MEMBER</fullName>
+        <country>United Kingdom</country>
+    </mep>
+    <mep>
+        <fullName>Fourth MEMBER</fullName>
+        <country>Non UK</country>
+    </mep>
+</meps>
