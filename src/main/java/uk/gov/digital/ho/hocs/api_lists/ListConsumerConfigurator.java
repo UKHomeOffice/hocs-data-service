@@ -28,7 +28,7 @@ class ListConsumerConfigurator {
     final String LIST_WELSH_ASSEMBLY = "welsh_assembly_list";
 
     ListConsumerConfigurator(@Value("${api.uk.parliament}") String apiUkParliament,
-                             @Value("${api.scottish.parliament") String apiScottishParliament,
+                             @Value("${api.scottish.parliament}") String apiScottishParliament,
                              @Value("${api.ni.assembly}") String apiNorthernIrishAssembly,
                              @Value("${api.european.parliament}") String apiEuropeanParliament) {
 

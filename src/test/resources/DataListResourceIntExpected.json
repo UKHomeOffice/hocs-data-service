@@ -7,9 +7,8 @@
       "text": "SubText",
       "value": "SUB_VAL"
     } ],
-    "properties" : [ {
-      "key": "Key",
-      "value" : "Value"
-    } ]
+    "properties" : {
+      "Key": "Value"
+    }
   } ]
 }

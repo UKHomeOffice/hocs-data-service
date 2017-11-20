@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,8 @@ import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
 import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -38,6 +34,11 @@ public class ConsumerServiceTest {
     private final static String LIST_EUROPEAN_PARLIAMENT = "european_parliament_list";
     private final static String LIST_WELSH_ASSEMBLY = "welsh_assembly_list";
 
+    private final String UK_PARLIAMENT_ENDPOINT = "http://test.url/uk/%s";
+    private final String SCOTTISH_PARLIAMENT_ENDPOINT = "http://test.url/scot/";
+    private final String NORTHERN_IRISH_ASSEMBLY_ENDPOINT = "http://test.url/nia/";
+    private final String EU_PARLIAMENT_ENDPOINT = "http://test.url/uk/eu/";
+
     @Mock
     private DataListRepository mockRepo;
 
@@ -47,10 +48,10 @@ public class ConsumerServiceTest {
     private RestTemplate restTemplate;
 
     private ListConsumerConfigurator configuration = new ListConsumerConfigurator(
-            "http://test.url",
-            "http://test.url",
-            "http://test.url",
-            "http://test.url"
+            UK_PARLIAMENT_ENDPOINT,
+            SCOTTISH_PARLIAMENT_ENDPOINT,
+            NORTHERN_IRISH_ASSEMBLY_ENDPOINT,
+            EU_PARLIAMENT_ENDPOINT
     );
 
 
@@ -68,11 +69,11 @@ public class ConsumerServiceTest {
 
         verify(mockRepo, times(NUMBER_OF_LISTS)).findDataListByName(anyString());
         verify(mockRepo, times(0)).delete(any(DataList.class));
-        verify(mockRepo, times(NUMBER_OF_LISTS - 1)).save(any(DataList.class));
+        verify(mockRepo, times(0)).save(any(DataList.class));
     }
 
     @Test
-    public void testRefreshListsFromApiCallsDeleteTheCorrectNumberOfTimesWhenListsExists() {
+    public void testRefreshListsFromApiCallsDeleteWhenListsExists() {
 
         when(mockRepo.findDataListByName(LIST_COMMONS)).thenReturn(new DataList());
         when(mockRepo.findDataListByName(LIST_LORDS)).thenReturn(new DataList());
@@ -89,14 +90,110 @@ public class ConsumerServiceTest {
 
         verify(mockRepo, times(NUMBER_OF_LISTS)).findDataListByName(anyString());
         verify(mockRepo, times(1)).delete(anyCollection());
-        verify(mockRepo, times(NUMBER_OF_LISTS - 1)).save(any(DataList.class));
+        verify(mockRepo, times(0)).save(any(DataList.class));
     }
 
     @Test
-    public void testCommonsApiIngest() {}
+    public void testCommonsApiIngest() {
+        List<Member> membersList = new ArrayList<>();
+        Member firstMember = new Member();
+        firstMember.setDisplayName("First Member");
+        firstMember.setListName("Member, First");
+        firstMember.setHouse("commons");
+
+        membersList.add(firstMember);
+
+        Members members = new Members();
+        members.setMembers(membersList);
+
+        ResponseEntity response = ResponseEntity.ok(members);
+
+        doReturn(response).when(restTemplate).exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(Class.class)
+        );
+
+        when(mockRepo.save(any(DataList.class))).thenAnswer(i -> {
+
+            DataList dataList = i.getArgumentAt(0, DataList.class);
+
+            Assert.assertNotNull(dataList);
+            Assert.assertEquals(1, dataList.getEntities().size());
+            Assert.assertEquals("commons_list", dataList.getName());
+
+            List<DataListEntity> dataListEntities = new ArrayList<>(dataList.getEntities());
+            DataListEntity member = dataListEntities.get(0);
+
+            Assert.assertEquals("First Member", member.getText());
+            Assert.assertEquals("MEMBER_FIRST", member.getValue());
+
+            List<DataListEntityProperty> dataListEntityProperties = new ArrayList<>(member.getProperties());
+            DataListEntityProperty house = dataListEntityProperties.get(0);
+
+            Assert.assertEquals("house", house.getKey());
+            Assert.assertEquals("commons", house.getValue());
+
+            return null;
+
+        });
+
+        listConsumerService.createFromUKParliamentAPI("commons");
+
+        verify(mockRepo, times(1)).save(any(DataList.class));
+    }
 
     @Test
-    public void testLordsApiIngest() {}
+    public void testLordsApiIngest() {
+        List<Member> membersList = new ArrayList<>();
+        Member firstMember = new Member();
+        firstMember.setDisplayName("First Member");
+        firstMember.setListName("Member, First");
+        firstMember.setHouse("lords");
+
+        membersList.add(firstMember);
+
+        Members members = new Members();
+        members.setMembers(membersList);
+
+        ResponseEntity response = ResponseEntity.ok(members);
+
+        doReturn(response).when(restTemplate).exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(Class.class)
+        );
+
+        when(mockRepo.save(any(DataList.class))).thenAnswer(i -> {
+
+            DataList dataList = i.getArgumentAt(0, DataList.class);
+
+            Assert.assertNotNull(dataList);
+            Assert.assertEquals(1, dataList.getEntities().size());
+            Assert.assertEquals("lords_list", dataList.getName());
+
+            List<DataListEntity> dataListEntities = new ArrayList<>(dataList.getEntities());
+            DataListEntity member = dataListEntities.get(0);
+
+            Assert.assertEquals("First Member", member.getText());
+            Assert.assertEquals("MEMBER_FIRST", member.getValue());
+
+            List<DataListEntityProperty> dataListEntityProperties = new ArrayList<>(member.getProperties());
+            DataListEntityProperty house = dataListEntityProperties.get(0);
+
+            Assert.assertEquals("house", house.getKey());
+            Assert.assertEquals("lords", house.getValue());
+
+            return null;
+
+        });
+
+        listConsumerService.createFromUKParliamentAPI("lords");
+
+        verify(mockRepo, times(1)).save(any(DataList.class));
+    }
 
     @Test
     public void testScottishParliamentApiIngest() {
@@ -196,6 +293,53 @@ public class ConsumerServiceTest {
     }
 
     @Test
-    public void testEuropeanParliamentApiIngest() {}
+    public void testEuropeanParliamentApiIngest() {
+        List<EuropeMember> membersList = new ArrayList<>();
+        EuropeMember firstMember = new EuropeMember();
+        firstMember.setName("First MEMBER");
+        firstMember.setCountry("United Kingdom");
+
+        membersList.add(firstMember);
+
+        EuropeMembers members = new EuropeMembers();
+        members.setMembers(membersList);
+
+        ResponseEntity response = ResponseEntity.ok(members);
+
+        doReturn(response).when(restTemplate).exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(Class.class)
+        );
+
+        when(mockRepo.save(any(DataList.class))).thenAnswer(i -> {
+
+            DataList dataList = i.getArgumentAt(0, DataList.class);
+
+            Assert.assertNotNull(dataList);
+            Assert.assertEquals(1, dataList.getEntities().size());
+            Assert.assertEquals("european_parliament_list", dataList.getName());
+
+            List<DataListEntity> dataListEntities = new ArrayList<>(dataList.getEntities());
+            DataListEntity member = dataListEntities.get(0);
+
+            Assert.assertEquals("First Member", member.getText());
+            Assert.assertEquals("MEMBER_FIRST", member.getValue());
+
+            List<DataListEntityProperty> dataListEntityProperties = new ArrayList<>(member.getProperties());
+            DataListEntityProperty house = dataListEntityProperties.get(0);
+
+            Assert.assertEquals("house", house.getKey());
+            Assert.assertEquals("european_parliament", house.getValue());
+
+            return null;
+
+        });
+
+        listConsumerService.createFromEuropeanParliamentAPI();
+
+        verify(mockRepo, times(1)).save(any(DataList.class));
+    }
 
 }

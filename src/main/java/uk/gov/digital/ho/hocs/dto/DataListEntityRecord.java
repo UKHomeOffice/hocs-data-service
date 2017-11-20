@@ -1,12 +1,17 @@
 package uk.gov.digital.ho.hocs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.yaml.snakeyaml.events.MappingStartEvent;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
+import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -30,4 +35,11 @@ public class DataListEntityRecord {
         return new DataListEntityRecord(dle.getText(), dle.getValue(), properties, subEntities);
     }
 
+    public Map<String, String> getProperties() {
+        Map<String, String> propMap = new HashMap<>();
+        for (DataListEntityRecordProperty property: this.properties) {
+            propMap.put(property.getKey(), property.getValue());
+        }
+        return propMap;
+    }
 }

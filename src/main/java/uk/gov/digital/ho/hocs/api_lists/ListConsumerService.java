@@ -177,7 +177,7 @@ public class ListConsumerService {
         }
     }
 
-    private <T> DataListEntity createListEntity(String name, final String HOUSE) {
+    private DataListEntity createListEntity(String name, final String HOUSE) {
 
         String[] names = name.split(",");
         String reference = String.join(" ", names).trim();

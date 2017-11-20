@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import uk.gov.digital.ho.hocs.api_lists.ListConsumerService;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -18,10 +19,12 @@ import java.util.Set;
 @Slf4j
 public class DataListResource {
     private final DataListService dataListService;
+    private final ListConsumerService listConsumerService;
 
     @Autowired
-    public DataListResource(DataListService dataListService) {
+    public DataListResource(DataListService dataListService, ListConsumerService listConsumerService) {
         this.dataListService = dataListService;
+        this.listConsumerService = listConsumerService;
     }
 
     @Deprecated
@@ -67,6 +70,12 @@ public class DataListResource {
     @RequestMapping(value = "/list/{name}", method = RequestMethod.PUT)
     public ResponseEntity putListByName(@PathVariable("name") String name, @RequestBody Set<DataListEntity> dataListEntities) {
         throw new NotImplementedException();
+    }
+
+    @RequestMapping(value = "/api/refresh", method = RequestMethod.GET)
+    public ResponseEntity refreshApiLists() {
+        listConsumerService.refreshListsFromAPI();
+        return ResponseEntity.ok().build();
     }
 
 }
