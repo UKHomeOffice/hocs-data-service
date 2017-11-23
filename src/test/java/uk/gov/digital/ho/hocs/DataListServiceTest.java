@@ -26,6 +26,9 @@ import static org.mockito.Mockito.when;
 public class DataListServiceTest {
 
     private final static String TEST_LIST = "Test List One";
+    private final static String LIST_A = "LIST_A";
+    private final static String LIST_B = "LIST_B";
+    private final static String LIST_C = "LIST_C";
     private final static String UNAVAILABLE_RESOURCE = "Unavailable Resource";
 
     @Mock
@@ -41,7 +44,7 @@ public class DataListServiceTest {
 
     @Test
     public void testCollaboratorsGettingList() throws ListNotFoundException {
-        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(buildValidDataList());
+        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(buildValidDataList(TEST_LIST));
 
         DataListRecord dataListRecord = service.getListByName(TEST_LIST);
 
@@ -49,10 +52,28 @@ public class DataListServiceTest {
 
         assertThat(dataListRecord).isNotNull();
         assertThat(dataListRecord).isInstanceOf(DataListRecord.class);
-        Assertions.assertThat(dataListRecord.getEntities()).size().isEqualTo(1);
+        assertThat(dataListRecord.getEntities()).size().isEqualTo(1);
         assertThat(dataListRecord.getName()).isEqualTo(TEST_LIST);
         assertThat(dataListRecord.getEntities().get(0).getText()).isEqualTo("Text");
         assertThat(dataListRecord.getEntities().get(0).getValue()).isEqualTo("VALUE");
+    }
+
+    @Test
+    public void testGetCombinedList() throws ListNotFoundException {
+
+        when(mockRepo.findOneByName(LIST_A)).thenReturn(buildValidDataList(LIST_A));
+        when(mockRepo.findOneByName(LIST_B)).thenReturn(buildValidDataList(LIST_B));
+
+        DataListRecord dataListRecord = service.getCombinedList(LIST_C, LIST_A, LIST_B);
+
+        verify(mockRepo).findOneByName(LIST_A);
+        verify(mockRepo).findOneByName(LIST_B);
+
+        assertThat(dataListRecord).isNotNull();
+        assertThat(dataListRecord).isInstanceOf(DataListRecord.class);
+        assertThat(dataListRecord.getName()).isEqualTo(LIST_C);
+        assertThat(dataListRecord.getEntities().size()).isEqualTo(2);
+
     }
 
     @Test(expected = ListNotFoundException.class)
@@ -65,14 +86,14 @@ public class DataListServiceTest {
 
     @Test
     public void testCreateList() {
-        service.createList(buildValidDataList());
-        verify(mockRepo).save(buildValidDataList());
+        service.createList(buildValidDataList(TEST_LIST));
+        verify(mockRepo).save(buildValidDataList(TEST_LIST));
     }
 
     @Test(expected = EntityCreationException.class)
     public void testRepoDataIntegrityExceptionThrowsEntityCreationException() {
 
-        DataList dataList = buildValidDataList();
+        DataList dataList = buildValidDataList(TEST_LIST);
 
         when(mockRepo.save(dataList)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "list_name_idempotent")));
         service.createList(dataList);
@@ -83,7 +104,7 @@ public class DataListServiceTest {
     @Test(expected = DataIntegrityViolationException.class)
     public void testRepoUnhandledExceptionThrowsDataIntegrityException() {
 
-        DataList dataList = buildValidDataList();
+        DataList dataList = buildValidDataList(TEST_LIST);
 
         when(mockRepo.save(dataList)). thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
         service.createList(dataList);
@@ -91,7 +112,7 @@ public class DataListServiceTest {
         verify(mockRepo).save(dataList);
     }
 
-    private DataList buildValidDataList() {
+    private DataList buildValidDataList(String name) {
         Set<DataListEntity> dataListEntities = new HashSet<>();
         DataListEntityProperty property = new DataListEntityProperty("caseType", "CaseValue");
         Set<DataListEntityProperty> properties = new HashSet<>();
@@ -100,7 +121,7 @@ public class DataListServiceTest {
         dataListEntity.setProperties(properties);
 
         dataListEntities.add(dataListEntity);
-        return new DataList(TEST_LIST, dataListEntities);
+        return new DataList(name, dataListEntities);
     }
 
 }

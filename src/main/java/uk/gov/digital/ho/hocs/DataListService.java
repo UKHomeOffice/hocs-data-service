@@ -7,16 +7,22 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Service
 @Slf4j
 public class DataListService {
     private final DataListRepository repo;
-    private Object List;
 
     @Autowired
     public DataListService(DataListRepository repo) {
@@ -29,6 +35,22 @@ public class DataListService {
             DataList list = repo.findOneByName(name);
             return DataListRecord.create(list);
         } catch (NullPointerException e) {
+            throw new ListNotFoundException();
+        }
+    }
+
+    public DataListRecord getCombinedList(String name, String... lists) throws ListNotFoundException {
+        try {
+            List<DataListEntityRecord> listEntities = new ArrayList<>();
+
+            for (String list : lists) {
+                DataListRecord dataListRecord = getListByName(list);
+                listEntities = Stream
+                        .concat(listEntities.stream(), dataListRecord.getEntities().stream())
+                        .collect(Collectors.toList());
+            }
+            return new DataListRecord(name, listEntities);
+        } catch (ListNotFoundException e) {
             throw new ListNotFoundException();
         }
     }

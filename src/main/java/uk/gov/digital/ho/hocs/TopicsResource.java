@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.legacy.topics.DCUFileParser;
 import uk.gov.digital.ho.hocs.legacy.topics.UKVIFileParser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ public class TopicsResource {
         this.topicsService = topicsService;
     }
 
-    @RequestMapping(value = "topics/{name}", method = RequestMethod.POST)
+    @RequestMapping(value = "/topics/{name}", method = RequestMethod.POST)
     public ResponseEntity createTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("name") String name) {
         if (!file.isEmpty()) {
             log.info("Parsing list \"TopicListDCU\"");
@@ -51,11 +52,19 @@ public class TopicsResource {
     public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
         log.info("List \"Legacy TopicList\" requested");
         try {
-            List<TopicGroupRecord> dcu = topicsService.getTopicByCaseType("DCU");
-            List<TopicGroupRecord> ukvi = topicsService.getTopicByCaseType("UKVI");
 
-            List<TopicGroupRecord> jointList = Stream.concat(dcu.stream(),ukvi.stream()).collect(Collectors.toList());
-            return ResponseEntity.ok(jointList);
+            List<TopicGroupRecord> topics = new ArrayList<>();
+            String[] caseTypes = {"DCU", "UKVI", "FOI"};
+
+            for (String caseType: caseTypes) {
+                List<TopicGroupRecord> topicList = topicsService.getTopicByCaseType(caseType);
+                topics =  Stream
+                        .concat(topics.stream(),topicList.stream())
+                        .collect(Collectors.toList());
+            }
+
+            return ResponseEntity.ok(topics);
+
         } catch (ListNotFoundException e) {
             log.info("List \"Legacy TopicList\" not found");
             log.info(e.getMessage());
