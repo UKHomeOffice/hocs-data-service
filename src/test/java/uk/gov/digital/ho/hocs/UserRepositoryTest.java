@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 import uk.gov.digital.ho.hocs.model.User;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,9 +55,9 @@ public class UserRepositoryTest {
 
     @Test
     public void shouldRetrieveEntriesProperties() {
-        final List<User> all = userRepository.findAllByDepartment("Dept2");
+        final Set<User> all = userRepository.findAllByDepartment("Dept2");
         assertThat(all).size().isEqualTo(1);
-        User firstUser = all.get(0);
+        User firstUser = new ArrayList<>(all).get(0);
 
         assertThat(firstUser.getFirstName()).isEqualTo("first1");
         assertThat(firstUser.getLastName()).isEqualTo("last");
@@ -88,9 +88,9 @@ public class UserRepositoryTest {
 
     @Test
     public void shouldRetrieveEntriesByBusinessGroupProperties() {
-        final List<User> all = userRepository.findAllByBusinessGroupReference("GROUP_TEST");
+        final Set<User> all = userRepository.findAllByBusinessGroupReference("GROUP_TEST");
         assertThat(all).size().isEqualTo(1);
-        User firstUser = all.get(0);
+        User firstUser = new ArrayList<>(all).get(0);
 
         assertThat(firstUser.getFirstName()).isEqualTo("first1");
         assertThat(firstUser.getLastName()).isEqualTo("last");

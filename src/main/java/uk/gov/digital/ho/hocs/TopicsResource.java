@@ -8,11 +8,13 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
+import uk.gov.digital.ho.hocs.legacy.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.legacy.topics.DCUFileParser;
 import uk.gov.digital.ho.hocs.legacy.topics.UKVIFileParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,24 +28,37 @@ public class TopicsResource {
         this.topicsService = topicsService;
     }
 
-    @RequestMapping(value = "/topics/{name}", method = RequestMethod.POST)
-    public ResponseEntity createTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("name") String name) {
+
+    @RequestMapping(value = "/topics/{unitName}", method = RequestMethod.POST)
+    public ResponseEntity createTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
         if (!file.isEmpty()) {
-            log.info("Parsing list \"TopicListDCU\"");
+            log.info("Parsing topics {} - POST", unitName);
             try {
-                switch (name) {
-                    case "DCU":
-                        topicsService.createTopics(new DCUFileParser(file).getLines(), "DCU");
-                        return ResponseEntity.ok().build();
-                    case "UKVI":
-                        topicsService.createTopics(new UKVIFileParser(file).getLines(), "UKVI");
-                        return ResponseEntity.ok().build();
-                }
+                Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
+                topicsService.createTopics(lines, unitName);
+                return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
-                    log.info("{} groups not created", name);
+                    log.info("{} topics not created", unitName);
                     log.info(e.getMessage());
                     return ResponseEntity.badRequest().build();
                 }
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @RequestMapping(value = "topics/{unitName}", method = RequestMethod.PUT)
+    public ResponseEntity updateTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+        if (!file.isEmpty()) {
+            log.info("Parsing topics {} - PUT", unitName);
+            try {
+                Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
+                topicsService.updateTopics(lines, unitName);
+                return ResponseEntity.ok().build();
+            } catch (EntityCreationException e) {
+                log.info("{} topics not created", unitName);
+                log.info(e.getMessage());
+                return ResponseEntity.badRequest().build();
+            }
         }
         return ResponseEntity.badRequest().build();
     }
@@ -70,6 +85,21 @@ public class TopicsResource {
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private Set<CSVTopicLine> getCsvTopicLines(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+        Set<CSVTopicLine> lines;
+        switch (unitName) {
+            case "DCU":
+                lines = new DCUFileParser(file).getLines();
+                break;
+            case "UKVI":
+                lines = new UKVIFileParser(file).getLines();
+                break;
+            default:
+                throw new EntityCreationException("Unknown Business Unit");
+        }
+        return lines;
     }
 
 }

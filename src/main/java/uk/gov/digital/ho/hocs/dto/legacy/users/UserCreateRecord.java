@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.User;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
 public class UserCreateRecord {
-    private List<UserCreateEntityRecord> users;
+    private Set<UserCreateEntityRecord> users;
 
-    public static UserCreateRecord create(List<User> list) {
-        List<UserCreateEntityRecord> users = list.stream().map(UserCreateEntityRecord::create).collect(Collectors.toList());
+    public static UserCreateRecord create(Set<User> list) {
+        Set<UserCreateEntityRecord> users = list.stream().map(UserCreateEntityRecord::create).collect(Collectors.toSet());
         return new UserCreateRecord(users);
     }
 }

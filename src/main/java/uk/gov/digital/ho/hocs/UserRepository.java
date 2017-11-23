@@ -6,14 +6,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.digital.ho.hocs.model.User;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-    List<User> findAllByDepartment(String department);
+    Set<User> findAllByDepartment(String department);
 
     @Query("select u from User u " +
             "join u.groups g " +
             "where g.referenceName = :refName")
-    List<User> findAllByBusinessGroupReference(@Param("refName") String refName);
+    Set<User> findAllByBusinessGroupReference(@Param("refName") String refName);
 }

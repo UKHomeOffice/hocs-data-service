@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -31,7 +32,7 @@ public class TopicsService {
     @Cacheable(value = "topics", key = "#caseType")
     public List<TopicGroupRecord> getTopicByCaseType(String caseType) throws ListNotFoundException {
         Set<TopicGroup> list = repo.findAllByCaseType(caseType);
-        if(list.size() == 0)
+        if(list.isEmpty())
         {
             throw new ListNotFoundException();
         }
@@ -40,6 +41,33 @@ public class TopicsService {
 
     @CacheEvict(value = "topics", key = "#caseType")
     public void createTopics(Set<CSVTopicLine> lines, String caseType) {
+        Set<TopicGroup> topicGroups = getTopics(lines,caseType);
+        if(!topicGroups.isEmpty()) {
+            createTopicGroups(topicGroups);
+        }
+    }
+
+    @Transactional
+    @CacheEvict(value = "topics", key = "#caseType")
+    public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
+        Set<TopicGroup> topicGroups = getTopics(lines,caseType);
+        Set<TopicGroup> jpaTopicGroups = repo.findAllByCaseType(caseType);
+
+        // Get list of topics to remove
+        Set<TopicGroup> topicsToDelete = jpaTopicGroups.stream().filter(user -> !topicGroups.contains(user)).collect(Collectors.toSet());
+
+        // Get list of users to add
+        Set<TopicGroup> topicsToAdd = topicGroups.stream().filter(user -> !jpaTopicGroups.contains(user)).collect(Collectors.toSet());
+
+        if(!topicsToDelete.isEmpty()) {
+            deleteTopicGroups(topicsToDelete);
+        }
+        if(!topicsToAdd.isEmpty()) {
+            createTopicGroups(topicsToAdd);
+        }
+    }
+
+    private Set<TopicGroup> getTopics(Set<CSVTopicLine> lines,String caseType){
         Map<String, Set<Topic>> topics = new HashMap<>();
 
         for (CSVTopicLine line : lines) {
@@ -58,14 +86,14 @@ public class TopicsService {
 
             topicGroups.add(topicGroup);
         }
+        return topicGroups;
+    }
 
-        if(topicGroups.size() > 0) {
-            createTopicGroups(topicGroups);
-        }
+    private void deleteTopicGroups(Set<TopicGroup> topicGroups) {
+        repo.delete(topicGroups);
     }
 
     private void createTopicGroups(Set<TopicGroup> topicGroups) {
-
         try {
             repo.save(topicGroups);
         } catch (DataIntegrityViolationException e) {
@@ -80,5 +108,4 @@ public class TopicsService {
         }
 
     }
-
 }

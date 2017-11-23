@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "users")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "groups")
+@EqualsAndHashCode(of = "userName")
 public class User {
 
     @Id
@@ -41,7 +41,7 @@ public class User {
     @Getter
     private String department;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_groups",
             joinColumns = { @JoinColumn(name = "user_id") },
