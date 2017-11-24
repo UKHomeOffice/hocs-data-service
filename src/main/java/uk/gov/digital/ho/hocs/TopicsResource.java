@@ -38,10 +38,10 @@ public class TopicsResource {
                 topicsService.createTopics(lines, unitName);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
-                    log.info("{} topics not created", unitName);
-                    log.info(e.getMessage());
-                    return ResponseEntity.badRequest().build();
-                }
+                log.info("{} topics not created", unitName);
+                log.info(e.getMessage());
+                return ResponseEntity.badRequest().build();
+            }
         }
         return ResponseEntity.badRequest().build();
     }
@@ -71,10 +71,10 @@ public class TopicsResource {
             List<TopicGroupRecord> topics = new ArrayList<>();
             String[] caseTypes = {"DCU", "UKVI", "FOI"};
 
-            for (String caseType: caseTypes) {
+            for (String caseType : caseTypes) {
                 List<TopicGroupRecord> topicList = topicsService.getTopicByCaseType(caseType);
-                topics =  Stream
-                        .concat(topics.stream(),topicList.stream())
+                topics = Stream
+                        .concat(topics.stream(), topicList.stream())
                         .collect(Collectors.toList());
             }
 
@@ -91,6 +91,7 @@ public class TopicsResource {
         Set<CSVTopicLine> lines;
         switch (unitName) {
             case "DCU":
+            case "FOI":
                 lines = new DCUFileParser(file).getLines();
                 break;
             case "UKVI":
