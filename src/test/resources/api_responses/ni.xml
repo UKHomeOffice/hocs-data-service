@@ -1,0 +1,11 @@
+<ArrayOfMember>
+    <Member>
+        <MemberName>Member, First</MemberName>
+    </Member>
+    <Member>
+        <MemberName>Member, Second</MemberName>
+    </Member>
+    <Member>
+        <MemberName>Member, Third</MemberName>
+    </Member>
+</ArrayOfMember>

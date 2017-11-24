@@ -1,0 +1,17 @@
+<Members>
+    <Member>
+        <DisplayAs>First Member</DisplayAs>
+        <ListAs>Member, First</ListAs>
+        <House>Lords</House>
+    </Member>
+    <Member>
+        <DisplayAs>Second Member</DisplayAs>
+        <ListAs>Member, Second</ListAs>
+        <House>Lords</House>
+    </Member>
+    <Member>
+        <DisplayAs>Third Member</DisplayAs>
+        <ListAs>Member, Third</ListAs>
+        <House>Lords</House>
+    </Member>
+</Members>

@@ -62,3 +62,4 @@ curl -v -o /dev/null -v http://${hostname}/topics/topicList
 curl -v -o /dev/null -v http://${hostname}/list/MinisterList
 
 curl -v -o /dev/null -v http://${hostname}/groups
+

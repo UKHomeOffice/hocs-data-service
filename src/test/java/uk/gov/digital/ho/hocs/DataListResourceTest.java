@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.api_lists.ListConsumerService;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -30,11 +31,14 @@ public class DataListResourceTest {
     @Mock
     private DataListService dataListService;
 
+    @Mock
+    private ListConsumerService listConsumerService;
+
     private DataListResource dataListResource;
 
     @Before
     public void setUp() {
-        dataListResource = new DataListResource(dataListService);
+        dataListResource = new DataListResource(dataListService, listConsumerService);
     }
 
     @Test
