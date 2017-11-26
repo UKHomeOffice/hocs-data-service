@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.legacy;
+package uk.gov.digital.ho.hocs.ingest;
 
 import java.util.Set;
 

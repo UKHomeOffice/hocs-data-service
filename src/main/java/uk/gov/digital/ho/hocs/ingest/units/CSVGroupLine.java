@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.legacy.units;
+package uk.gov.digital.ho.hocs.ingest.units;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -1,16 +1,16 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-class ScottishMember {
+@Getter
+@AllArgsConstructor
+public class ScottishMember {
 
     @JsonProperty(value = "ParliamentaryName")
-    String name;
+    public String name;
 
 }

@@ -12,8 +12,8 @@ import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.legacy.units.CSVGroupLine;
-import uk.gov.digital.ho.hocs.legacy.units.UnitFileParser;
+import uk.gov.digital.ho.hocs.ingest.units.CSVGroupLine;
+import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.*;

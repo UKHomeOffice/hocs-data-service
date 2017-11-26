@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.IOUtils;

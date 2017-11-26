@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,15 +96,11 @@ public class ConsumerServiceTest {
     @Test
     public void testCommonsApiIngest() {
         List<Member> membersList = new ArrayList<>();
-        Member firstMember = new Member();
-        firstMember.setDisplayName("First Member");
-        firstMember.setListName("Member, First");
-        firstMember.setHouse("commons");
+        Member firstMember = new Member("First Member", "Member, First", "commons" );
 
         membersList.add(firstMember);
 
-        Members members = new Members();
-        members.setMembers(membersList);
+        Members members = new Members(membersList);
 
         ResponseEntity response = ResponseEntity.ok(members);
 
@@ -147,15 +143,11 @@ public class ConsumerServiceTest {
     @Test
     public void testLordsApiIngest() {
         List<Member> membersList = new ArrayList<>();
-        Member firstMember = new Member();
-        firstMember.setDisplayName("First Member");
-        firstMember.setListName("Member, First");
-        firstMember.setHouse("lords");
+        Member firstMember = new Member("First Member", "Member, First", "lords" );
 
         membersList.add(firstMember);
 
-        Members members = new Members();
-        members.setMembers(membersList);
+        Members members = new Members(membersList);
 
         ResponseEntity response = ResponseEntity.ok(members);
 
@@ -198,8 +190,7 @@ public class ConsumerServiceTest {
     @Test
     public void testScottishParliamentApiIngest() {
         List<ScottishMember> membersList = new ArrayList<>();
-        ScottishMember firstMember = new ScottishMember();
-        firstMember.setName("Member, First");
+        ScottishMember firstMember = new ScottishMember("Member, First");
 
         membersList.add(firstMember);
 
@@ -245,13 +236,10 @@ public class ConsumerServiceTest {
     public void testIrishParliamentApiIngest() {
 
         List<IrishMember> membersList = new ArrayList<>();
-        IrishMember firstMember = new IrishMember();
-        firstMember.setName("Member, First");
-
+        IrishMember firstMember = new IrishMember("Member, First");
         membersList.add(firstMember);
 
-        IrishMembers members = new IrishMembers();
-        members.setMembers(membersList);
+        IrishMembers members = new IrishMembers(membersList);
 
         ResponseEntity response = ResponseEntity.ok(members);
 
@@ -295,14 +283,11 @@ public class ConsumerServiceTest {
     @Test
     public void testEuropeanParliamentApiIngest() {
         List<EuropeMember> membersList = new ArrayList<>();
-        EuropeMember firstMember = new EuropeMember();
-        firstMember.setName("First MEMBER");
-        firstMember.setCountry("United Kingdom");
+        EuropeMember firstMember = new EuropeMember("First MEMBER", "United Kingdom");
 
         membersList.add(firstMember);
 
-        EuropeMembers members = new EuropeMembers();
-        members.setMembers(membersList);
+        EuropeMembers members = new EuropeMembers(membersList);
 
         ResponseEntity response = ResponseEntity.ok(members);
 

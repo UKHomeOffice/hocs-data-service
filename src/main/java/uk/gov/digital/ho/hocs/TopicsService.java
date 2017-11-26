@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.legacy.topics.CSVTopicLine;
+import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.model.Topic;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
 

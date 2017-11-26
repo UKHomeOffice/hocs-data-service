@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.legacy.topics.CSVTopicLine;
-import uk.gov.digital.ho.hocs.legacy.topics.DCUFileParser;
-import uk.gov.digital.ho.hocs.legacy.topics.UKVIFileParser;
+import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
+import uk.gov.digital.ho.hocs.ingest.topics.DCUFileParser;
+import uk.gov.digital.ho.hocs.ingest.topics.UKVIFileParser;
 
 import java.util.ArrayList;
 import java.util.List;
