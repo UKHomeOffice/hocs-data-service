@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.ingest.members.ListConsumerService;
 
 @RestController
 @Slf4j
 public class MemberResource {
     private final DataListService dataListService;
-    private final ListConsumerService listConsumerService;
+    private final MemberService memberService;
 
     @Autowired
-    public MemberResource(DataListService dataListService, ListConsumerService listConsumerService) {
+    public MemberResource(DataListService dataListService, MemberService memberService) {
         this.dataListService = dataListService;
-        this.listConsumerService = listConsumerService;
+        this.memberService = memberService;
     }
 
     @RequestMapping(value = "/members/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -42,6 +42,7 @@ public class MemberResource {
                     break;
                 default:
                     list = dataListService.getListByName(name);
+                    break;
             }
             return ResponseEntity.ok(list);
 
@@ -51,4 +52,10 @@ public class MemberResource {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @RequestMapping(value = "/members/{name}/update", method = RequestMethod.GET)
+    public void updateMinisterListByName(@PathVariable("name") String name) {
+        throw new NotImplementedException();
+    }
+
 }
