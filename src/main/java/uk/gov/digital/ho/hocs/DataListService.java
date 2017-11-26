@@ -38,6 +38,7 @@ public class DataListService {
         }
     }
 
+    @Cacheable(value = "list", key = "#name")
     public DataListRecord getCombinedList(String name, String... lists) throws ListNotFoundException {
         List<DataListEntityRecord> listEntities = new ArrayList<>();
 
