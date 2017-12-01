@@ -5,11 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateEntityRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.legacy.users.UserFileParser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @RestController
 @Slf4j
@@ -76,6 +80,7 @@ public class UserResource {
         log.info("export \"{}\" users requested", group);
         try {
             UserCreateRecord users = userService.getUsersByDepartmentName(group);
+
             return ResponseEntity.ok(users);
         } catch (ListNotFoundException e) {
             log.info("export \"{}\" users failed", group);
