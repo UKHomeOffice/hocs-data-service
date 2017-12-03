@@ -7,7 +7,7 @@
 hocs-data-service is part of a larger series of work to replace functionality currently in [hocs-alfresco](https://github.com/UKHomeOffice/hocs-alfresco).
 It serves a set infrequently-updated data specific to hocs although any individual data type is usable in isolation.
 This data was previously stored in an Alfresco instance but storing it as relational data is much more appropriate as it allows better management and easier querying.
- It should be noted that this solution meets the immediate needs of the Hocs project and was written under time pressure. There is plenty of scope to improve this service in the future.
+ It should be noted that this solution meets the immediate needs of the Hocs project and was written under time pressure. It is not in its current form part of the target architecture for Hocs. There is plenty of scope to improve this service in the future.
 
 ## Topics
 A Hocs case has one or more topics associated with it. Topics are stored against a list name. The list name is typically the a Hocs business unit name e.g. 'DCU', 'UKVI'.
