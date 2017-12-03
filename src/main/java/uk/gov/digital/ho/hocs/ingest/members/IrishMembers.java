@@ -15,6 +15,6 @@ public class IrishMembers {
 
     @JacksonXmlProperty(localName = "Member")
     @JacksonXmlElementWrapper(localName = "Member", useWrapping = false)
-    public List<IrishMember> members;
+    private List<IrishMember> members;
 
 }

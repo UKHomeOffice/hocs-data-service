@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-class ListConsumerConfigurator {
+public class ListConsumerConfigurator {
 
 
     final String LIST_LORDS = "lords_list";
@@ -17,7 +17,7 @@ class ListConsumerConfigurator {
     final String API_EUROPEAN_PARLIAMENT;
 
 
-    ListConsumerConfigurator(@Value("${api.uk.parliament}") String apiUkParliament,
+    public ListConsumerConfigurator(@Value("${api.uk.parliament}") String apiUkParliament,
                              @Value("${api.scottish.parliament}") String apiScottishParliament,
                              @Value("${api.ni.assembly}") String apiNorthernIrishAssembly,
                              @Value("${api.european.parliament}") String apiEuropeanParliament) {

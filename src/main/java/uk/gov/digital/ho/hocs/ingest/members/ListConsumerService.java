@@ -61,11 +61,11 @@ public class ListConsumerService {
     }
 
     public Members createCommonsFromUKParliamentAPI() throws IngestException {
-        return createFromUKParliamentAPI(configuration.LIST_COMMONS);
+        return createFromUKParliamentAPI("commons");
     }
 
     public Members createLordsFromUKParliamentAPI() throws IngestException {
-        return createFromUKParliamentAPI(configuration.LIST_LORDS);
+        return createFromUKParliamentAPI("lords");
     }
 
     private Members createFromUKParliamentAPI(final String house) throws IngestException {

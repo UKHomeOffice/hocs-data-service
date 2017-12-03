@@ -15,6 +15,6 @@ public class EuropeMembers {
 
     @JacksonXmlProperty(localName = "mep")
     @JacksonXmlElementWrapper(localName = "mep", useWrapping = false)
-    public  List<EuropeMember> members;
+    private  List<EuropeMember> members;
 
 }

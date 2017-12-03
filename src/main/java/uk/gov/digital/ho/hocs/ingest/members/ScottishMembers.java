@@ -9,6 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ScottishMembers {
 
-    public List<ScottishMember> members;
+    private List<ScottishMember> members;
 
 }

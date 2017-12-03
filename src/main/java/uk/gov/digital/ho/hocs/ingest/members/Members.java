@@ -15,6 +15,6 @@ public class Members {
 
     @JacksonXmlProperty(localName = "Member")
     @JacksonXmlElementWrapper(localName = "Member", useWrapping = false)
-    public List<Member> members;
+    private List<Member> members;
 
 }

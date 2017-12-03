@@ -37,7 +37,7 @@ services:
       - database
 
     ports:
-      - 9001:8080
+      - 9002:8080
 
     networks:
       - sls-network

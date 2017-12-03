@@ -9,9 +9,9 @@ import lombok.Getter;
 public class EuropeMember {
 
     @JacksonXmlProperty(localName = "fullName")
-    public String name;
+    private String name;
 
     @JacksonXmlProperty(localName = "country")
-    public String country;
+    private String country;
 
 }

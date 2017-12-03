@@ -9,6 +9,6 @@ import lombok.Getter;
 public class IrishMember {
 
     @JacksonXmlProperty(localName = "MemberName")
-    public String name;
+    private String name;
 
 }

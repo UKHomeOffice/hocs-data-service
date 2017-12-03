@@ -9,10 +9,10 @@ import lombok.Getter;
 public class Member {
 
     @JacksonXmlProperty(localName = "DisplayAs")
-    public String displayName;
+    private String displayName;
     @JacksonXmlProperty(localName = "ListAs")
-    public String listName;
+    private String listName;
     @JacksonXmlProperty(localName = "House")
-    public String house;
+    private String house;
 
 }

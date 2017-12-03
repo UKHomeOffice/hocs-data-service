@@ -11,6 +11,6 @@ import lombok.Getter;
 public class ScottishMember {
 
     @JsonProperty(value = "ParliamentaryName")
-    public String name;
+    private String name;
 
 }
