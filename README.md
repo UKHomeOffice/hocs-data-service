@@ -14,9 +14,9 @@ A Hocs case has one or more topics associated with it. Topics are stored against
 Topics are hierarchical lists of data like so:
 
     - Topic Group
-    --  Topic Item 1
-    --  Topic Item 2
-    -  Gun Crime
+    -- Topic Item 1
+    -- Topic Item 2
+    - Gun Crime
     -- Shotguns 
     -- Hand Guns
 
@@ -41,7 +41,7 @@ Units and Teams are a representation of Home Office business units and team name
     -- Drugs & Firearms Licensing Unit
     -- Crime and Safeguarding Delivery Unit
     -- Matters for Major Events Hub
-    -  FOI
+    - FOI
     -- Information Rights Team
 
 Units and teams are mastered in the hocs-data-service but are also required to be created in hocs-alfresco for the BPMN engine, a CSV file is checked in to the hocs-data project.
