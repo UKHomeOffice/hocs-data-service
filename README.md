@@ -13,12 +13,12 @@ This data was previously stored in an Alfresco instance but storing it as relati
 A Hocs case has one or more topics associated with it. Topics are stored against a list name. The list name is typically the a Hocs business unit name e.g. 'DCU', 'UKVI'.
 Topics are hierarchical lists of data like so:
 
-     - Topic Group
-    	 -  Topic Item 1
-    	 -  Topic Item 2
-     -  Gun Crime
-    	 - Shotguns 
-    	 - Hand Guns
+    - Topic Group
+    	-  Topic Item 1
+    	-  Topic Item 2
+    -  Gun Crime
+    	- Shotguns 
+    	- Hand Guns
 
 Topic items also hold data about the Hocs Units and Teams the topic relates to. 
 Currently we receive two CSV files from the DCU and UKVI Units which are checked into the hocs-data project. 
@@ -38,11 +38,11 @@ Unfortunately this webscript restricts the number of users that can be processed
 Units and Teams are a representation of Home Office business units and team names e.g.
 
     - Crime, Policing and Fire Group Crime Directorate	
-	    - Drugs & Firearms Licensing Unit
-	    - Crime and Safeguarding Delivery Unit
-	    - Matters for Major Events Hub
-	-  FOI
-		- Information Rights Team
+	- Drugs & Firearms Licensing Unit
+	- Crime and Safeguarding Delivery Unit
+	- Matters for Major Events Hub
+    -  FOI
+	- Information Rights Team
 
 Units and teams are mastered in the hocs-data-service but are also required to be created in hocs-alfresco for the BPMN engine, a CSV file is checked in to the hocs-data project.
 
