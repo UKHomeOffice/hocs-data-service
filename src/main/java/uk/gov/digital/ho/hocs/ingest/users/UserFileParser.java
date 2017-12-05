@@ -1,8 +1,8 @@
-package uk.gov.digital.ho.hocs.legacy.users;
+package uk.gov.digital.ho.hocs.ingest.users;
 
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.legacy.AbstractFilePasrer;
+import uk.gov.digital.ho.hocs.ingest.AbstractFilePasrer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

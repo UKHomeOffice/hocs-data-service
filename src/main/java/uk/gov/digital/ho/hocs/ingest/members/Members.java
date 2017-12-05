@@ -1,20 +1,20 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
-@JacksonXmlRootElement(localName = "ArrayOfMember")
-@Data
-@NoArgsConstructor
-class IrishMembers {
+@JacksonXmlRootElement(localName = "Members")
+@Getter
+@AllArgsConstructor
+public class Members {
 
     @JacksonXmlProperty(localName = "Member")
     @JacksonXmlElementWrapper(localName = "Member", useWrapping = false)
-    private List<IrishMember> members;
+    private List<Member> members;
 
 }

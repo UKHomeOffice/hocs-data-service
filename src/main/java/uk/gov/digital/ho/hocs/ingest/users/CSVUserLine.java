@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.legacy.users;
+package uk.gov.digital.ho.hocs.ingest.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

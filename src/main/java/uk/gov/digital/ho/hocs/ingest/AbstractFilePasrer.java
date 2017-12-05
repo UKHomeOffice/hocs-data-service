@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.legacy;
+package uk.gov.digital.ho.hocs.ingest;
 
 public abstract class AbstractFilePasrer<T> implements CSVList<T> {
 

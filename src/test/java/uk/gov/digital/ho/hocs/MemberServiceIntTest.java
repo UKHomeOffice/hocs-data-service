@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.IOUtils;
@@ -13,7 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.DataListRepository;
+import uk.gov.digital.ho.hocs.ingest.members.ListConsumerConfigurator;
+import uk.gov.digital.ho.hocs.ingest.members.ListConsumerService;
 import uk.gov.digital.ho.hocs.model.DataList;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -23,7 +24,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @EnableAutoConfiguration
 @ComponentScan("uk.gov.digital.ho.hocs")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class ConsumerServiceIntTest {
+public class MemberServiceIntTest {
 
     private static final int PORT = 9100;
 
@@ -32,7 +33,9 @@ public class ConsumerServiceIntTest {
     @Autowired
     private DataListRepository repository;
 
-    private ListConsumerService service;
+    private ListConsumerService listConsumerService;
+
+    private MemberService memberService;
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -48,10 +51,10 @@ public class ConsumerServiceIntTest {
 
         repository.deleteAll();
 
-        service = new ListConsumerService(repository, restTemplate, configuration);
+        listConsumerService = new ListConsumerService(restTemplate, configuration);
+        memberService = new MemberService(repository, listConsumerService);
 
         mockServer.start();
-
     }
 
     @Test
@@ -66,7 +69,7 @@ public class ConsumerServiceIntTest {
                         .withHeader("Content-Type", "application/xml")
                         .withBody(responseBody)));
 
-        service.createFromUKParliamentAPI("commons");
+        memberService.createCommonsUKParliament();
 
         DataList commons = repository.findDataListByName("commons_list");
 
@@ -88,7 +91,7 @@ public class ConsumerServiceIntTest {
                         .withHeader("Content-Type", "application/xml")
                         .withBody(responseBody)));
 
-        service.createFromUKParliamentAPI("lords");
+        memberService.createLordsUKParliament();
 
         DataList lords = repository.findDataListByName("lords_list");
 
@@ -110,7 +113,7 @@ public class ConsumerServiceIntTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(responseBody)));
 
-        service.createFromScottishParliamentAPI();
+        memberService.createScottishParliament();
 
         DataList scottish_parliament = repository.findDataListByName("scottish_parliament_list");
 
@@ -132,7 +135,7 @@ public class ConsumerServiceIntTest {
                         .withHeader("Content-Type", "application/xml")
                         .withBody(responseBody)));
 
-        service.createFromIrishParliamentAPI();
+        memberService.createIrishParliament();
 
         DataList northernIrishAssembly = repository.findDataListByName("northern_irish_assembly_list");
 
@@ -154,7 +157,7 @@ public class ConsumerServiceIntTest {
                         .withHeader("Content-Type", "application/xml")
                         .withBody(responseBody)));
 
-        service.createFromEuropeanParliamentAPI();
+        memberService.createEuropeanParliament();
 
         DataList european_parliament = repository.findDataListByName("european_parliament_list");
 

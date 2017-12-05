@@ -13,7 +13,7 @@ import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.legacy.users.CSVUserLine;
+import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 import uk.gov.digital.ho.hocs.model.User;
 

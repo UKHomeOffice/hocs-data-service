@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

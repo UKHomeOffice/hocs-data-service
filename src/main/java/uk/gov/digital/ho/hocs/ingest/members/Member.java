@@ -1,14 +1,12 @@
-package uk.gov.digital.ho.hocs.api_lists;
+package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@Data
-@NoArgsConstructor
-class Member {
+@AllArgsConstructor
+public class Member {
 
     @JacksonXmlProperty(localName = "DisplayAs")
     private String displayName;
