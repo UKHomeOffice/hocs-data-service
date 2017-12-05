@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
+import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
@@ -34,13 +35,15 @@ public class UserServiceTest {
     @Mock
     private BusinessGroupService mockBusinessGroupService;
 
+    @Mock
+    private AlfrescoService mockAlfrescoService;
+
     private UserService service;
 
 
     @Before
     public void setUp() {
-
-        service = new UserService(mockUserRepo, mockBusinessGroupService);
+        service = new UserService(mockUserRepo, mockBusinessGroupService, mockAlfrescoService);
     }
 
     @Test
@@ -276,6 +279,26 @@ public class UserServiceTest {
         Set<User> users = new HashSet<>();
         User user = new User("First", "Last", "User","email", "Dept");
         users.add(user);
+        return users;
+    }
+
+    @Test
+    public void testPublishUsersByDepartmentName() throws AlfrescoPostException, ListNotFoundException {
+        final Set<User> testUsers = generateTestUsers(154);
+        when(mockUserRepo.findAllByDepartment("test_users")).thenReturn(testUsers);
+
+        List<UserCreateRecord> userList = service.publishUsersByDepartmentName("test_users");
+
+        verify(mockAlfrescoService, times(1)).postBatchedRecords(anyList());
+        assertThat(userList).size().isEqualTo(4);
+        assertThat(userList.get(3).getUsers().size()).isEqualTo(4);
+    }
+
+    private Set<User> generateTestUsers(int quantity) {
+        Set<User> users = new HashSet<>();
+        for (int i = 0; i < quantity; i++) {
+            users.add(new User("Test", String.format("User %s", i), String.format("TestUser%s", i), "Test.User@test.com", "test_users"));
+        }
         return users;
     }
 

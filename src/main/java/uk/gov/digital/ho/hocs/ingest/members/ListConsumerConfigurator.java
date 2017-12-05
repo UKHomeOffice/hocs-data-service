@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ListConsumerConfigurator {
 
-
     final String LIST_LORDS = "lords_list";
     final String LIST_COMMONS = "commons_list";
 
@@ -15,7 +14,6 @@ public class ListConsumerConfigurator {
     final String API_SCOTTISH_PARLIAMENT;
     final String API_NORTHERN_IRISH_ASSEMBLY;
     final String API_EUROPEAN_PARLIAMENT;
-
 
     public ListConsumerConfigurator(@Value("${api.uk.parliament}") String apiUkParliament,
                              @Value("${api.scottish.parliament}") String apiScottishParliament,

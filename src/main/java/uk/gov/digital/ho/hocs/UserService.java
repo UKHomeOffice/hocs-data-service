@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
+import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 import uk.gov.digital.ho.hocs.model.User;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,11 +27,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BusinessGroupService groupService;
+    private final AlfrescoService alfrescoService;
 
     @Autowired
-    public UserService(UserRepository userRepository, BusinessGroupService groupService) {
+    public UserService(UserRepository userRepository, BusinessGroupService groupService, AlfrescoService alfrescoService) {
         this.userRepository = userRepository;
         this.groupService = groupService;
+        this.alfrescoService = alfrescoService;
     }
 
     @Cacheable(value = "usersByDeptName", key = "#departmentRef")
@@ -42,6 +44,30 @@ public class UserService {
             throw new ListNotFoundException();
         }
         return UserCreateRecord.create(users);
+    }
+
+    @Cacheable(value = "batchedUsersByDeptName", key = "#departmentRef")
+    public List<UserCreateRecord> publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {
+        List<User> users = new ArrayList<>(userRepository.findAllByDepartment(departmentRef));
+
+        if (users.isEmpty()) {
+            throw new ListNotFoundException();
+        }
+
+        List<UserCreateRecord> userList = new ArrayList<>();
+        final Integer CHUNK_SIZE = AlfrescoConfiguration.API_CHUNK_SIZE;
+
+        for (int i = 0; i < users.size(); i += CHUNK_SIZE) {
+            List<User> usersInChunk = new ArrayList<>();
+            for (int j = i; j < i + CHUNK_SIZE && j < users.size(); j++) {
+                usersInChunk.add(users.get(j));
+            }
+            userList.add(UserCreateRecord.create(new HashSet<>(usersInChunk)));
+        }
+
+        alfrescoService.postBatchedRecords(userList);
+
+        return userList;
     }
 
     @Cacheable(value = "usersByGroupName", key = "#groupRef")

@@ -8,17 +8,23 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Getter
 @Slf4j
-@EqualsAndHashCode(of = {"unit", "team"})
+@EqualsAndHashCode(of = {"unitReference", "teamReference"})
 public class CSVGroupLine {
 
     @Getter
-    private String unit;
+    private String unitDisplay;
 
     @Getter
-    private String team;
+    private String unitReference;
+
+    @Getter
+    private String teamDisplay;
+
+    @Getter
+    private String teamReference;
 
     public String getTeamValue() {
-        return String.format("%s_%s", unit, team);
+        return String.format("%s_%s", unitReference, teamReference);
     }
 
 }
