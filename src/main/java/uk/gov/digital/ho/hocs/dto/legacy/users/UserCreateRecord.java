@@ -30,15 +30,6 @@ public class UserCreateRecord {
                 .distinct()
                 .collect(Collectors.toList());
 
-        List<String> truncationWarnings = permissionGroups.stream()
-                .filter(i -> i.length() > 100)
-                .sorted(Comparator.comparing(String::length).reversed())
-                .collect(Collectors.toList());
-
-        if (truncationWarnings.size() > 0)
-            log.warn(String.format("%d group names were found that exceed the 100 character limit imposed by Alfresco", truncationWarnings.size()));
-            truncationWarnings.forEach(i -> log.warn(String.format("Length: %d | ID: %s)", i.length(), i)));
-
         List<UnitCreateEntityRecordPermissions> permissions = permissionGroups.stream()
                 .map(i -> new UnitCreateEntityRecordPermissions(i, "Drafter"))
                 .collect(Collectors.toList());
