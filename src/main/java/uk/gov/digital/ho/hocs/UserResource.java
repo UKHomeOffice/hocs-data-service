@@ -76,7 +76,6 @@ public class UserResource {
         log.info("export \"{}\" users requested", group);
         try {
             UserCreateRecord users = userService.getUsersByDepartmentName(group);
-
             return ResponseEntity.ok(users);
         } catch (ListNotFoundException e) {
             log.info("export \"{}\" users failed", group);
