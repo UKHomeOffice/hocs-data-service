@@ -15,7 +15,7 @@ public class AlfrescoConfiguration {
 
     public AlfrescoConfiguration(@Value("${hocs.api.user}") String apiUsername,
                                  @Value("${hocs.api.pass}") String apiPassword,
-                                 @Value("${hocs.api.endpoint}") String apiHost) {
+                                 @Value("${hocs.api.host}") String apiHost) {
 
         this.API_USERNAME = apiUsername;
         this.API_PASSWORD = apiPassword;
