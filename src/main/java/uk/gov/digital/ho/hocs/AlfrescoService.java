@@ -1,15 +1,20 @@
 package uk.gov.digital.ho.hocs;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateEntityRecord;
+import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 
 @Service
+@Slf4j
 public class AlfrescoService {
 
     private final AlfrescoConfiguration configuration;
@@ -21,13 +26,26 @@ public class AlfrescoService {
         this.configuration = configuration;
     }
 
-    public <T> void postBatchedRecords(List<T> recordList) throws AlfrescoPostException{
+    public <T> void postBatchedRecords(List<T> recordList) throws AlfrescoPostException {
 
         final String url = configuration.API_HOST + AlfrescoConfiguration.API_ENDPOINT_USERS;
 
+        Integer batch = 1;
+
         for (T records : recordList) {
-             if ( postRequest(url, records).getStatusCode() != HttpStatus.OK)
-                 throw new AlfrescoPostException("Failed to post request payload to Alfresco");
+
+            log.info("Sending batch number: " + batch);
+
+            if (records.getClass() == UserCreateRecord.class) {
+                UserCreateRecord asRecord = (UserCreateRecord) records;
+                Set<UserCreateEntityRecord> users = asRecord.getUsers();
+                users.stream().forEach(i -> log.info("Sending user -> " + i.getEmail()));
+            }
+
+            if (postRequest(url, records).getStatusCode() != HttpStatus.OK)
+                throw new AlfrescoPostException("Failed to post request payload to Alfresco");
+
+            batch++;
         }
 
     }

@@ -84,6 +84,12 @@ public class UserService {
                        @CacheEvict(value = "usersByGroupName", allEntries = true)})
     public void createUsersFromCSV(Set<CSVUserLine> lines, String department) throws ListNotFoundException{
         Set<User> users = getUsers(lines, department);
+
+        Set<User> existingUsers = userRepository.findAllByDepartment(department);
+
+        if (existingUsers != null && existingUsers.size() != 0)
+            users.addAll(existingUsers);
+
         if(!users.isEmpty()) {
             createUsers(users);
         }
