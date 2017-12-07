@@ -30,9 +30,11 @@ public class UnitFileParser extends AbstractFilePasrer<CSVGroupLine> {
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
                 String[] lineArray = splitLine(line);
-                String unit = lineArray[1].trim();
-                String team = lineArray[2].trim();
-                groups.add(new CSVGroupLine(unit, team));
+                String unitDisplay = lineArray[1].trim();
+                String unitReference = lineArray[2].trim();
+                String teamDisplay = lineArray[3].trim();
+                String teamReference = lineArray[4].trim();
+                groups.add(new CSVGroupLine(unitDisplay, unitReference, teamDisplay, teamReference));
             }
 
         } catch (IOException e) {

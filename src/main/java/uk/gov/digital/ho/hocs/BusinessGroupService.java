@@ -11,12 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.units.CSVGroupLine;
 import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,22 +51,28 @@ public class BusinessGroupService {
 
     @CacheEvict(value = "groups", allEntries = true)
     public void createGroupsFromCSV(MultipartFile file) {
-        Set<CSVGroupLine> lines = new UnitFileParser(file).getLines();
+        try {
+            Set<CSVGroupLine> lines = new UnitFileParser(file).getLines();
 
-        Map<String, Set<BusinessGroup>> groupMap = new HashMap<>();
-        for (CSVGroupLine line : lines) {
-            groupMap.putIfAbsent(line.getUnit(), new HashSet<>());
-            groupMap.get(line.getUnit()).add(new BusinessGroup(line.getTeam(), line.getTeamValue()));
+            Map<String, BusinessGroup> units = new HashMap<>();
+            for (CSVGroupLine line : lines) {
+                units.putIfAbsent(line.getUnitReference(), new BusinessGroup(line.getUnitDisplay(), line.getUnitReference()));
+                BusinessGroup unit = units.get(line.getUnitReference());
+                unit.getSubGroups().add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
+                validateLine(line);
+            }
+
+            createGroups(new HashSet<>(units.values()));
+
+        } catch (GroupCreationException e) {
+            e.printStackTrace();
         }
+    }
 
-        Set<BusinessGroup> groups = new HashSet<>();
-        for (Map.Entry<String, Set<BusinessGroup>> entity : groupMap.entrySet()) {
-            BusinessGroup group = new BusinessGroup(entity.getKey());
-            group.setSubGroups(entity.getValue());
-            groups.add(group);
+    private void validateLine(CSVGroupLine line) throws GroupCreationException {
+        if (line.getTeamValue().length() > 94) {
+            throw new GroupCreationException("Group name exceeds size limit");
         }
-
-        createGroups(groups);
     }
 
     public UnitCreateRecord getGroupsCreateList() throws ListNotFoundException {

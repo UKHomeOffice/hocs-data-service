@@ -31,6 +31,9 @@ services:
       sls.db.name: postgres
       sls.db.port: 5432
       sls.schema.name: public
+      env.hocs.api.user: admin
+      env.hocs.api.pass: admin
+      env.hocs.api.host: https://vagrant.hocs.homeoffice.gov.uk:8080
       hostname: sls:8080
 
     depends_on:
