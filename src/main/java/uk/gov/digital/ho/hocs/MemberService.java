@@ -38,6 +38,14 @@ public class MemberService {
         this.listConsumerService = listConsumerService;
     }
 
+    public void createFromApi() throws IngestException {
+        createCommonsUKParliament();
+        createLordsUKParliament();
+        createIrishParliament();
+        createScottishParliament();
+        createEuropeanParliament();
+    }
+
     public void createEuropeanParliament() throws IngestException {
         EuropeMembers members = listConsumerService.createFromEuropeanParliamentAPI();
         Set<DataListEntity> dataListEntities = members.getMembers()

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.exception.IngestException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
@@ -18,10 +19,12 @@ import java.util.Set;
 @Slf4j
 public class DataListResource {
     private final DataListService dataListService;
+    private final MemberService memberService;
 
     @Autowired
-    public DataListResource(DataListService dataListService) {
+    public DataListResource(DataListService dataListService, MemberService memberService) {
         this.dataListService = dataListService;
+        this.memberService = memberService;
     }
 
     @Deprecated
@@ -84,6 +87,17 @@ public class DataListResource {
     @RequestMapping(value = "/list/{name}", method = RequestMethod.PUT)
     public ResponseEntity putListByName(@PathVariable("name") String name, @RequestBody Set<DataListEntity> dataListEntities) {
         throw new NotImplementedException();
+    }
+
+    @RequestMapping(value = "list/api/refresh", method = RequestMethod.GET)
+    public ResponseEntity getFromApi() {
+        try {
+            memberService.createFromApi();
+            return ResponseEntity.ok().build();
+        } catch (IngestException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
 }
