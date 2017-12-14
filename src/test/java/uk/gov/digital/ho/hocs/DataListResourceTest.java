@@ -30,11 +30,14 @@ public class DataListResourceTest {
     @Mock
     private DataListService dataListService;
 
+    @Mock
+    private MemberService memberService;
+
     private DataListResource dataListResource;
 
     @Before
     public void setUp() {
-        dataListResource = new DataListResource(dataListService);
+        dataListResource = new DataListResource(dataListService, memberService);
     }
 
     @Test
