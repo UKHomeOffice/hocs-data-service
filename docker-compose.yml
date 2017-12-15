@@ -34,7 +34,6 @@ services:
       env.hocs.api.user: admin
       env.hocs.api.password: admin
       env.hocs.api.host: https://vagrant.hocs.homeoffice.gov.uk:8080
-      hostname: sls:8080
 
     depends_on:
       - database
@@ -45,7 +44,7 @@ services:
     networks:
       - sls-network
 
-    command: /app/scripts/run.sh
+    command: /app/scripts/run.sh sls:8080 /app/data
 
     volumes:
       - ../hocs-data/data/:/app/data/
