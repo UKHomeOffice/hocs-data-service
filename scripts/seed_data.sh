@@ -16,6 +16,10 @@ echo "Posting DCU Topics"
 curl -vX POST http://${hostname}/topics/DCU -F "file=@/app/data/DCU_Topics.csv" \
  -H "Content-Type: multipart/form-data"
 
+echo "Posting FOI Topics"
+curl -vX POST http://${hostname}/topics/FOI -F "file=@/app/data/DCU_Topics.csv" \
+ -H "Content-Type: multipart/form-data"
+
 echo "Posting UKVI Topics"
 curl -vX POST http://${hostname}/topics/UKVI -F "file=@/app/data/UKVI_Topics.csv" \
  -H "Content-Type: multipart/form-data"
