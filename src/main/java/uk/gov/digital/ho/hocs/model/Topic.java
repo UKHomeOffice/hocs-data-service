@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -10,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "topic")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@EqualsAndHashCode()
+@EqualsAndHashCode(exclude = {"id", "deleted", "parentTopic"})
 public class Topic {
 
     @Id
@@ -34,10 +36,16 @@ public class Topic {
     @Getter
     private String parentTopic;
 
+    @Column(name = "deleted", nullable = false)
+    @Getter
+    @Setter
+    private Boolean deleted;
+
     public Topic(String name, String owningUnit, String owningTeam) {
         this.name = toDisplayName(name);
         this.topicTeam = owningTeam;
         this.topicUnit = owningUnit;
+        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {

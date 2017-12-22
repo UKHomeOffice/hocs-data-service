@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Table(name = "topic_groups")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@EqualsAndHashCode()
+@EqualsAndHashCode(exclude = {"id", "deleted", "topicListItems"})
 public class TopicGroup {
 
     @Id
@@ -35,9 +36,15 @@ public class TopicGroup {
     @Setter
     private Set<Topic> topicListItems = new HashSet<>();
 
+    @Column(name = "deleted", nullable = false)
+    @Getter
+    @Setter
+    private Boolean deleted;
+
     public TopicGroup(String name, String caseType) {
         this.name = toDisplayName(name);
         this.caseType = caseType;
+        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {

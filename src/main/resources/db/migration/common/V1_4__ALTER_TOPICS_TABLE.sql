@@ -1,0 +1,7 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+ALTER TABLE topic_groups
+  ADD COLUMN IF NOT EXISTS  deleted   BOOLEAN DEFAULT FALSE NOT NULL;
+
+ALTER TABLE topic
+  ADD COLUMN IF NOT EXISTS  deleted   BOOLEAN DEFAULT FALSE NOT NULL;

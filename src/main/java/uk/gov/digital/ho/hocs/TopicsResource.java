@@ -46,7 +46,7 @@ public class TopicsResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = "topics/{unitName}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/topics/{unitName}", method = RequestMethod.PUT)
     public ResponseEntity updateTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
         if (!file.isEmpty()) {
             log.info("Parsing topics {} - PUT", unitName);

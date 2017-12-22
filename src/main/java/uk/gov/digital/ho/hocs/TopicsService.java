@@ -31,9 +31,8 @@ public class TopicsService {
 
     @Cacheable(value = "topics", key = "#caseType")
     public List<TopicGroupRecord> getTopicByCaseType(String caseType) throws ListNotFoundException {
-        Set<TopicGroup> list = repo.findAllByCaseType(caseType);
-        if(list.isEmpty())
-        {
+        Set<TopicGroup> list = repo.findAllByCaseTypeAndDeletedIsFalse(caseType);
+        if (list.isEmpty()) {
             throw new ListNotFoundException();
         }
         return list.stream().map(TopicGroupRecord::create).collect(Collectors.toList());
@@ -41,8 +40,8 @@ public class TopicsService {
 
     @CacheEvict(value = "topics", key = "#caseType")
     public void createTopics(Set<CSVTopicLine> lines, String caseType) {
-        Set<TopicGroup> topicGroups = getTopics(lines,caseType);
-        if(!topicGroups.isEmpty()) {
+        Set<TopicGroup> topicGroups = getTopics(lines, caseType);
+        if (!topicGroups.isEmpty()) {
             createTopicGroups(topicGroups);
         }
     }
@@ -50,30 +49,53 @@ public class TopicsService {
     @Transactional
     @CacheEvict(value = "topics", key = "#caseType")
     public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
-        Set<TopicGroup> topicGroups = getTopics(lines,caseType);
-        Set<TopicGroup> jpaTopicGroups = repo.findAllByCaseType(caseType);
+        Set<TopicGroup> newTopics = getTopics(lines, caseType);
+        Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
 
-        // Get list of topics to remove
-        Set<TopicGroup> topicsToDelete = jpaTopicGroups.stream().filter(user -> !topicGroups.contains(user)).collect(Collectors.toSet());
+        jpaTopics.forEach(t -> {
+            Optional<TopicGroup> currentTopicGroup = newTopics.stream().filter(i -> i.equals(t)).findFirst();
+            if (currentTopicGroup.isPresent()) {
+                t.getTopicListItems().forEach(s -> {
+                    if (!currentTopicGroup.get().getTopicListItems().contains(s))
+                        s.setDeleted(true);
+                    else
+                        s.setDeleted(false);
+                });
+                if (t.getTopicListItems().stream().filter(Topic::getDeleted).count() == t.getTopicListItems().size())
+                    t.setDeleted(true);
+                else
+                    t.setDeleted(false);
+            } else {
+                t.setDeleted(true);
+                t.getTopicListItems().forEach(s -> s.setDeleted(true));
+            }
+        });
 
-        // Get list of users to add
-        Set<TopicGroup> topicsToAdd = topicGroups.stream().filter(user -> !jpaTopicGroups.contains(user)).collect(Collectors.toSet());
+        newTopics.forEach(t -> {
+            Optional<TopicGroup> currentTopicGroup = jpaTopics.stream().filter(i -> i.equals(t)).findFirst();
+            if (currentTopicGroup.isPresent()) {
+                t.getTopicListItems().forEach(s -> {
+                    if (!currentTopicGroup.get().getTopicListItems().contains(s)) {
+                        s.setDeleted(false);
+                        currentTopicGroup.get().getTopicListItems().add(s);
+                    }
+                });
+                currentTopicGroup.get().setDeleted(false);
+            } else {
+                jpaTopics.add(t);
+            }
+        });
 
-        if(!topicsToDelete.isEmpty()) {
-            deleteTopicGroups(topicsToDelete);
-        }
-        if(!topicsToAdd.isEmpty()) {
-            createTopicGroups(topicsToAdd);
-        }
+        createTopicGroups(jpaTopics);
     }
 
-    private Set<TopicGroup> getTopics(Set<CSVTopicLine> lines,String caseType){
+    private Set<TopicGroup> getTopics(Set<CSVTopicLine> lines, String caseType) {
         Map<String, Set<Topic>> topics = new HashMap<>();
 
         for (CSVTopicLine line : lines) {
             topics.putIfAbsent(line.getParentTopicName(), new HashSet<>());
 
-            Topic topic = new Topic(line.getTopicName(), line.getTopicUnit(), line.getTopicTeam() );
+            Topic topic = new Topic(line.getTopicName(), line.getTopicUnit(), line.getTopicTeam());
             topics.get(line.getParentTopicName()).add(topic);
         }
 
@@ -87,10 +109,6 @@ public class TopicsService {
             topicGroups.add(topicGroup);
         }
         return topicGroups;
-    }
-
-    private void deleteTopicGroups(Set<TopicGroup> topicGroups) {
-        repo.delete(topicGroups);
     }
 
     private void createTopicGroups(Set<TopicGroup> topicGroups) {
