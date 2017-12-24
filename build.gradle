@@ -71,5 +71,7 @@ dependencies {
   testCompile ('com.github.tomakehurst:wiremock:1.58') {
     exclude module: 'servlet-api'
   }
+
+  testCompileOnly 'org.projectlombok:lombok:1.16.12'
 }
 gradle.startParameter.continueOnFailure = false
