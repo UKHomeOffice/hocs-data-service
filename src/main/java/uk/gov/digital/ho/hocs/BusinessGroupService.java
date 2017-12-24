@@ -5,6 +5,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +68,11 @@ public class BusinessGroupService {
         } catch (GroupCreationException e) {
             e.printStackTrace();
         }
+    }
+
+    @Caching( evict = {@CacheEvict(value = "groups", allEntries = true)})
+    public void clearCache(){
+        log.info("All groups cache cleared");
     }
 
     private void validateLine(CSVGroupLine line) throws GroupCreationException {
