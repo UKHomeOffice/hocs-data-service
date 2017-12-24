@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Before;
@@ -26,7 +25,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@Slf4j
 public class DataListResourceIntTest {
 
     @Autowired
@@ -62,8 +60,6 @@ public class DataListResourceIntTest {
         String auditRecords = restTemplate.getForObject("/list/TopicList", String.class);
         String expectedRecords = IOUtils.toString(getClass().getResourceAsStream("/DataListResourceIntExpected.json"));
 
-        log.info(auditRecords);
-        log.info(auditRecords);
         JSONAssert.assertEquals(auditRecords, expectedRecords, false);
     }
 
