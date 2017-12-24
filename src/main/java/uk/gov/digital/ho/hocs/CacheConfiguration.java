@@ -18,7 +18,7 @@ public class CacheConfiguration extends CachingConfigurerSupport {
     private String HOST;
     private String PORT;
 
-    public CacheConfiguration(@Value("${hocs.api.user}") String host, @Value("${hocs.api.user}") String port) {
+    public CacheConfiguration(@Value("${hocs.redis.host}") String host, @Value("${hocs.redis.port}") String port) {
         HOST = host;
         PORT = port;
     }
