@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.DataList;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
-public class DataListRecord {
+public class DataListRecord implements Serializable {
     private String name;
     private List<DataListEntityRecord> entities;
 

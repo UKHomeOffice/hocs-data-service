@@ -46,11 +46,11 @@ public class TopicsServiceTest {
 
     @Test
     public void testCollaboratorsGettingTopics() throws ListNotFoundException {
-        when(mockRepo.findAllByCaseType(CASETYPE)).thenReturn(buildTopicList());
+        when(mockRepo.findAllByCaseTypeAndDeletedIsFalse(CASETYPE)).thenReturn(buildTopicList());
 
         List<TopicGroupRecord> records = topicsService.getTopicByCaseType(CASETYPE);
 
-        verify(mockRepo).findAllByCaseType(CASETYPE);
+        verify(mockRepo).findAllByCaseTypeAndDeletedIsFalse(CASETYPE);
 
         assertThat(records).isNotNull();
         assertThat(records).hasOnlyElementsOfType(TopicGroupRecord.class);

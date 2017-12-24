@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
-public class UnitEntityRecord {
+public class UnitEntityRecord implements Serializable {
 
     private String authorityName;
 

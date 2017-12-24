@@ -56,37 +56,28 @@ public class TopicsService {
             Optional<TopicGroup> currentTopicGroup = newTopics.stream().filter(i -> i.equals(t)).findFirst();
             if (currentTopicGroup.isPresent()) {
                 t.getTopicListItems().forEach(s -> {
-                    if (!currentTopicGroup.get().getTopicListItems().contains(s))
-                        s.setDeleted(true);
-                    else
-                        s.setDeleted(false);
+                    s.setDeleted(!currentTopicGroup.get().getTopicListItems().contains(s));
                 });
-                if (t.getTopicListItems().stream().filter(Topic::getDeleted).count() == t.getTopicListItems().size())
-                    t.setDeleted(true);
-                else
-                    t.setDeleted(false);
             } else {
-                t.setDeleted(true);
                 t.getTopicListItems().forEach(s -> s.setDeleted(true));
             }
+
+            t.setDeleted(t.getTopicListItems().stream().allMatch(topic -> topic.getDeleted()));
         });
 
         newTopics.forEach(t -> {
-            Optional<TopicGroup> currentTopicGroup = jpaTopics.stream().filter(i -> i.equals(t)).findFirst();
-            if (currentTopicGroup.isPresent()) {
-                t.getTopicListItems().forEach(s -> {
-                    if (!currentTopicGroup.get().getTopicListItems().contains(s)) {
-                        s.setDeleted(false);
-                        currentTopicGroup.get().getTopicListItems().add(s);
-                    }
-                });
-                currentTopicGroup.get().setDeleted(false);
-            } else {
+
+            if (!jpaTopics.contains(t)) {
                 jpaTopics.add(t);
             }
         });
 
         createTopicGroups(jpaTopics);
+    }
+
+    @CacheEvict(value = "topics", allEntries = true)
+    public void clearCache(){
+        log.info("All topics cache cleared");
     }
 
     private Set<TopicGroup> getTopics(Set<CSVTopicLine> lines, String caseType) {

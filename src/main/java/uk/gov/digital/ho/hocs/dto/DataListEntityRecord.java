@@ -1,13 +1,11 @@
 package uk.gov.digital.ho.hocs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.yaml.snakeyaml.events.MappingStartEvent;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
-import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
-public class DataListEntityRecord {
+public class DataListEntityRecord implements Serializable {
 
     private String text;
 

@@ -81,8 +81,10 @@ public class UserService {
     }
 
     @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
+            @CacheEvict(value = "usersByGroupName", allEntries = true),
+            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
     public void createUsersFromCSV(Set<CSVUserLine> lines, String department) throws ListNotFoundException{
+
         Set<User> users = getUsers(lines, department);
 
         Set<User> existingUsers = userRepository.findAllByDepartment(department);
@@ -97,8 +99,10 @@ public class UserService {
 
     @Transactional
     @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
+            @CacheEvict(value = "usersByGroupName", allEntries = true),
+            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
     public void updateUsersByDepartment(Set<CSVUserLine> lines,String department) throws ListNotFoundException {
+
         Set<User> users = getUsers(lines, department);
         Set<User> jpaUsers = userRepository.findAllByDepartment(department);
 
@@ -114,6 +118,13 @@ public class UserService {
         if(!usersToAdd.isEmpty()) {
             createUsers(usersToAdd);
         }
+    }
+
+    @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
+            @CacheEvict(value = "usersByGroupName", allEntries = true),
+            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
+    public void clearCache(){
+        log.info("All user cache cleared");
     }
 
     private Set<User> getUsers(Set<CSVUserLine> lines, String department) throws ListNotFoundException {
