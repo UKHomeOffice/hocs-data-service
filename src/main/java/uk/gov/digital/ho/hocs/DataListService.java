@@ -67,4 +67,9 @@ public class DataListService {
             throw e;
         }
     }
+
+    @CacheEvict(value = "list", allEntries = true)
+    public void clearCache(){
+        log.info("All lists cache cleared");
+    }
 }

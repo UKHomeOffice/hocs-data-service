@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
-public class UnitCreateRecord {
+public class UnitCreateRecord implements Serializable {
     private List<UnitCreateEntityRecord> manageGroups;
 
     public static UnitCreateRecord create(List<BusinessGroup> list) {

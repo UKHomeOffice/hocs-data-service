@@ -8,13 +8,14 @@ import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateEntityRecordPermissionG
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateEntityRecordPermissions;
 import uk.gov.digital.ho.hocs.model.User;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
 @Log4j
-public class UserCreateRecord {
+public class UserCreateRecord implements Serializable {
     private Set<UserCreateEntityRecord> users;
     private Set<UnitCreateEntityRecord> units;
     private List<UnitCreateEntityRecordPermissionGroup> permissions;

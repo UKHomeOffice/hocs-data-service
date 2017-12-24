@@ -18,7 +18,6 @@ import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,6 +39,7 @@ public class BusinessGroupService {
         }
     }
 
+    @Cacheable(value = "groups", key = "#referenceName")
     public BusinessGroup getGroupByReference(String referenceName) throws ListNotFoundException {
         try {
             BusinessGroup businessGroup = repo.findByReferenceName(referenceName);

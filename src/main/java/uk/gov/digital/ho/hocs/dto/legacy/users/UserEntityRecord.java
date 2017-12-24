@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.User;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @Getter
-public class UserEntityRecord {
+public class UserEntityRecord implements Serializable {
 
     private String userName;
 
