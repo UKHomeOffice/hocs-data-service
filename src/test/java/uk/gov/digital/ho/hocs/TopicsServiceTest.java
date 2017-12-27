@@ -171,21 +171,51 @@ public class TopicsServiceTest {
         assertThat(topicGroupList).isNotNull();
         assertThat(topicGroupList).hasSize(2);
 
-        Optional<TopicGroup> topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First1")).findFirst();
-        TopicGroup topicGroupToTest = topicGroup.orElse(null);
+        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        assertThat(topicGroup1).isNotNull();
+        assertThat(topicGroup1.getDeleted()).isFalse();
 
-        Optional<Topic> topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name1")).findFirst();
-        Topic subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isFalse();
+        Topic topic = getTopicItemByName(topicGroup1.getTopicListItems(), "Name1");
+        assertThat(topic).isNotNull();
+        assertThat(topic.getDeleted()).isFalse();
 
-        topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First2")).findFirst();
-        topicGroupToTest = topicGroup.orElse(null);
+        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        assertThat(topicGroup2).isNotNull();
+        assertThat(topicGroup2.getDeleted()).isFalse();
 
-        topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name2")).findFirst();
-        subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isFalse();
+        Topic topic2 = getTopicItemByName(topicGroup2.getTopicListItems(), "Name2");
+        assertThat(topic2).isNotNull();
+        assertThat(topic2.getDeleted()).isFalse();
+    }
+
+    @Test
+    public void testServiceUpdateTopicsFromCsvEmptyGroupIsDeleted() {
+        Set<TopicGroup> topics = getTopicGroupsChildDeleted(true, true);
+        when(mockRepo.findAllByCaseType("Dept")).thenReturn(topics);
+
+        CSVTopicLine lineOne = new CSVTopicLine("First1", "Name4", "Unit1", "Team1");
+        Set<CSVTopicLine> lines = new HashSet<>();
+        lines.add(lineOne);
+        topicsService.updateTopics(lines, "Dept");
+
+        verify(mockRepo).save(captor.capture());
+        final Set<TopicGroup> topicGroupList = captor.getValue();
+
+        verify(mockRepo, times(1)).save(anyList());
+        assertThat(topicGroupList).isNotNull();
+        assertThat(topicGroupList).hasSize(1);
+
+        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        assertThat(topicGroup1).isNotNull();
+        assertThat(topicGroup1.getDeleted()).isFalse();
+
+        Topic topic = getTopicItemByName(topicGroup1.getTopicListItems(), "Name1");
+        assertThat(topic).isNotNull();
+        assertThat(topic.getDeleted()).isTrue();
+
+        Topic topic2 = getTopicItemByName(topicGroup1.getTopicListItems(), "Name4");
+        assertThat(topic2).isNotNull();
+        assertThat(topic2.getDeleted()).isFalse();
     }
 
     @Test
@@ -205,27 +235,21 @@ public class TopicsServiceTest {
         assertThat(topicGroupList).isNotNull();
         assertThat(topicGroupList).hasSize(2);
 
-        Optional<TopicGroup> topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First1")).findFirst();
-        TopicGroup topicGroupToTest = topicGroup.orElse(null);
+        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        assertThat(topicGroup1).isNotNull();
+        assertThat(topicGroup1.getDeleted()).isFalse();
 
-        assertThat(topicGroupToTest).isNotNull();
-        assertThat(topicGroupToTest.getDeleted()).isFalse();
+        Topic topic = getTopicItemByName(topicGroup1.getTopicListItems(), "Name1");
+        assertThat(topic).isNotNull();
+        assertThat(topic.getDeleted()).isFalse();
 
-        Optional<Topic> topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name1")).findFirst();
-        Topic subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isFalse();
+        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        assertThat(topicGroup2).isNotNull();
+        assertThat(topicGroup2.getDeleted()).isTrue();
 
-        topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First2")).findFirst();
-        topicGroupToTest = topicGroup.orElse(null);
-
-        assertThat(topicGroupToTest).isNotNull();
-        assertThat(topicGroupToTest.getDeleted()).isTrue();
-
-        topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name2")).findFirst();
-        subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isTrue();
+        Topic topic2 = getTopicItemByName(topicGroup2.getTopicListItems(), "Name2");
+        assertThat(topic2).isNotNull();
+        assertThat(topic2.getDeleted()).isTrue();
 
     }
 
@@ -248,33 +272,25 @@ public class TopicsServiceTest {
         assertThat(topicGroupList).isNotNull();
         assertThat(topicGroupList).hasSize(2);
 
-        Optional<TopicGroup> topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First1")).findFirst();
-        TopicGroup topicGroupToTest = topicGroup.orElse(null);
+        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        assertThat(topicGroup1).isNotNull();
+        assertThat(topicGroup1.getDeleted()).isFalse();
 
-        assertThat(topicGroupToTest).isNotNull();
-        assertThat(topicGroupToTest.getDeleted()).isFalse();
-        Optional<Topic> topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name1")).findFirst();
-        Topic subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isFalse();
+        Topic topic = getTopicItemByName(topicGroup1.getTopicListItems(), "Name1");
+        assertThat(topic).isNotNull();
+        assertThat(topic.getDeleted()).isFalse();
 
-        topicGroup = topicGroupList.stream().filter(t -> t.getName().equals("First2")).findFirst();
-        topicGroupToTest = topicGroup.orElse(null);
+        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        assertThat(topicGroup2).isNotNull();
+        assertThat(topicGroup2.getDeleted()).isFalse();
 
-        assertThat(topicGroupToTest).isNotNull();
-        assertThat(topicGroupToTest.getDeleted()).isFalse();
+        Topic topic2 = getTopicItemByName(topicGroup2.getTopicListItems(), "Name2");
+        assertThat(topic2).isNotNull();
+        assertThat(topic2.getDeleted()).isFalse();
 
-        topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name2")).findFirst();
-        subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isFalse();
-
-        topic = topicGroupToTest.getTopicListItems().stream().filter(t -> t.getName().equals("Name3")).findFirst();
-        subTopic = topic.orElse(null);
-        assertThat(subTopic).isNotNull();
-        assertThat(subTopic.getDeleted()).isTrue();
-
-
+        Topic topic3 = getTopicItemByName(topicGroup2.getTopicListItems(), "Name3");
+        assertThat(topic3).isNotNull();
+        assertThat(topic3.getDeleted()).isTrue();
     }
 
     @Test
@@ -288,13 +304,14 @@ public class TopicsServiceTest {
         Set<CSVTopicLine> lines = new HashSet<>();
         lines.add(lineOne);
         lines.add(lineThree);
+        lines.add(lineFour);
         topicsService.updateTopics(lines, "Dept");
 
         verify(mockRepo, times(1)).save(anyList());
     }
 
     @Test
-    public void testServiceUpdateTopicsFromCSVNothingSame() throws ListNotFoundException {
+    public void testServiceUpdateTopicsFromCSVSame() throws ListNotFoundException {
         Set<TopicGroup> topics = getTopicGroups();
         when(mockRepo.findAllByCaseType("Dept")).thenReturn(topics);
 
@@ -319,7 +336,7 @@ public class TopicsServiceTest {
         verify(mockRepo, times(1)).save(anyList());
     }
 
-    private Set<TopicGroup> getTopicGroups() {
+    private static Set<TopicGroup> getTopicGroups() {
         Set<TopicGroup> topics = new HashSet<>();
 
         Topic topicOne = new Topic("Name1", "Unit1", "Team1");
@@ -341,7 +358,7 @@ public class TopicsServiceTest {
         return topics;
     }
 
-    private Set<TopicGroup> getTopicGroupsChildDeleted(Boolean parent, Boolean child) {
+    private static Set<TopicGroup> getTopicGroupsChildDeleted(Boolean parent, Boolean child) {
         Set<TopicGroup> topics = new HashSet<>();
 
         Topic topicOne = new Topic("Name1", "Unit1", "Team1");
@@ -356,7 +373,7 @@ public class TopicsServiceTest {
         return topics;
     }
 
-    private Set<CSVTopicLine> buildValidCSVTopicLines() {
+    private static Set<CSVTopicLine> buildValidCSVTopicLines() {
         Set<CSVTopicLine> lines = new HashSet<>();
 
         CSVTopicLine line = new CSVTopicLine("ParentTopicName", "TopicName", "TopicUnit", "TopicTeam");
@@ -365,7 +382,7 @@ public class TopicsServiceTest {
         return lines;
     }
 
-    private Set<TopicGroup> buildTopicList() {
+    private static Set<TopicGroup> buildTopicList() {
         TopicGroup topicGroup = new TopicGroup("TopicName", "CaseType");
 
         Set<Topic> topics = new HashSet<>();
@@ -376,6 +393,16 @@ public class TopicsServiceTest {
         records.add(topicGroup);
 
         return records;
+    }
+
+    private static TopicGroup getTopicGroupByName(Set<TopicGroup> topicGroups, String topicGroupName)
+    {
+        return topicGroups.stream().filter(t -> t.getName().equals(topicGroupName)).findFirst().orElse(null);
+    }
+
+    private static Topic getTopicItemByName(Set<Topic> topics, String topicName)
+    {
+        return topics.stream().filter(t -> t.getName().equals(topicName)).findFirst().orElseGet(null);
     }
 
 

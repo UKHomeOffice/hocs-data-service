@@ -52,30 +52,51 @@ public class TopicsService {
     @Caching( evict = {@CacheEvict(value = "topics", key = "#caseType"),
                        @CacheEvict(value = "topics", key = "all")})
     public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
-        Set<TopicGroup> newTopics = getTopics(lines, caseType);
+        List<TopicGroup> newTopics = buildTopicGroups(lines, caseType);
         Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
 
-        jpaTopics.forEach(t -> {
-            Optional<TopicGroup> currentTopicGroup = newTopics.stream().filter(i -> i.equals(t)).findFirst();
-            if (currentTopicGroup.isPresent()) {
-                t.getTopicListItems().forEach(s -> {
-                    s.setDeleted(!currentTopicGroup.get().getTopicListItems().contains(s));
+        // Update existing topic groups
+        jpaTopics.forEach(jpaTopic -> {
+
+            if(newTopics.contains(jpaTopic)) {
+                TopicGroup matchingNewTopicGroup = newTopics.get(newTopics.indexOf(jpaTopic));
+
+                Set<Topic> newTopicListItems = matchingNewTopicGroup.getTopicListItems();
+                Set<Topic> jpaTopicListItems = jpaTopic.getTopicListItems();
+
+
+                // Update existing topic items
+                jpaTopicListItems.forEach(item -> {
+                        item.setDeleted(!newTopicListItems.contains(item));
                 });
-            } else {
-                t.getTopicListItems().forEach(s -> s.setDeleted(true));
-            }
 
-            t.setDeleted(t.getTopicListItems().stream().allMatch(topic -> topic.getDeleted()));
+                // Add new topic items
+                newTopicListItems.forEach(newTopic -> {
+                    if(!jpaTopicListItems.contains(newTopic))
+                    {
+                        jpaTopicListItems.add(newTopic);
+                    }
+                });
+
+                jpaTopic.setTopicListItems(jpaTopicListItems);
+
+                // Set the topic group to deleted if there are no visible topic items
+                jpaTopic.setDeleted(jpaTopic.getTopicListItems().stream().allMatch(topic -> topic.getDeleted()));
+            }
+            else {
+                jpaTopic.getTopicListItems().forEach(item -> item.setDeleted(true));
+                jpaTopic.setDeleted(true);
+            }
         });
 
-        newTopics.forEach(t -> {
-
-            if (!jpaTopics.contains(t)) {
-                jpaTopics.add(t);
+        // Add new topic groups
+        newTopics.forEach(newTopicGroup -> {
+            if (!jpaTopics.contains(newTopicGroup)) {
+                jpaTopics.add(newTopicGroup);
             }
         });
 
-        createTopicGroups(jpaTopics);
+        saveTopicGroups(jpaTopics);
     }
 
     @CacheEvict(value = "topics", allEntries = true)
@@ -83,29 +104,27 @@ public class TopicsService {
         log.info("All topics cache cleared");
     }
 
-    private Set<TopicGroup> getTopics(Set<CSVTopicLine> lines, String caseType) {
+    private static List<TopicGroup> buildTopicGroups(Set<CSVTopicLine> lines, String caseType) {
+        // Build a Map of parent topic strings Strings to sub topics
         Map<String, Set<Topic>> topics = new HashMap<>();
-
         for (CSVTopicLine line : lines) {
             topics.putIfAbsent(line.getParentTopicName(), new HashSet<>());
-
             Topic topic = new Topic(line.getTopicName(), line.getTopicUnit(), line.getTopicTeam());
             topics.get(line.getParentTopicName()).add(topic);
         }
 
-        Set<TopicGroup> topicGroups = new HashSet<>();
+        // Build a set of topic groups based on each entry of parent String and subtopics
+        List<TopicGroup> topicGroups = new ArrayList<>();
         for (Map.Entry<String, Set<Topic>> entity : topics.entrySet()) {
             String parentTopicName = entity.getKey();
-
             TopicGroup topicGroup = new TopicGroup(parentTopicName, caseType);
             topicGroup.setTopicListItems(entity.getValue());
-
             topicGroups.add(topicGroup);
         }
         return topicGroups;
     }
 
-    private void createTopicGroups(Set<TopicGroup> topicGroups) {
+    private void saveTopicGroups(Set<TopicGroup> topicGroups) {
         try {
             if(topicGroups.size() > 0) {
                 repo.save(topicGroups);

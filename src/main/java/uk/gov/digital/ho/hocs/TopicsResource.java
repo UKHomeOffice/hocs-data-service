@@ -25,16 +25,16 @@ public class TopicsResource {
         this.topicsService = topicsService;
     }
 
-    @RequestMapping(value = "/topics/{unitName}", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+    @RequestMapping(value = "/topics/{caseType}", method = {RequestMethod.PUT, RequestMethod.POST})
+    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("caseType") String caseType) {
         if (!file.isEmpty()) {
-            log.info("Parsing topics {}", unitName);
+            log.info("Parsing topics {}", caseType);
             try {
-                Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
-                topicsService.updateTopics(lines, unitName);
+                Set<CSVTopicLine> lines = getCsvTopicLines(file, caseType);
+                topicsService.updateTopics(lines, caseType);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
-                log.info("{} topics not created", unitName);
+                log.info("{} topics not created", caseType);
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
@@ -55,7 +55,7 @@ public class TopicsResource {
         }
     }
 
-    @RequestMapping(value = {"/topics/topicList", "/service/homeoffice/ctsv2/topicList"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/topics", method = RequestMethod.GET)
     public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
         log.info("List \"Legacy TopicList\" requested");
         try {
@@ -68,7 +68,6 @@ public class TopicsResource {
         }
     }
 
-    //TODO: DCU and FOI topic differences need understanding.
     private Set<CSVTopicLine> getCsvTopicLines(MultipartFile file, String unitName) {
         Set<CSVTopicLine> lines;
         switch (unitName) {
