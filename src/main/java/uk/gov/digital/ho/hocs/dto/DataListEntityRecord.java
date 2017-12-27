@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
+import uk.gov.digital.ho.hocs.model.Member;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,14 @@ public class DataListEntityRecord implements Serializable {
         List<DataListEntityRecord> subEntities = dle.getSubEntities().stream().map(DataListEntityRecord::create).collect(Collectors.toList());
 
         return new DataListEntityRecord(dle.getText(), dle.getValue(), properties, subEntities);
+    }
+
+    public static DataListEntityRecord create(Member dle, String houseName) {
+
+        List<DataListEntityRecordProperty> properties = new ArrayList<>();
+        properties.add(new DataListEntityRecordProperty("HOUSE", houseName));
+
+        return new DataListEntityRecord(dle.getDisplayName(), dle.getReferenceName(), properties, null);
     }
 
     public Map<String, String> getProperties() {

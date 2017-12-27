@@ -7,16 +7,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -36,19 +30,6 @@ public class DataListService {
         } catch (NullPointerException e) {
             throw new ListNotFoundException();
         }
-    }
-
-    @Cacheable(value = "list", key = "#name")
-    public DataListRecord getCombinedList(String name, String... lists) throws ListNotFoundException {
-        List<DataListEntityRecord> listEntities = new ArrayList<>();
-
-        for (String list : lists) {
-            DataListRecord dataListRecord = getListByName(list);
-            listEntities = Stream
-                    .concat(listEntities.stream(), dataListRecord.getEntities().stream())
-                    .collect(Collectors.toList());
-        }
-        return new DataListRecord(name, listEntities);
     }
 
     @CacheEvict(value = "list", key = "#dataList.getName()")

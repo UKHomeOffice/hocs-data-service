@@ -39,6 +39,36 @@ public class TopicsResourceTest {
     }
 
     @Test
+    public void shouldRetrieveAllEntities() throws IOException, JSONException, ListNotFoundException {
+        TopicGroup topicGroup = new TopicGroup("TopicName", "CaseType");
+
+        Set<Topic> topics = new HashSet<>();
+        topics.add(new Topic("TopicName", "OwningUnit","OwningTeam"));
+        topicGroup.setTopicListItems(topics);
+
+        TopicGroupRecord record = TopicGroupRecord.create(topicGroup);
+        List<TopicGroupRecord> records = new ArrayList<>();
+        records.add(record);
+
+        when(topicsService.getTopicByCaseType("CaseType")).thenReturn(records);
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicListByReference("CaseType");
+
+        assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(httpResponse.getBody()).hasSize(1);
+
+    }
+
+    @Test
+    public void shouldReturnNotFoundWhenException() throws ListNotFoundException {
+        when(topicsService.getTopicByCaseType("CaseType")).thenThrow(new ListNotFoundException());
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicListByReference("CaseType");
+
+        assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(httpResponse.getBody()).isNull();
+
+    }
+
+    @Test
     public void shouldRetrieveAllEntitiesLegacy() throws IOException, JSONException, ListNotFoundException {
         TopicGroup topicGroup = new TopicGroup("TopicName", "CaseType");
 
@@ -50,34 +80,17 @@ public class TopicsResourceTest {
         List<TopicGroupRecord> records = new ArrayList<>();
         records.add(record);
 
-        when(topicsService.getTopicByCaseType("DCU")).thenReturn(records);
-        when(topicsService.getTopicByCaseType("UKVI")).thenReturn(records);
+        when(topicsService.getAllTopics()).thenReturn(records);
         ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(httpResponse.getBody()).hasSize(2);
+        assertThat(httpResponse.getBody()).hasSize(1);
 
     }
 
     @Test
-    public void shouldReturnNotFoundWhenUnableToFindLegacyUKVIEntity() throws ListNotFoundException {
-        List<TopicGroupRecord> records = new ArrayList<>();
-
-        when(topicsService.getTopicByCaseType("UKVI")).thenThrow(new ListNotFoundException());
-        when(topicsService.getTopicByCaseType("DCU")).thenReturn(records);
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
-
-        assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(httpResponse.getBody()).isNull();
-
-    }
-
-    @Test
-    public void shouldReturnNotFoundWhenUnableToFindLegacyDCUEntity() throws ListNotFoundException {
-        List<TopicGroupRecord> records = new ArrayList<>();
-
-        when(topicsService.getTopicByCaseType("UKVI")).thenReturn(records);
-        when(topicsService.getTopicByCaseType("DCU")).thenThrow(new ListNotFoundException());
+    public void shouldReturnNotFoundWhenExceptionEntity() throws ListNotFoundException {
+        when(topicsService.getAllTopics()).thenThrow(new ListNotFoundException());
         ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

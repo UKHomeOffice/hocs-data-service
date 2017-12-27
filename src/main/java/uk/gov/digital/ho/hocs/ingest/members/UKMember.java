@@ -6,13 +6,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Member {
+public class UKMember {
 
     @JacksonXmlProperty(localName = "DisplayAs")
-    private String displayName;
-    @JacksonXmlProperty(localName = "ListAs")
-    private String listName;
-    @JacksonXmlProperty(localName = "House")
-    private String house;
+    private String name;
 
 }

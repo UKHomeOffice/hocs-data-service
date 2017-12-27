@@ -12,11 +12,8 @@ import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.ingest.topics.DCUFileParser;
 import uk.gov.digital.ho.hocs.ingest.topics.UKVIFileParser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @Slf4j
@@ -28,28 +25,10 @@ public class TopicsResource {
         this.topicsService = topicsService;
     }
 
-
-    @RequestMapping(value = "/topics/{unitName}", method = RequestMethod.POST)
-    public ResponseEntity createTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+    @RequestMapping(value = "/topics/{unitName}", method = {RequestMethod.PUT, RequestMethod.POST})
+    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
         if (!file.isEmpty()) {
-            log.info("Parsing topics {} - POST", unitName);
-            try {
-                Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
-                topicsService.createTopics(lines, unitName);
-                return ResponseEntity.ok().build();
-            } catch (EntityCreationException e) {
-                log.info("{} topics not created", unitName);
-                log.info(e.getMessage());
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        return ResponseEntity.badRequest().build();
-    }
-
-    @RequestMapping(value = "/topics/{unitName}", method = RequestMethod.PUT)
-    public ResponseEntity updateTopicsListFromDCU(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
-        if (!file.isEmpty()) {
-            log.info("Parsing topics {} - PUT", unitName);
+            log.info("Parsing topics {}", unitName);
             try {
                 Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
                 topicsService.updateTopics(lines, unitName);
@@ -63,23 +42,25 @@ public class TopicsResource {
         return ResponseEntity.badRequest().build();
     }
 
+    @RequestMapping(value = "/topics/{caseType}", method = RequestMethod.GET)
+    public ResponseEntity<List<TopicGroupRecord>> getTopicListByReference(@PathVariable("caseType") String caseType) {
+        log.info("List \"{}\" requested", caseType);
+        try {
+            List<TopicGroupRecord> topics = topicsService.getTopicByCaseType(caseType);
+            return ResponseEntity.ok(topics);
+        } catch (ListNotFoundException e) {
+            log.info("List \"{}\" not found", caseType);
+            log.info(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @RequestMapping(value = {"/topics/topicList", "/service/homeoffice/ctsv2/topicList"}, method = RequestMethod.GET)
     public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
         log.info("List \"Legacy TopicList\" requested");
         try {
-
-            List<TopicGroupRecord> topics = new ArrayList<>();
-            String[] caseTypes = {"DCU", "UKVI", "FOI"};
-
-            for (String caseType : caseTypes) {
-                List<TopicGroupRecord> topicList = topicsService.getTopicByCaseType(caseType);
-                topics = Stream
-                        .concat(topics.stream(), topicList.stream())
-                        .collect(Collectors.toList());
-            }
-
+            List<TopicGroupRecord> topics = topicsService.getAllTopics();
             return ResponseEntity.ok(topics);
-
         } catch (ListNotFoundException e) {
             log.info("List \"Legacy TopicList\" not found");
             log.info(e.getMessage());
@@ -87,7 +68,8 @@ public class TopicsResource {
         }
     }
 
-    private Set<CSVTopicLine> getCsvTopicLines(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+    //TODO: DCU and FOI topic differences need understanding.
+    private Set<CSVTopicLine> getCsvTopicLines(MultipartFile file, String unitName) {
         Set<CSVTopicLine> lines;
         switch (unitName) {
             case "DCU":

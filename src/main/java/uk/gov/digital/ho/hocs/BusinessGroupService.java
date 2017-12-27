@@ -8,14 +8,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.units.CSVGroupLine;
-import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.*;
@@ -33,7 +31,7 @@ public class BusinessGroupService {
     @Cacheable(value = "groups")
     public UnitRecord getAllGroups() throws ListNotFoundException {
         try {
-            List<BusinessGroup> list = repo.findAll();
+            Set<BusinessGroup> list = repo.findAll();
             return UnitRecord.create(list);
         } catch (NullPointerException e) {
             throw new ListNotFoundException();
@@ -51,23 +49,39 @@ public class BusinessGroupService {
     }
 
     @CacheEvict(value = "groups", allEntries = true)
-    public void createGroupsFromCSV(MultipartFile file) {
-        try {
-            Set<CSVGroupLine> lines = new UnitFileParser(file).getLines();
+    public void createGroupsFromCSV(Set<CSVGroupLine> lines) {
+        Set<BusinessGroup> groups = getGroups(lines);
+        if (!groups.isEmpty()) {
+            createGroups(new HashSet<>(groups));
+        }
+    }
 
-            Map<String, BusinessGroup> units = new HashMap<>();
-            for (CSVGroupLine line : lines) {
-                units.putIfAbsent(line.getUnitReference(), new BusinessGroup(line.getUnitDisplay(), line.getUnitReference()));
-                BusinessGroup unit = units.get(line.getUnitReference());
-                unit.getSubGroups().add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
-                validateLine(line);
+    @CacheEvict(value = "groups", allEntries = true)
+    public void updateGroupsFromCSV(Set<CSVGroupLine> lines) {
+        Set<BusinessGroup> newGroups = getGroups(lines);
+        Set<BusinessGroup> jpaGroups = repo.findAll();
+
+        jpaGroups.forEach(t -> {
+            Optional<BusinessGroup> currentBusinessGroup = newGroups.stream().filter(i -> i.equals(t)).findFirst();
+            if (currentBusinessGroup.isPresent()) {
+                t.getSubGroups().forEach(s -> {
+                    s.setDeleted(!currentBusinessGroup.get().getSubGroups().contains(s));
+                });
+            } else {
+                t.getSubGroups().forEach(s -> s.setDeleted(true));
             }
 
-            createGroups(new HashSet<>(units.values()));
+            t.setDeleted(t.getSubGroups().stream().allMatch(topic -> topic.getDeleted()));
+        });
 
-        } catch (GroupCreationException e) {
-            e.printStackTrace();
-        }
+        newGroups.forEach(t -> {
+
+            if (!jpaGroups.contains(t)) {
+                jpaGroups.add(t);
+            }
+        });
+
+        createGroups(jpaGroups);
     }
 
     @Caching( evict = {@CacheEvict(value = "groups", allEntries = true)})
@@ -83,11 +97,27 @@ public class BusinessGroupService {
 
     public UnitCreateRecord getGroupsCreateList() throws ListNotFoundException {
         try {
-            List<BusinessGroup> list = repo.findAll();
+            Set<BusinessGroup> list = repo.findAll();
             return UnitCreateRecord.create(list);
         } catch (NullPointerException e) {
             throw new ListNotFoundException();
         }
+    }
+
+    private Set<BusinessGroup> getGroups(Set<CSVGroupLine> lines) {
+        Map<String, BusinessGroup> units = new HashMap<>();
+        try {
+            for (CSVGroupLine line : lines) {
+                units.putIfAbsent(line.getUnitReference(), new BusinessGroup(line.getUnitDisplay(), line.getUnitReference()));
+                BusinessGroup unit = units.get(line.getUnitReference());
+                unit.getSubGroups().add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
+                validateLine(line);
+            }
+
+        } catch (GroupCreationException e) {
+            e.printStackTrace();
+        }
+        return new HashSet<>(units.values());
     }
 
     private void createGroups(Set<BusinessGroup> groups) {

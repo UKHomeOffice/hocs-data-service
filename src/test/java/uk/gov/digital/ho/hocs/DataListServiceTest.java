@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs;
 
-import org.assertj.core.api.Assertions;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,24 +55,6 @@ public class DataListServiceTest {
         assertThat(dataListRecord.getName()).isEqualTo(TEST_LIST);
         assertThat(dataListRecord.getEntities().get(0).getText()).isEqualTo("Text");
         assertThat(dataListRecord.getEntities().get(0).getValue()).isEqualTo("VALUE");
-    }
-
-    @Test
-    public void testGetCombinedList() throws ListNotFoundException {
-
-        when(mockRepo.findOneByName(LIST_A)).thenReturn(buildValidDataList(LIST_A));
-        when(mockRepo.findOneByName(LIST_B)).thenReturn(buildValidDataList(LIST_B));
-
-        DataListRecord dataListRecord = service.getCombinedList(LIST_C, LIST_A, LIST_B);
-
-        verify(mockRepo).findOneByName(LIST_A);
-        verify(mockRepo).findOneByName(LIST_B);
-
-        assertThat(dataListRecord).isNotNull();
-        assertThat(dataListRecord).isInstanceOf(DataListRecord.class);
-        assertThat(dataListRecord.getName()).isEqualTo(LIST_C);
-        assertThat(dataListRecord.getEntities().size()).isEqualTo(2);
-
     }
 
     @Test(expected = ListNotFoundException.class)

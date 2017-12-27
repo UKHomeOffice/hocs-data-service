@@ -6,6 +6,7 @@ import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public class UnitRecord implements Serializable {
     private List<UnitEntityRecord> units;
 
-    public static UnitRecord create(List<BusinessGroup> list) {
+    public static UnitRecord create(Set<BusinessGroup> list) {
         List<UnitEntityRecord> units = list.stream().map(UnitEntityRecord::create).collect(Collectors.toList());
         return new UnitRecord(units);
     }

@@ -2,13 +2,19 @@ package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
 public class IrishMember {
 
-    @JacksonXmlProperty(localName = "MemberName")
-    private String name;
+    @JacksonXmlProperty(localName = "MemberFirstName")
+    private String firstName;
+
+    @JacksonXmlProperty(localName = "MemberLastName")
+    private String lastName;
+
+    public String getName()
+    {
+        return firstName + " " + lastName;
+    }
 
 }
