@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users
     user_name        TEXT           NOT NULL,
     email            TEXT           NOT NULL,
     department       TEXT           NOT NULL,
+    deleted          BOOLEAN        DEFAULT FALSE NOT NULL,
 
     CONSTRAINT user_name_idempotent UNIQUE (user_name)
 );
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS groups
     display_name     TEXT            NOT NULL,
     reference_name   TEXT            NOT NULL,
     parent_group_id  INT,
+    deleted          BOOLEAN         DEFAULT FALSE NOT NULL,
 
     CONSTRAINT group_name_ref_idempotent UNIQUE (display_name, reference_name),
     CONSTRAINT fk_parent_group_id FOREIGN KEY (parent_group_id) REFERENCES groups(id)

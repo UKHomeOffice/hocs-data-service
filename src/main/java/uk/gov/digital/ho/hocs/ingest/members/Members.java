@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Members {
 
-    @JacksonXmlProperty(localName = "Member")
-    @JacksonXmlElementWrapper(localName = "Member", useWrapping = false)
-    private List<Member> members;
+    @JacksonXmlProperty(localName = "UKMember")
+    @JacksonXmlElementWrapper(localName = "UKMember", useWrapping = false)
+    private List<UKMember> members;
 
 }

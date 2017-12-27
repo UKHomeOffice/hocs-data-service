@@ -2,16 +2,17 @@ package uk.gov.digital.ho.hocs.ingest.members;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils;
 
-@Getter
 @AllArgsConstructor
 public class EuropeMember {
 
     @JacksonXmlProperty(localName = "fullName")
     private String name;
 
-    @JacksonXmlProperty(localName = "country")
-    private String country;
+    public String getName()
+    {
+        return WordUtils.capitalizeFully(name.toLowerCase(), new char[]{' ', '\'', '-', '('});
+    }
 
 }

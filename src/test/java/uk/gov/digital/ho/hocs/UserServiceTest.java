@@ -36,14 +36,14 @@ public class UserServiceTest {
     private BusinessGroupService mockBusinessGroupService;
 
     @Mock
-    private AlfrescoService mockAlfrescoService;
+    private AlfrescoClient mockAlfrescoClient;
 
     private UserService service;
 
 
     @Before
     public void setUp() {
-        service = new UserService(mockUserRepo, mockBusinessGroupService, mockAlfrescoService);
+        service = new UserService(mockUserRepo, mockBusinessGroupService, mockAlfrescoClient);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class UserServiceTest {
         Set<CSVUserLine> lines = new HashSet<>();
         lines.add(line);
 
-        service.createUsersFromCSV(lines, "Dept");
+        service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessGroupService, times(1)).getGroupByReference("A_GROUP");
         verify(mockUserRepo).save(anyList());
@@ -112,7 +112,7 @@ public class UserServiceTest {
 
         Set<CSVUserLine> lines = new HashSet<>();
 
-        service.createUsersFromCSV(lines, "Dept");
+        service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessGroupService, times(0)).getGroupByReference("Invalid_Group");
         verify(mockUserRepo, times(0)).save(anyList());
@@ -128,7 +128,7 @@ public class UserServiceTest {
         Set<CSVUserLine> lines = new HashSet<>();
         lines.add(line);
 
-        service.createUsersFromCSV(lines, "Dept");
+        service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessGroupService, times(1)).getGroupByReference("Invalid_Group");
         verify(mockUserRepo, times(0)).save(anyList());
@@ -144,7 +144,7 @@ public class UserServiceTest {
         Set<CSVUserLine> lines = new HashSet<>();
         lines.add(line);
 
-        service.createUsersFromCSV(lines, "Dept");
+        service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockUserRepo).save(anyList());
     }
@@ -159,7 +159,7 @@ public class UserServiceTest {
         Set<CSVUserLine> lines = new HashSet<>();
         lines.add(line);
 
-        service.createUsersFromCSV(lines, "Dept");
+        service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockUserRepo).save(anyList());
     }
@@ -287,11 +287,10 @@ public class UserServiceTest {
         final Set<User> testUsers = generateTestUsers(154);
         when(mockUserRepo.findAllByDepartment("test_users")).thenReturn(testUsers);
 
-        List<UserCreateRecord> userList = service.publishUsersByDepartmentName("test_users");
+        service.publishUsersByDepartmentName("test_users");
 
-        verify(mockAlfrescoService, times(1)).postBatchedRecords(anyList());
-        assertThat(userList).size().isEqualTo(4);
-        assertThat(userList.get(3).getUsers().size()).isEqualTo(4);
+        verify(mockAlfrescoClient, times(1)).postRecords(anyList());
+
     }
 
     private Set<User> generateTestUsers(int quantity) {

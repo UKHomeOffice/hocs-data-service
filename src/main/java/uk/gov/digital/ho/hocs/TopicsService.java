@@ -5,6 +5,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +39,18 @@ public class TopicsService {
         return list.stream().map(TopicGroupRecord::create).collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "topics", key = "#caseType")
-    public void createTopics(Set<CSVTopicLine> lines, String caseType) {
-        Set<TopicGroup> topicGroups = getTopics(lines, caseType);
-        if (!topicGroups.isEmpty()) {
-            createTopicGroups(topicGroups);
+    @Cacheable(value = "topics", key = "all")
+    public List<TopicGroupRecord> getAllTopics() throws ListNotFoundException {
+        Set<TopicGroup> list = repo.findAllByDeletedIsFalse();
+        if (list.isEmpty()) {
+            throw new ListNotFoundException();
         }
+        return list.stream().map(TopicGroupRecord::create).collect(Collectors.toList());
     }
 
     @Transactional
-    @CacheEvict(value = "topics", key = "#caseType")
+    @Caching( evict = {@CacheEvict(value = "topics", key = "#caseType"),
+                       @CacheEvict(value = "topics", key = "all")})
     public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
         Set<TopicGroup> newTopics = getTopics(lines, caseType);
         Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
@@ -104,7 +107,9 @@ public class TopicsService {
 
     private void createTopicGroups(Set<TopicGroup> topicGroups) {
         try {
-            repo.save(topicGroups);
+            if(topicGroups.size() > 0) {
+                repo.save(topicGroups);
+            }
         } catch (DataIntegrityViolationException e) {
 
             if (e.getCause() instanceof ConstraintViolationException &&

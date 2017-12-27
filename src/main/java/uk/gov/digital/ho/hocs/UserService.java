@@ -27,80 +27,45 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BusinessGroupService groupService;
-    private final AlfrescoService alfrescoService;
+    private final AlfrescoClient alfrescoClient;
 
     @Autowired
-    public UserService(UserRepository userRepository, BusinessGroupService groupService, AlfrescoService alfrescoService) {
+    public UserService(UserRepository userRepository, BusinessGroupService groupService, AlfrescoClient alfrescoClient) {
         this.userRepository = userRepository;
         this.groupService = groupService;
-        this.alfrescoService = alfrescoService;
+        this.alfrescoClient = alfrescoClient;
     }
 
     @Cacheable(value = "usersByDeptName", key = "#departmentRef")
     public UserCreateRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByDepartment(departmentRef);
-        if(users.isEmpty())
-        {
+        if(users.isEmpty()){
             throw new ListNotFoundException();
         }
         return UserCreateRecord.create(users);
     }
 
-    @Cacheable(value = "batchedUsersByDeptName", key = "#departmentRef")
-    public List<UserCreateRecord> publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {
+    public void publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {
         List<User> users = new ArrayList<>(userRepository.findAllByDepartment(departmentRef));
-
         if (users.isEmpty()) {
             throw new ListNotFoundException();
         }
-
-        List<UserCreateRecord> userList = new ArrayList<>();
-        final Integer CHUNK_SIZE = AlfrescoConfiguration.API_CHUNK_SIZE;
-
-        for (int i = 0; i < users.size(); i += CHUNK_SIZE) {
-            List<User> usersInChunk = new ArrayList<>();
-            for (int j = i; j < i + CHUNK_SIZE && j < users.size(); j++) {
-                usersInChunk.add(users.get(j));
-            }
-            userList.add(UserCreateRecord.create(new HashSet<>(usersInChunk)));
-        }
-
-        alfrescoService.postBatchedRecords(userList);
-
-        return userList;
+        alfrescoClient.postRecords(users);
     }
 
     @Cacheable(value = "usersByGroupName", key = "#groupRef")
     public UserRecord getUsersByGroupName(String groupRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByBusinessGroupReference(groupRef);
-        if(users.isEmpty())
-        {
+        if(users.isEmpty()){
             throw new ListNotFoundException();
         }
         return UserRecord.create(users);
     }
 
-    @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-            @CacheEvict(value = "usersByGroupName", allEntries = true),
-            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
-    public void createUsersFromCSV(Set<CSVUserLine> lines, String department) throws ListNotFoundException{
-
-        Set<User> users = getUsers(lines, department);
-
-        Set<User> existingUsers = userRepository.findAllByDepartment(department);
-
-        if (existingUsers != null && existingUsers.size() != 0)
-            users.addAll(existingUsers);
-
-        if(!users.isEmpty()) {
-            createUsers(users);
-        }
-    }
-
+    //TODO: this behaviour is wrong, we should publish the update, deleting the accounts from alfresco, should also unallocate cases too.
     @Transactional
     @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-            @CacheEvict(value = "usersByGroupName", allEntries = true),
-            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
+                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
     public void updateUsersByDepartment(Set<CSVUserLine> lines,String department) throws ListNotFoundException {
 
         Set<User> users = getUsers(lines, department);
@@ -121,8 +86,7 @@ public class UserService {
     }
 
     @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-            @CacheEvict(value = "usersByGroupName", allEntries = true),
-            @CacheEvict(value = "batchedUsersByDeptName", allEntries = true)})
+                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
     public void clearCache(){
         log.info("All user cache cleared");
     }

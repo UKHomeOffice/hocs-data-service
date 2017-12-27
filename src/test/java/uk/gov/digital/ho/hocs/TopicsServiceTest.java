@@ -46,6 +46,29 @@ public class TopicsServiceTest {
 
     @Test
     public void testCollaboratorsGettingTopics() throws ListNotFoundException {
+        when(mockRepo.findAllByDeletedIsFalse()).thenReturn(buildTopicList());
+
+        List<TopicGroupRecord> records = topicsService.getAllTopics();
+
+        verify(mockRepo).findAllByDeletedIsFalse();
+
+        assertThat(records).isNotNull();
+        assertThat(records).hasOnlyElementsOfType(TopicGroupRecord.class);
+        assertThat(records).hasSize(1);
+        assertThat(records.get(0).getName()).isEqualTo("TopicName");
+        assertThat(records.get(0).getCaseType()).isEqualTo("CaseType");
+    }
+
+    @Test(expected = ListNotFoundException.class)
+    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
+
+        List<TopicGroupRecord> records = topicsService.getAllTopics();
+        verify(mockRepo).findAllByDeletedIsFalse();
+        assertThat(records).isEmpty();
+    }
+
+    @Test
+    public void testCollaboratorsGettingAllTopics() throws ListNotFoundException {
         when(mockRepo.findAllByCaseTypeAndDeletedIsFalse(CASETYPE)).thenReturn(buildTopicList());
 
         List<TopicGroupRecord> records = topicsService.getTopicByCaseType(CASETYPE);
@@ -60,7 +83,7 @@ public class TopicsServiceTest {
     }
 
     @Test(expected = ListNotFoundException.class)
-    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
+    public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
         List<TopicGroupRecord> records = topicsService.getTopicByCaseType(UNAVAILABLE_RESOURCE);
         verify(mockRepo).findAllByCaseType(UNAVAILABLE_RESOURCE);
@@ -69,13 +92,13 @@ public class TopicsServiceTest {
 
     @Test
     public void testCreateList() {
-        topicsService.createTopics(buildValidCSVTopicLines(), CASETYPE);
+        topicsService.updateTopics(buildValidCSVTopicLines(), CASETYPE);
         verify(mockRepo).save(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() {
-        topicsService.createTopics(new HashSet<>(), CASETYPE);
+        topicsService.updateTopics(new HashSet<>(), CASETYPE);
         verify(mockRepo, times(0)).save(anyList());
     }
 
@@ -85,7 +108,7 @@ public class TopicsServiceTest {
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
         when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_group_name_idempotent")));
-        topicsService.createTopics(topics, CASETYPE);
+        topicsService.updateTopics(topics, CASETYPE);
 
         verify(mockRepo).save(anyList());
     }
@@ -96,7 +119,7 @@ public class TopicsServiceTest {
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
         when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_name_ref_idempotent")));
-        topicsService.createTopics(topics, CASETYPE);
+        topicsService.updateTopics(topics, CASETYPE);
 
         verify(mockRepo).save(anyList());
     }
@@ -107,7 +130,7 @@ public class TopicsServiceTest {
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
         when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
-        topicsService.createTopics(topics, CASETYPE);
+        topicsService.updateTopics(topics, CASETYPE);
 
         verify(mockRepo).save(anyList());
     }
@@ -306,15 +329,11 @@ public class TopicsServiceTest {
         topicGroupOne.setTopicListItems(topicSetOne);
 
         Topic topicTwo = new Topic("Name2", "Unit2", "Team2");
+        Topic topicThree = new Topic("Name3", "Unit3", "Team3");
         Set<Topic> topicSetTwo = new HashSet<>();
         topicSetTwo.add(topicTwo);
-        TopicGroup topicGroupTwo = new TopicGroup("First2", "Dept");
-        topicGroupTwo.setTopicListItems(topicSetTwo);
-
-        Topic topicThree = new Topic("Name3", "Unit3", "Team3");
-        Set<Topic> topicSetThree = new HashSet<>();
         topicSetTwo.add(topicThree);
-        TopicGroup topicGroupThree = new TopicGroup("First2", "Dept");
+        TopicGroup topicGroupTwo = new TopicGroup("First2", "Dept");
         topicGroupTwo.setTopicListItems(topicSetTwo);
 
         topics.add(topicGroupOne);

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.exception.IngestException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
@@ -58,25 +57,8 @@ public class DataListResource {
     public ResponseEntity<DataListRecord> getListByName(@PathVariable("name") String name) {
         log.info("List \"{}\" requested", name);
         try {
-
-            DataListRecord list;
-            switch(name) {
-                case "ukvi_member_list":
-                    list = dataListService.getCombinedList(name,
-                            "commons_list",
-                            "lords_list",
-                            "scottish_parliament_list",
-                            "northern_irish_assembly_list",
-                            "european_parliament_list",
-                            "welsh_assembly_list");
-                    break;
-                default:
-                    list = dataListService.getListByName(name);
-                    break;
-            }
-
+            DataListRecord list = dataListService.getListByName(name);
             return ResponseEntity.ok(list);
-
         } catch (ListNotFoundException e){
             log.info("List \"{}\" not found", name);
             log.info(e.getMessage());
@@ -87,17 +69,6 @@ public class DataListResource {
     @RequestMapping(value = "/list/{name}", method = RequestMethod.PUT)
     public ResponseEntity putListByName(@PathVariable("name") String name, @RequestBody Set<DataListEntity> dataListEntities) {
         throw new NotImplementedException();
-    }
-
-    @RequestMapping(value = "list/api/refresh", method = RequestMethod.GET)
-    public ResponseEntity getFromApi() {
-        try {
-            memberService.createFromApi();
-            return ResponseEntity.ok().build();
-        } catch (IngestException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.badRequest().build();
     }
 
 }

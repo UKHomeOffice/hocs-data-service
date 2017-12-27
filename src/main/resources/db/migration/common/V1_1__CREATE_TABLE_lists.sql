@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS lists
     CONSTRAINT list_name_idempotent UNIQUE (name)
 );
 
-CREATE INDEX idx_reference
-    ON lists (name);
+CREATE INDEX idx_list_reference ON lists (name);
 
 CREATE TABLE IF NOT EXISTS entities
 (
@@ -38,5 +37,4 @@ CREATE TABLE IF NOT EXISTS properties
     CONSTRAINT fk_entity_id FOREIGN KEY (entity_id) REFERENCES entities (id)
 );
 
-CREATE INDEX idx_entity_id
-    ON properties (entity_id);
+CREATE INDEX idx_entity_id ON properties (entity_id);

@@ -10,5 +10,6 @@ import java.util.Set;
 public interface TopicsRepository extends CrudRepository<TopicGroup, Long> {
     Set<TopicGroup> findAllByCaseType(String caseType);
     Set<TopicGroup> findAllByCaseTypeAndDeletedIsFalse(String caseType);
-    }
 
+    Set<TopicGroup> findAllByDeletedIsFalse();
+    }

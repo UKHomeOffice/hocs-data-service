@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "groups")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "users")
+@EqualsAndHashCode(exclude = {"id", "deleted", "subGroups", "users"})
 public class BusinessGroup {
 
     @Id
@@ -44,6 +44,11 @@ public class BusinessGroup {
     @Setter
     private Set<BusinessGroup> subGroups = new HashSet<>();
 
+    @Column(name = "deleted", nullable = false)
+    @Getter
+    @Setter
+    private Boolean deleted;
+
     public BusinessGroup(String displayName) {
         this(displayName,displayName);
     }
@@ -51,6 +56,7 @@ public class BusinessGroup {
     public BusinessGroup(String displayName, String referenceName) {
         this.displayName = toDisplayName(displayName);
         this.referenceName = toReferenceName(referenceName);
+        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {
