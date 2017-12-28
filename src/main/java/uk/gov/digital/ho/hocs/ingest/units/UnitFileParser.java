@@ -11,17 +11,17 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UnitFileParser extends AbstractFilePasrer<CSVGroupLine> {
+public class UnitFileParser extends AbstractFilePasrer<CSVBusinessGroupLine> {
 
     @Getter
-    private final Set<CSVGroupLine> lines;
+    private final Set<CSVBusinessGroupLine> lines;
 
     public UnitFileParser(MultipartFile file) {
         this.lines = parseUnitTeamsFile(file);
     }
 
-    private static Set<CSVGroupLine> parseUnitTeamsFile(MultipartFile file) {
-        Set<CSVGroupLine> groups = new HashSet<>();
+    private static Set<CSVBusinessGroupLine> parseUnitTeamsFile(MultipartFile file) {
+        Set<CSVBusinessGroupLine> groups = new HashSet<>();
 
         BufferedReader br;
         try {
@@ -34,7 +34,7 @@ public class UnitFileParser extends AbstractFilePasrer<CSVGroupLine> {
                 String unitReference = lineArray[2].trim();
                 String teamDisplay = lineArray[3].trim();
                 String teamReference = lineArray[4].trim();
-                groups.add(new CSVGroupLine(unitDisplay, unitReference, teamDisplay, teamReference));
+                groups.add(new CSVBusinessGroupLine(unitDisplay, unitReference, teamDisplay, teamReference));
             }
 
         } catch (IOException e) {

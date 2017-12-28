@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Table(name = "groups")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id", "deleted", "subGroups", "users"})
+@EqualsAndHashCode(exclude = {"id", "deleted", "parentGroup", "subGroups", "users"})
 public class BusinessGroup {
 
     @Id
@@ -49,11 +50,11 @@ public class BusinessGroup {
     @Setter
     private Boolean deleted;
 
-    public BusinessGroup(String displayName) {
+    public BusinessGroup(String displayName) throws GroupCreationException {
         this(displayName,displayName);
     }
 
-    public BusinessGroup(String displayName, String referenceName) {
+    public BusinessGroup(String displayName, String referenceName) throws GroupCreationException {
         this.displayName = toDisplayName(displayName);
         this.referenceName = toReferenceName(referenceName);
         this.deleted = false;
@@ -65,7 +66,10 @@ public class BusinessGroup {
         return text;
     }
 
-    private static String toReferenceName(String value) {
+    private static String toReferenceName(String value) throws GroupCreationException {
+        if (value.length() > 94) {
+            throw new GroupCreationException("Group name exceeds size limit");
+        }
         return "GROUP_" + value.replaceAll(" ", "_")
                 .replaceAll("[^a-zA-Z0-9_]+", "")
                 .replaceAll("__", "_")

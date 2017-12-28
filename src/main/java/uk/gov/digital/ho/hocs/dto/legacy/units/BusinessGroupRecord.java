@@ -11,17 +11,17 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
-public class UnitEntityRecord implements Serializable {
+public class BusinessGroupRecord implements Serializable {
 
     private String authorityName;
 
     private String displayName;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<UnitEntityRecord> teams;
+    private List<BusinessGroupRecord> teams;
 
-    public static UnitEntityRecord create(BusinessGroup unit) {
-        List<UnitEntityRecord> teams = unit.getSubGroups().stream().filter(m -> m.getParentGroup() == null).map(UnitEntityRecord::create).collect(Collectors.toList());
-        return new UnitEntityRecord(unit.getReferenceName(), unit.getDisplayName(), teams);
+    public static BusinessGroupRecord create(BusinessGroup unit) {
+        List<BusinessGroupRecord> teams = unit.getSubGroups().stream().filter(m -> m.getParentGroup() == null).map(BusinessGroupRecord::create).collect(Collectors.toList());
+        return new BusinessGroupRecord(unit.getReferenceName(), unit.getDisplayName(), teams);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 import uk.gov.digital.ho.hocs.model.User;
 
@@ -30,7 +31,7 @@ public class BusinessGroupRepositoryTest {
     private BusinessGroupRepository businessGroupRepository;
 
     @Before
-    public void setup() {
+    public void setup() throws GroupCreationException {
         userRepository.deleteAll();
         businessGroupRepository.deleteAll();
 
@@ -85,21 +86,21 @@ public class BusinessGroupRepositoryTest {
 
     @Test
     public void shouldRetrieveAllEntryFindByReference() {
-        final BusinessGroup businessGroup = businessGroupRepository.findByReferenceName("GROUP_TEST");
+        final BusinessGroup businessGroup = businessGroupRepository.findOneByReferenceNameAndDeletedIsFalse("GROUP_TEST");
         assertThat(businessGroup.getDisplayName()).isEqualTo("Test");
         assertThat(businessGroup.getReferenceName()).isEqualTo("GROUP_TEST");
     }
 
     @Test
     public void shouldRetrieveAllEntryFindByReferenceAddedAsSubGroup() {
-        final BusinessGroup businessGroup = businessGroupRepository.findByReferenceName("GROUP_SUBTEST");
+        final BusinessGroup businessGroup = businessGroupRepository.findOneByReferenceNameAndDeletedIsFalse("GROUP_SUBTEST");
         assertThat(businessGroup.getDisplayName()).isEqualTo("SubTest");
         assertThat(businessGroup.getReferenceName()).isEqualTo("GROUP_SUBTEST");
     }
 
     @Test
     public void shouldRetrieveEntryFindByReferenceNoneFound() {
-        final BusinessGroup businessGroup = businessGroupRepository.findByReferenceName("GROUP_NOT_FOUND");
+        final BusinessGroup businessGroup = businessGroupRepository.findOneByReferenceNameAndDeletedIsFalse("GROUP_NOT_FOUND");
         assertThat(businessGroup).isNull();
     }
 

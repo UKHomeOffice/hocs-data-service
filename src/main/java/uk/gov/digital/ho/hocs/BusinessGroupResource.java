@@ -8,15 +8,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.dto.legacy.units.BusinessGroupRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
-import uk.gov.digital.ho.hocs.dto.legacy.units.UnitRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.ingest.units.CSVGroupLine;
+import uk.gov.digital.ho.hocs.ingest.units.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
+import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -33,7 +36,7 @@ public class BusinessGroupResource {
         if (!file.isEmpty()) {
             log.info("Parsing Group File - POST");
             try {
-                Set<CSVGroupLine> lines = getCsvGroupLines(file);
+                Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
                 businessGroupService.createGroupsFromCSV(lines);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
@@ -50,8 +53,8 @@ public class BusinessGroupResource {
         if (!file.isEmpty()) {
             log.info("Parsing Group File - PUT");
             try {
-                Set<CSVGroupLine> lines = getCsvGroupLines(file);
-                businessGroupService.updateGroupsFromCSV(lines);
+                Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
+                businessGroupService.updateBusinessGroups(lines);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
                 log.info("Groups not created");
@@ -63,11 +66,11 @@ public class BusinessGroupResource {
     }
 
     @RequestMapping(value = {"/groups", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET)
-    public ResponseEntity<UnitRecord> getGroups(){
+    public ResponseEntity<List<BusinessGroupRecord>> getGroups(){
         log.info("All Groups requested");
         try {
-            UnitRecord groups = businessGroupService.getAllGroups();
-            return ResponseEntity.ok(groups);
+            Set<BusinessGroup> groups = businessGroupService.getAllBusinessGroups();
+            return ResponseEntity.ok(groups.stream().map(BusinessGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("\"All Groups\" not found");
             log.info(e.getMessage());
@@ -89,8 +92,8 @@ public class BusinessGroupResource {
         }
     }
 
-    private Set<CSVGroupLine> getCsvGroupLines(MultipartFile file) {
-        Set<CSVGroupLine> lines;
+    private Set<CSVBusinessGroupLine> getCsvGroupLines(MultipartFile file) {
+        Set<CSVBusinessGroupLine> lines;
         lines = new UnitFileParser(file).getLines();
         return lines;
     }

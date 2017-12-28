@@ -9,20 +9,20 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.model.Topic;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopicsServiceTest {
@@ -48,12 +48,12 @@ public class TopicsServiceTest {
     public void testCollaboratorsGettingTopics() throws ListNotFoundException {
         when(mockRepo.findAllByDeletedIsFalse()).thenReturn(buildTopicList());
 
-        List<TopicGroupRecord> records = topicsService.getAllTopics();
+        List<TopicGroup> records = topicsService.getAllTopics().stream().collect(Collectors.toList());
 
         verify(mockRepo).findAllByDeletedIsFalse();
 
         assertThat(records).isNotNull();
-        assertThat(records).hasOnlyElementsOfType(TopicGroupRecord.class);
+        assertThat(records).hasOnlyElementsOfType(TopicGroup.class);
         assertThat(records).hasSize(1);
         assertThat(records.get(0).getName()).isEqualTo("TopicName");
         assertThat(records.get(0).getCaseType()).isEqualTo("CaseType");
@@ -62,7 +62,7 @@ public class TopicsServiceTest {
     @Test(expected = ListNotFoundException.class)
     public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
-        List<TopicGroupRecord> records = topicsService.getAllTopics();
+        List<TopicGroup> records = topicsService.getAllTopics().stream().collect(Collectors.toList());
         verify(mockRepo).findAllByDeletedIsFalse();
         assertThat(records).isEmpty();
     }
@@ -71,12 +71,12 @@ public class TopicsServiceTest {
     public void testCollaboratorsGettingAllTopics() throws ListNotFoundException {
         when(mockRepo.findAllByCaseTypeAndDeletedIsFalse(CASETYPE)).thenReturn(buildTopicList());
 
-        List<TopicGroupRecord> records = topicsService.getTopicByCaseType(CASETYPE);
+        List<TopicGroup> records = topicsService.getTopicByCaseType(CASETYPE).stream().collect(Collectors.toList());
 
         verify(mockRepo).findAllByCaseTypeAndDeletedIsFalse(CASETYPE);
 
         assertThat(records).isNotNull();
-        assertThat(records).hasOnlyElementsOfType(TopicGroupRecord.class);
+        assertThat(records).hasOnlyElementsOfType(TopicGroup.class);
         assertThat(records).hasSize(1);
         assertThat(records.get(0).getName()).isEqualTo("TopicName");
         assertThat(records.get(0).getCaseType()).isEqualTo("CaseType");
@@ -85,7 +85,7 @@ public class TopicsServiceTest {
     @Test(expected = ListNotFoundException.class)
     public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
-        List<TopicGroupRecord> records = topicsService.getTopicByCaseType(UNAVAILABLE_RESOURCE);
+        List<TopicGroup> records = topicsService.getTopicByCaseType(UNAVAILABLE_RESOURCE).stream().collect(Collectors.toList());
         verify(mockRepo).findAllByCaseType(UNAVAILABLE_RESOURCE);
         assertThat(records).isEmpty();
     }

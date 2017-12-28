@@ -14,7 +14,6 @@ import uk.gov.digital.ho.hocs.model.Topic;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,11 +45,11 @@ public class TopicsResourceTest {
         topics.add(new Topic("TopicName", "OwningUnit","OwningTeam"));
         topicGroup.setTopicListItems(topics);
 
-        TopicGroupRecord record = TopicGroupRecord.create(topicGroup);
-        List<TopicGroupRecord> records = new ArrayList<>();
-        records.add(record);
 
-        when(topicsService.getTopicByCaseType("CaseType")).thenReturn(records);
+        Set<TopicGroup> topicGroups = new HashSet<>();
+        topicGroups.add(topicGroup);
+
+        when(topicsService.getTopicByCaseType("CaseType")).thenReturn(topicGroups);
         ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicListByReference("CaseType");
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -76,11 +75,10 @@ public class TopicsResourceTest {
         topics.add(new Topic("TopicName", "OwningUnit","OwningTeam"));
         topicGroup.setTopicListItems(topics);
 
-        TopicGroupRecord record = TopicGroupRecord.create(topicGroup);
-        List<TopicGroupRecord> records = new ArrayList<>();
-        records.add(record);
+        Set<TopicGroup> topicGroups = new HashSet<>();
+        topicGroups.add(topicGroup);
 
-        when(topicsService.getAllTopics()).thenReturn(records);
+        when(topicsService.getAllTopics()).thenReturn(topicGroups);
         ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);

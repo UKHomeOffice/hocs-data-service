@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.dto.legacy.users;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 import uk.gov.digital.ho.hocs.model.User;
 
@@ -13,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserCreateEntityRecordTest {
     @Test
-    public void createUser() throws Exception {
+    public void createUser() throws Exception, GroupCreationException {
 
         BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
         Set<BusinessGroup> groups = new HashSet<>();

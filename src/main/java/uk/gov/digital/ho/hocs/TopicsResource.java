@@ -11,9 +11,11 @@ import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.ingest.topics.DCUFileParser;
 import uk.gov.digital.ho.hocs.ingest.topics.UKVIFileParser;
+import uk.gov.digital.ho.hocs.model.TopicGroup;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -46,8 +48,8 @@ public class TopicsResource {
     public ResponseEntity<List<TopicGroupRecord>> getTopicListByReference(@PathVariable("caseType") String caseType) {
         log.info("List \"{}\" requested", caseType);
         try {
-            List<TopicGroupRecord> topics = topicsService.getTopicByCaseType(caseType);
-            return ResponseEntity.ok(topics);
+            Set<TopicGroup> topics = topicsService.getTopicByCaseType(caseType);
+            return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("List \"{}\" not found", caseType);
             log.info(e.getMessage());
@@ -59,8 +61,8 @@ public class TopicsResource {
     public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
         log.info("List \"Legacy TopicList\" requested");
         try {
-            List<TopicGroupRecord> topics = topicsService.getAllTopics();
-            return ResponseEntity.ok(topics);
+            Set<TopicGroup> topics = topicsService.getAllTopics();
+            return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("List \"Legacy TopicList\" not found");
             log.info(e.getMessage());
