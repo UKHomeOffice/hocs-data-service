@@ -96,6 +96,12 @@ public class TopicsServiceTest {
         verify(mockRepo).save(anyList());
     }
 
+    @Test(expected = EntityCreationException.class)
+    public void testCreateListNull() {
+        topicsService.updateTopics(null, CASETYPE);
+        verify(mockRepo, times(0)).save(anyList());
+    }
+
     @Test
     public void testCreateListNoEntities() {
         topicsService.updateTopics(new HashSet<>(), CASETYPE);

@@ -21,7 +21,11 @@ public class BusinessGroupRecord implements Serializable {
     private List<BusinessGroupRecord> teams;
 
     public static BusinessGroupRecord create(BusinessGroup unit) {
-        List<BusinessGroupRecord> teams = unit.getSubGroups().stream().filter(m -> m.getParentGroup() == null).map(BusinessGroupRecord::create).collect(Collectors.toList());
+        return create(unit,false);
+    }
+
+    public static BusinessGroupRecord create(BusinessGroup unit, boolean showDeleted) {
+        List<BusinessGroupRecord> teams = unit.getSubGroups().stream().filter(m -> m.getParentGroup() == null).filter(m -> !m.getDeleted() || showDeleted).map(BusinessGroupRecord::create).collect(Collectors.toList());
         return new BusinessGroupRecord(unit.getReferenceName(), unit.getDisplayName(), teams);
     }
 }

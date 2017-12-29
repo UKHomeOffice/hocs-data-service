@@ -48,7 +48,7 @@ public class BusinessGroup {
     @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     public BusinessGroup(String displayName) throws GroupCreationException {
         this(displayName,displayName);
@@ -57,7 +57,6 @@ public class BusinessGroup {
     public BusinessGroup(String displayName, String referenceName) throws GroupCreationException {
         this.displayName = toDisplayName(displayName);
         this.referenceName = toReferenceName(referenceName);
-        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {

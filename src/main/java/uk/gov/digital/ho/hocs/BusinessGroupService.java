@@ -65,50 +65,53 @@ public class BusinessGroupService {
 
     @CacheEvict(value = "groups", allEntries = true)
     public void updateBusinessGroups(Set<CSVBusinessGroupLine> lines) {
-        List<BusinessGroup> newGroups = buildBusinessGroups(lines);
-        Set<BusinessGroup> jpaGroups = repo.findAll();
+        if(lines != null) {
+            List<BusinessGroup> newGroups = buildBusinessGroups(lines);
+            Set<BusinessGroup> jpaGroups = repo.findAll();
 
-        jpaGroups.forEach(jpaGroup -> {
+            jpaGroups.forEach(jpaGroup -> {
 
-            if(newGroups.contains(jpaGroup)) {
-                BusinessGroup matchingNewBusinessGroup = newGroups.get(newGroups.indexOf(jpaGroup));
+                if (newGroups.contains(jpaGroup)) {
+                    BusinessGroup matchingNewBusinessGroup = newGroups.get(newGroups.indexOf(jpaGroup));
 
-                Set<BusinessGroup> newBusinessGroupItems = matchingNewBusinessGroup.getSubGroups();
-                Set<BusinessGroup> jpaBusinessGroupItems = jpaGroup.getSubGroups();
+                    Set<BusinessGroup> newBusinessGroupItems = matchingNewBusinessGroup.getSubGroups();
+                    Set<BusinessGroup> jpaBusinessGroupItems = jpaGroup.getSubGroups();
 
-                // Update existing business groups
-                jpaBusinessGroupItems.forEach(item -> {
-                    item.setDeleted(!newBusinessGroupItems.contains(item));
-                });
+                    // Update existing business groups
+                    jpaBusinessGroupItems.forEach(item -> {
+                        item.setDeleted(!newBusinessGroupItems.contains(item));
+                    });
 
-                // Add new business groups
-                newBusinessGroupItems.forEach(newTopic -> {
-                    if(!jpaBusinessGroupItems.contains(newTopic))
-                    {
-                        jpaBusinessGroupItems.add(newTopic);
-                    }
-                });
+                    // Add new business groups
+                    newBusinessGroupItems.forEach(newTopic -> {
+                        if (!jpaBusinessGroupItems.contains(newTopic)) {
+                            jpaBusinessGroupItems.add(newTopic);
+                        }
+                    });
 
-                jpaGroup.setSubGroups(jpaBusinessGroupItems);
+                    jpaGroup.setSubGroups(jpaBusinessGroupItems);
 
-                // Set the topic group to deleted if there are no visible topic items
-                jpaGroup.setDeleted(jpaGroup.getSubGroups().stream().allMatch(topic -> topic.getDeleted()));
+                    // Set the topic group to deleted if there are no visible topic items
+                    jpaGroup.setDeleted(jpaGroup.getSubGroups().stream().allMatch(topic -> topic.getDeleted()));
 
-            }
-            else {
-                jpaGroup.getSubGroups().forEach(item -> item.setDeleted(true));
-                jpaGroup.setDeleted(true);
-            }
-        });
+                } else {
+                    jpaGroup.getSubGroups().forEach(item -> item.setDeleted(true));
+                    jpaGroup.setDeleted(true);
+                }
+            });
 
-        // Add new topic groups
-        newGroups.forEach(newTopicGroup -> {
-            if (!jpaGroups.contains(newTopicGroup)) {
-                jpaGroups.add(newTopicGroup);
-            }
-        });
+            // Add new topic groups
+            newGroups.forEach(newTopicGroup -> {
+                if (!jpaGroups.contains(newTopicGroup)) {
+                    jpaGroups.add(newTopicGroup);
+                }
+            });
 
-        saveGroups(jpaGroups);
+            saveGroups(jpaGroups);
+        } else{
+            throw new EntityCreationException("Unable to update entity");
+        }
+
     }
 
     @Caching( evict = {@CacheEvict(value = "groups", allEntries = true)})

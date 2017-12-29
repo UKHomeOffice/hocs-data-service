@@ -92,6 +92,12 @@ public class BusinessGroupServiceTest {
         verify(mockRepo).save(anyList());
     }
 
+    @Test(expected = EntityCreationException.class)
+    public void testCreateListNull() {
+        BusinessGroupService.updateBusinessGroups(null);
+        verify(mockRepo, times(0)).save(anyList());
+    }
+
     @Test
     public void testCreateListNoEntities() {
         BusinessGroupService.updateBusinessGroups(new HashSet<>());

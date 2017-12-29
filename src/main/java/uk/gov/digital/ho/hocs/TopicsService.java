@@ -45,55 +45,56 @@ public class TopicsService {
         return list;
     }
 
-
     @Caching( evict = {@CacheEvict(value = "topics", key = "#caseType"),
                        @CacheEvict(value = "topics", key = "all")})
     public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
-        List<TopicGroup> newTopics = buildTopicGroups(lines, caseType);
-        Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
+       if(lines != null && caseType != null) {
+           List<TopicGroup> newTopics = buildTopicGroups(lines, caseType);
+           Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
 
-        // Update existing topic groups
-        jpaTopics.forEach(jpaTopic -> {
+           // Update existing topic groups
+           jpaTopics.forEach(jpaTopic -> {
 
-            if(newTopics.contains(jpaTopic)) {
-                TopicGroup matchingNewTopicGroup = newTopics.get(newTopics.indexOf(jpaTopic));
+               if (newTopics.contains(jpaTopic)) {
+                   TopicGroup matchingNewTopicGroup = newTopics.get(newTopics.indexOf(jpaTopic));
 
-                Set<Topic> newTopicListItems = matchingNewTopicGroup.getTopicListItems();
-                Set<Topic> jpaTopicListItems = jpaTopic.getTopicListItems();
+                   Set<Topic> newTopicListItems = matchingNewTopicGroup.getTopicListItems();
+                   Set<Topic> jpaTopicListItems = jpaTopic.getTopicListItems();
 
 
-                // Update existing topic items
-                jpaTopicListItems.forEach(item -> {
-                        item.setDeleted(!newTopicListItems.contains(item));
-                });
+                   // Update existing topic items
+                   jpaTopicListItems.forEach(item -> {
+                       item.setDeleted(!newTopicListItems.contains(item));
+                   });
 
-                // Add new topic items
-                newTopicListItems.forEach(newTopic -> {
-                    if(!jpaTopicListItems.contains(newTopic))
-                    {
-                        jpaTopicListItems.add(newTopic);
-                    }
-                });
+                   // Add new topic items
+                   newTopicListItems.forEach(newTopic -> {
+                       if (!jpaTopicListItems.contains(newTopic)) {
+                           jpaTopicListItems.add(newTopic);
+                       }
+                   });
 
-                jpaTopic.setTopicListItems(jpaTopicListItems);
+                   jpaTopic.setTopicListItems(jpaTopicListItems);
 
-                // Set the topic group to deleted if there are no visible topic items
-                jpaTopic.setDeleted(jpaTopic.getTopicListItems().stream().allMatch(topic -> topic.getDeleted()));
-            }
-            else {
-                jpaTopic.getTopicListItems().forEach(item -> item.setDeleted(true));
-                jpaTopic.setDeleted(true);
-            }
-        });
+                   // Set the topic group to deleted if there are no visible topic items
+                   jpaTopic.setDeleted(jpaTopic.getTopicListItems().stream().allMatch(topic -> topic.getDeleted()));
+               } else {
+                   jpaTopic.getTopicListItems().forEach(item -> item.setDeleted(true));
+                   jpaTopic.setDeleted(true);
+               }
+           });
 
-        // Add new topic groups
-        newTopics.forEach(newTopicGroup -> {
-            if (!jpaTopics.contains(newTopicGroup)) {
-                jpaTopics.add(newTopicGroup);
-            }
-        });
+           // Add new topic groups
+           newTopics.forEach(newTopicGroup -> {
+               if (!jpaTopics.contains(newTopicGroup)) {
+                   jpaTopics.add(newTopicGroup);
+               }
+           });
 
-        saveTopicGroups(jpaTopics);
+           saveTopicGroups(jpaTopics);
+       } else{
+           throw new EntityCreationException("Unable to update entity");
+       }
     }
 
     @CacheEvict(value = "topics", allEntries = true)

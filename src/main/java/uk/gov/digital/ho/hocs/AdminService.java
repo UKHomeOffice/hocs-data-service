@@ -33,17 +33,17 @@ public class AdminService {
     public void clearCache() {
       businessGroupService.clearCache();
       dataListService.clearCache();
-      //memberService.clearCache(); WIP
+      memberService.clearCache();
       topicsService.clearCache();
       userService.clearCache();
     }
 
     public void updateWebMemberLists() throws IngestException {
-        memberService.createCommonsUKParliament();
-        memberService.createLordsUKParliament();
-        memberService.createIrishParliament();
-        memberService.createScottishParliament();
-        memberService.createEuropeanParliament();
+       // memberService.createCommonsUKParliament();
+       // memberService.createLordsUKParliament();
+       // memberService.createIrishParliament();
+       // memberService.createScottishParliament();
+       // memberService.createEuropeanParliament();
     }
 
     public void publishUsersByDepartmentName(String group) throws AlfrescoPostException, ListNotFoundException {

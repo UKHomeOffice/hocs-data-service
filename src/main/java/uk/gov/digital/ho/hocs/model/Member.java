@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Access(AccessType.FIELD)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"text", "value"})
+@EqualsAndHashCode(exclude = {"id", "deleted", "houseId"})
 public class Member {
 
     @Id
@@ -31,7 +31,7 @@ public class Member {
     @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     public Member(String displayName) {
         this(displayName, displayName);
@@ -40,7 +40,6 @@ public class Member {
     public Member(String displayName, String referenceName){
         this.displayName = toListText(displayName);
         this.referenceName = toListValue(referenceName);
-        this.deleted = false;
     }
 
     private static String toListText(String text) {

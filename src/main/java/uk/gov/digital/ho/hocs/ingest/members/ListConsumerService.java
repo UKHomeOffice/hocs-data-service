@@ -7,12 +7,22 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.exception.IngestException;
+import uk.gov.digital.ho.hocs.model.House;
+import uk.gov.digital.ho.hocs.model.Member;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class ListConsumerService {
+
+    final String HOUSE_LORDS = "lords";
+    final String HOUSE_COMMONS = "commons";
+    final String HOUSE_SCOTTISH_PARLIAMENT = "scottish_parliament";
+    final String HOUSE_NORTHERN_IRISH_ASSEMBLY = "northern_irish_assembly";
+    final String HOUSE_EUROPEAN_PARLIAMENT = "european_parliament";
 
     final String API_UK_PARLIAMENT;
     final String API_SCOTTISH_PARLIAMENT;
@@ -30,69 +40,48 @@ public class ListConsumerService {
         this.API_EUROPEAN_PARLIAMENT = apiEuropeanParliament;
     }
 
-    public EuropeMembers createFromEuropeanParliamentAPI() throws IngestException {
-        ResponseEntity<EuropeMembers> response = getListFromApi(API_EUROPEAN_PARLIAMENT, MediaType.APPLICATION_XML, EuropeMembers.class);
-        EuropeMembers members;
-        if (response != null) {
-            members = response.getBody();
-        }
-        else {
-            throw new IngestException("Europe Members Not Found");
-        }
-        return members;
+    public House createFromEuropeanParliamentAPI() throws IngestException {
+        EuropeMembers europeMembers = getMembersFromAPI(API_EUROPEAN_PARLIAMENT, MediaType.APPLICATION_XML, EuropeMembers.class);
+        Set<Member> members = europeMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_EUROPEAN_PARLIAMENT, members);
     }
 
-    public IrishMembers createFromIrishParliamentAPI() throws IngestException {
-        ResponseEntity<IrishMembers> response = getListFromApi(API_NORTHERN_IRISH_ASSEMBLY, MediaType.APPLICATION_XML, IrishMembers.class);
-        IrishMembers members;
-        if (response != null) {
-            members = response.getBody();
-        }
-        else {
-            throw new IngestException("Irish Members Not Found");
-        }
-        return members;
+    public House createFromIrishParliamentAPI() throws IngestException {
+        IrishMembers irishMembers = getMembersFromAPI(API_NORTHERN_IRISH_ASSEMBLY, MediaType.APPLICATION_XML, IrishMembers.class);
+        Set<Member> members = irishMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_NORTHERN_IRISH_ASSEMBLY, members);
     }
 
-    public ScottishMembers createFromScottishParliamentAPI() throws IngestException {
-        ResponseEntity<ScottishMember[]> response = getListFromApi(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMember[].class);
-        ScottishMembers members;
-        if (response != null) {
-            members = new ScottishMembers(Arrays.asList(response.getBody()));
-        }
-        else {
-            throw new IngestException("Scottish Members Not Found");
-        }
-        return members;
+    public House createFromScottishParliamentAPI() throws IngestException {
+        ScottishMembers scottishMembers = getMembersFromAPI(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMembers.class);
+        Set<Member> members = scottishMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_SCOTTISH_PARLIAMENT, members);
     }
 
-    public Members createCommonsFromUKParliamentAPI() throws IngestException {
-        return createFromUKParliamentAPI("commons");
+    public House createCommonsFromUKParliamentAPI() throws IngestException {
+        Members ukMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_COMMONS), MediaType.APPLICATION_XML, Members.class);
+        Set<Member> members = ukMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_COMMONS, members);
     }
 
-    public Members createLordsFromUKParliamentAPI() throws IngestException {
-        return createFromUKParliamentAPI("lords");
+    public House createLordsFromUKParliamentAPI() throws IngestException {
+        Members ukMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_LORDS), MediaType.APPLICATION_XML, Members.class);
+        Set<Member> members = ukMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_LORDS, members);
     }
 
-    private Members createFromUKParliamentAPI(final String house) throws IngestException {
-        ResponseEntity<Members> response = getListFromApi(getFormattedUkEndpoint(house), MediaType.APPLICATION_XML, Members.class);
-        Members members;
-        if (response != null) {
-            members = response.getBody();
-        }
-        else {
-            throw new IngestException("UK Members Not Found");
-        }
-        return members;
-    }
-
-    private <T> ResponseEntity<T> getListFromApi(String apiEndpoint, MediaType mediaType, Class<T> returnClass) {
+    private <T> T getMembersFromAPI(String apiEndpoint, MediaType mediaType, Class<T> returnClass) throws IngestException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(mediaType));
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
-        return new RestTemplate().exchange(apiEndpoint, HttpMethod.GET, entity, returnClass);
+        ResponseEntity<T> response = new RestTemplate().exchange(apiEndpoint, HttpMethod.GET, entity, returnClass);
+
+        if (response == null || response.getStatusCodeValue() != 200) {
+            throw new IngestException("Members Not Found at " + apiEndpoint);
+        }
+        return response.getBody();
     }
 
     private String getFormattedUkEndpoint(final String house) {
