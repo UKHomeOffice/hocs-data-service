@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -39,12 +38,11 @@ public class TopicGroup {
     @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     public TopicGroup(String name, String caseType) {
         this.name = toDisplayName(name);
         this.caseType = caseType;
-        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {

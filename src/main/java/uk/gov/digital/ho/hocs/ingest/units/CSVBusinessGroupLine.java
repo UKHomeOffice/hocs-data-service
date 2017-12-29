@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @EqualsAndHashCode(of = {"unitReference", "teamReference"})
-public class CSVGroupLine {
+public class CSVBusinessGroupLine {
 
     @Getter
     private String unitDisplay;

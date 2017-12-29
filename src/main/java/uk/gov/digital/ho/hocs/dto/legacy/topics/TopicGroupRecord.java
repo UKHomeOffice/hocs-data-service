@@ -18,7 +18,11 @@ public class TopicGroupRecord {
     private List<TopicRecord> topicListItems;
 
     public static TopicGroupRecord create(TopicGroup groupList) {
-        List<TopicRecord> topicList = groupList.getTopicListItems().stream().map(TopicRecord::create).collect(Collectors.toList());
+        return create(groupList, false);
+    }
+
+    public static TopicGroupRecord create(TopicGroup groupList, boolean showDeleted) {
+        List<TopicRecord> topicList = groupList.getTopicListItems().stream().filter(topic -> !topic.getDeleted() || showDeleted).map(TopicRecord::create).collect(Collectors.toList());
         return new TopicGroupRecord(groupList.getName(), groupList.getCaseType(),topicList);
     }
 }

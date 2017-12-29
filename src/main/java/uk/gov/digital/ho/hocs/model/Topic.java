@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -39,13 +38,12 @@ public class Topic {
     @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     public Topic(String name, String owningUnit, String owningTeam) {
         this.name = toDisplayName(name);
         this.topicTeam = owningTeam;
         this.topicUnit = owningUnit;
-        this.deleted = false;
     }
 
     private static String toDisplayName(String text) {

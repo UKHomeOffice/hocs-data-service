@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.dto.legacy.units;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UnitCreateEntityRecordTest {
     @Test
-    public void createTeam() throws Exception {
+    public void createTeam() throws Exception, GroupCreationException {
         BusinessGroup group = new BusinessGroup("TeamDisp", "TeamRef");
         UnitCreateEntityRecord entityRecord = UnitCreateEntityRecord.createTeam(group, "UnitRef");
 
@@ -23,7 +24,7 @@ public class UnitCreateEntityRecordTest {
     }
 
     @Test
-    public void createUnit() throws Exception {
+    public void createUnit() throws Exception, GroupCreationException {
         BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
         UnitCreateEntityRecord entityRecord = UnitCreateEntityRecord.createUnit(group);
 
@@ -35,7 +36,7 @@ public class UnitCreateEntityRecordTest {
     }
 
     @Test
-    public void createGroups() throws Exception {
+    public void createGroups() throws Exception, GroupCreationException {
         BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
         BusinessGroup subGroupOne = new BusinessGroup("SubUnitDisp1", "SubUnitRef");
         BusinessGroup subGroupTwo = new BusinessGroup("SubUnitDisp2", "SubUnitRef");

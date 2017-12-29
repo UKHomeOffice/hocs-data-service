@@ -11,9 +11,11 @@ import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
 import uk.gov.digital.ho.hocs.ingest.topics.DCUFileParser;
 import uk.gov.digital.ho.hocs.ingest.topics.UKVIFileParser;
+import uk.gov.digital.ho.hocs.model.TopicGroup;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -25,16 +27,16 @@ public class TopicsResource {
         this.topicsService = topicsService;
     }
 
-    @RequestMapping(value = "/topics/{unitName}", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("unitName") String unitName) {
+    @RequestMapping(value = "/topics/{caseType}", method = {RequestMethod.PUT, RequestMethod.POST})
+    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("caseType") String caseType) {
         if (!file.isEmpty()) {
-            log.info("Parsing topics {}", unitName);
+            log.info("Parsing topics {}", caseType);
             try {
-                Set<CSVTopicLine> lines = getCsvTopicLines(file, unitName);
-                topicsService.updateTopics(lines, unitName);
+                Set<CSVTopicLine> lines = getCsvTopicLines(file, caseType);
+                topicsService.updateTopics(lines, caseType);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
-                log.info("{} topics not created", unitName);
+                log.info("{} topics not created", caseType);
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
@@ -46,8 +48,8 @@ public class TopicsResource {
     public ResponseEntity<List<TopicGroupRecord>> getTopicListByReference(@PathVariable("caseType") String caseType) {
         log.info("List \"{}\" requested", caseType);
         try {
-            List<TopicGroupRecord> topics = topicsService.getTopicByCaseType(caseType);
-            return ResponseEntity.ok(topics);
+            Set<TopicGroup> topics = topicsService.getTopicByCaseType(caseType);
+            return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("List \"{}\" not found", caseType);
             log.info(e.getMessage());
@@ -55,12 +57,12 @@ public class TopicsResource {
         }
     }
 
-    @RequestMapping(value = {"/topics/topicList", "/service/homeoffice/ctsv2/topicList"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/topics", method = RequestMethod.GET)
     public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
         log.info("List \"Legacy TopicList\" requested");
         try {
-            List<TopicGroupRecord> topics = topicsService.getAllTopics();
-            return ResponseEntity.ok(topics);
+            Set<TopicGroup> topics = topicsService.getAllTopics();
+            return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("List \"Legacy TopicList\" not found");
             log.info(e.getMessage());
@@ -68,7 +70,6 @@ public class TopicsResource {
         }
     }
 
-    //TODO: DCU and FOI topic differences need understanding.
     private Set<CSVTopicLine> getCsvTopicLines(MultipartFile file, String unitName) {
         Set<CSVTopicLine> lines;
         switch (unitName) {

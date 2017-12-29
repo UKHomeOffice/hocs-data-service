@@ -9,11 +9,10 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
-import uk.gov.digital.ho.hocs.dto.legacy.units.UnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
-import uk.gov.digital.ho.hocs.ingest.units.CSVGroupLine;
+import uk.gov.digital.ho.hocs.ingest.units.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.model.BusinessGroup;
 
 import java.util.*;
@@ -28,73 +27,6 @@ public class BusinessGroupService {
         this.repo = repo;
     }
 
-    @Cacheable(value = "groups")
-    public UnitRecord getAllGroups() throws ListNotFoundException {
-        try {
-            Set<BusinessGroup> list = repo.findAll();
-            return UnitRecord.create(list);
-        } catch (NullPointerException e) {
-            throw new ListNotFoundException();
-        }
-    }
-
-    @Cacheable(value = "groups", key = "#referenceName")
-    public BusinessGroup getGroupByReference(String referenceName) throws ListNotFoundException {
-        try {
-            BusinessGroup businessGroup = repo.findByReferenceName(referenceName);
-            return businessGroup;
-        } catch (NullPointerException e) {
-            throw new ListNotFoundException();
-        }
-    }
-
-    @CacheEvict(value = "groups", allEntries = true)
-    public void createGroupsFromCSV(Set<CSVGroupLine> lines) {
-        Set<BusinessGroup> groups = getGroups(lines);
-        if (!groups.isEmpty()) {
-            createGroups(new HashSet<>(groups));
-        }
-    }
-
-    @CacheEvict(value = "groups", allEntries = true)
-    public void updateGroupsFromCSV(Set<CSVGroupLine> lines) {
-        Set<BusinessGroup> newGroups = getGroups(lines);
-        Set<BusinessGroup> jpaGroups = repo.findAll();
-
-        jpaGroups.forEach(t -> {
-            Optional<BusinessGroup> currentBusinessGroup = newGroups.stream().filter(i -> i.equals(t)).findFirst();
-            if (currentBusinessGroup.isPresent()) {
-                t.getSubGroups().forEach(s -> {
-                    s.setDeleted(!currentBusinessGroup.get().getSubGroups().contains(s));
-                });
-            } else {
-                t.getSubGroups().forEach(s -> s.setDeleted(true));
-            }
-
-            t.setDeleted(t.getSubGroups().stream().allMatch(topic -> topic.getDeleted()));
-        });
-
-        newGroups.forEach(t -> {
-
-            if (!jpaGroups.contains(t)) {
-                jpaGroups.add(t);
-            }
-        });
-
-        createGroups(jpaGroups);
-    }
-
-    @Caching( evict = {@CacheEvict(value = "groups", allEntries = true)})
-    public void clearCache(){
-        log.info("All groups cache cleared");
-    }
-
-    private void validateLine(CSVGroupLine line) throws GroupCreationException {
-        if (line.getTeamValue().length() > 94) {
-            throw new GroupCreationException("Group name exceeds size limit");
-        }
-    }
-
     public UnitCreateRecord getGroupsCreateList() throws ListNotFoundException {
         try {
             Set<BusinessGroup> list = repo.findAll();
@@ -104,25 +36,115 @@ public class BusinessGroupService {
         }
     }
 
-    private Set<BusinessGroup> getGroups(Set<CSVGroupLine> lines) {
-        Map<String, BusinessGroup> units = new HashMap<>();
-        try {
-            for (CSVGroupLine line : lines) {
-                units.putIfAbsent(line.getUnitReference(), new BusinessGroup(line.getUnitDisplay(), line.getUnitReference()));
-                BusinessGroup unit = units.get(line.getUnitReference());
-                unit.getSubGroups().add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
-                validateLine(line);
-            }
+    @Cacheable(value = "groups", key = "#referenceName")
+    public BusinessGroup getGroupByReference(String referenceName) throws ListNotFoundException {
+        BusinessGroup businessGroup = repo.findOneByReferenceNameAndDeletedIsFalse(referenceName);
+        if(businessGroup == null)
+        {
+            throw new ListNotFoundException();
+        }
+        return businessGroup;
+    }
 
+    @CacheEvict(value = "groups", allEntries = true)
+    public void createGroupsFromCSV(Set<CSVBusinessGroupLine> lines) {
+        List<BusinessGroup> groups = buildBusinessGroups(lines);
+        if (!groups.isEmpty()) {
+            saveGroups(new HashSet<>(groups));
+        }
+    }
+
+    @Cacheable(value = "groups", key = "all")
+    public Set<BusinessGroup> getAllBusinessGroups() throws ListNotFoundException {
+        Set<BusinessGroup> list = repo.findAllByDeletedIsFalse();
+        if (list.isEmpty()) {
+            throw new ListNotFoundException();
+        }
+        return list;
+    }
+
+    @CacheEvict(value = "groups", allEntries = true)
+    public void updateBusinessGroups(Set<CSVBusinessGroupLine> lines) {
+        if(lines != null) {
+            List<BusinessGroup> newGroups = buildBusinessGroups(lines);
+            Set<BusinessGroup> jpaGroups = repo.findAll();
+
+            jpaGroups.forEach(jpaGroup -> {
+
+                if (newGroups.contains(jpaGroup)) {
+                    BusinessGroup matchingNewBusinessGroup = newGroups.get(newGroups.indexOf(jpaGroup));
+
+                    Set<BusinessGroup> newBusinessGroupItems = matchingNewBusinessGroup.getSubGroups();
+                    Set<BusinessGroup> jpaBusinessGroupItems = jpaGroup.getSubGroups();
+
+                    // Update existing business groups
+                    jpaBusinessGroupItems.forEach(item -> {
+                        item.setDeleted(!newBusinessGroupItems.contains(item));
+                    });
+
+                    // Add new business groups
+                    newBusinessGroupItems.forEach(newTopic -> {
+                        if (!jpaBusinessGroupItems.contains(newTopic)) {
+                            jpaBusinessGroupItems.add(newTopic);
+                        }
+                    });
+
+                    jpaGroup.setSubGroups(jpaBusinessGroupItems);
+
+                    // Set the topic group to deleted if there are no visible topic items
+                    jpaGroup.setDeleted(jpaGroup.getSubGroups().stream().allMatch(topic -> topic.getDeleted()));
+
+                } else {
+                    jpaGroup.getSubGroups().forEach(item -> item.setDeleted(true));
+                    jpaGroup.setDeleted(true);
+                }
+            });
+
+            // Add new topic groups
+            newGroups.forEach(newTopicGroup -> {
+                if (!jpaGroups.contains(newTopicGroup)) {
+                    jpaGroups.add(newTopicGroup);
+                }
+            });
+
+            saveGroups(jpaGroups);
+        } else{
+            throw new EntityCreationException("Unable to update entity");
+        }
+
+    }
+
+    @Caching( evict = {@CacheEvict(value = "groups", allEntries = true)})
+    public void clearCache(){
+        log.info("All groups cache cleared");
+    }
+
+    private static List<BusinessGroup> buildBusinessGroups(Set<CSVBusinessGroupLine> lines) {
+        Map<BusinessGroup, Set<BusinessGroup>> units = new HashMap<>();
+        try {
+            for (CSVBusinessGroupLine line : lines) {
+                BusinessGroup unit = new BusinessGroup(line.getUnitDisplay(), line.getUnitReference());
+                units.putIfAbsent(unit, new HashSet<>());
+                units.get(unit).add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
+            }
         } catch (GroupCreationException e) {
             e.printStackTrace();
         }
-        return new HashSet<>(units.values());
+
+        List<BusinessGroup> businessGroups = new ArrayList<>();
+        for(Map.Entry<BusinessGroup, Set<BusinessGroup>> entity : units.entrySet()) {
+            BusinessGroup unit = entity.getKey();
+            unit.setSubGroups(entity.getValue());
+            businessGroups.add(unit);
+        }
+        return businessGroups;
     }
 
-    private void createGroups(Set<BusinessGroup> groups) {
+    private void saveGroups(Collection<BusinessGroup> groups) {
         try {
-            repo.save(groups);
+            if(!groups.isEmpty()) {
+                repo.save(groups);
+            }
         } catch (DataIntegrityViolationException e) {
 
             if (e.getCause() instanceof ConstraintViolationException &&

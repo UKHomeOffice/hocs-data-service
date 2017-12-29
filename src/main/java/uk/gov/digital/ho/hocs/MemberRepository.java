@@ -9,6 +9,7 @@ import java.util.Set;
 @Repository
 public interface MemberRepository extends CrudRepository<House, Long> {
 
+    House findOneByName(String name);
     House findOneByNameAndDeletedIsFalse(String name);
 
     Set<House> findAllByDeletedIsFalse();

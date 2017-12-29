@@ -8,8 +8,9 @@ import java.util.Set;
 
 @Repository
 public interface BusinessGroupRepository extends CrudRepository<BusinessGroup, Long> {
-    @Override
-    Set<BusinessGroup> findAll();
 
-    BusinessGroup findByReferenceName(String referenceName);
+    BusinessGroup findOneByReferenceNameAndDeletedIsFalse(String referenceName);
+
+    Set<BusinessGroup> findAll();
+    Set<BusinessGroup> findAllByDeletedIsFalse();
 }
