@@ -59,21 +59,9 @@ echo "Posting Minister List"
 curl -vX POST $target_uri/list/ -d "@$data_dir/Minister_List.JSON" \
  -H "Content-Type: application/json"
 
-echo "Pulling member information from external API"
-curl -v -o /dev/null -v $target_uri/list/api/refresh
-
 echo "Posting Welsh Assembly List"
-curl -vX POST $target_uri/list/ -d "@$data_dir/welsh_assembly_list.json" \
+curl -vX POST $target_uri/houses/ -d "@$data_dir/welsh_assembly_list.json" \
  -H "Content-Type: application/json"
 
-# Perform a series of GETs to prime the cache for the seeded data
-echo "Priming cache on resources"
-
-sleep 2
-
-curl -v -o /dev/null -v $target_uri/topics/topicList
-
-curl -v -o /dev/null -v $target_uri/list/MinisterList
-
-curl -v -o /dev/null -v $target_uri/groups
-
+echo "Pulling member information from external API"
+curl -v -o /dev/null -v $target_uri/houses/refresh

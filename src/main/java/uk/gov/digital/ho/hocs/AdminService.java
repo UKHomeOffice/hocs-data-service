@@ -3,9 +3,6 @@ package uk.gov.digital.ho.hocs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
-import uk.gov.digital.ho.hocs.exception.IngestException;
-import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 
 @Service
 @Slf4j
@@ -31,22 +28,10 @@ public class AdminService {
     }
 
     public void clearCache() {
-      businessGroupService.clearCache();
-      dataListService.clearCache();
-      memberService.clearCache();
-      topicsService.clearCache();
-      userService.clearCache();
-    }
-
-    public void updateWebMemberLists() throws IngestException {
-       // memberService.createCommonsUKParliament();
-       // memberService.createLordsUKParliament();
-       // memberService.createIrishParliament();
-       // memberService.createScottishParliament();
-       // memberService.createEuropeanParliament();
-    }
-
-    public void publishUsersByDepartmentName(String group) throws AlfrescoPostException, ListNotFoundException {
-        userService.publishUsersByDepartmentName(group);
+        businessGroupService.clearCache();
+        dataListService.clearCache();
+        memberService.clearCache();
+        topicsService.clearCache();
+        userService.clearCache();
     }
 }

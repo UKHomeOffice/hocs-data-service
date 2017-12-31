@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.exception.IngestException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.House;
 
@@ -37,6 +38,17 @@ public class MemberResource {
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @RequestMapping(value = "/houses/refresh", method = RequestMethod.GET)
+    public ResponseEntity getFromApi() {
+        try {
+            memberService.updateWebMemberLists();
+            return ResponseEntity.ok().build();
+        } catch (IngestException e) {
+            e.printStackTrace();
         }
         return ResponseEntity.badRequest().build();
     }

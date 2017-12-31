@@ -87,25 +87,36 @@ public class BusinessGroupServiceTest {
     }
 
     @Test
-    public void testCreateList() {
+    public void testCreateList() throws GroupCreationException {
         BusinessGroupService.updateBusinessGroups(buildValidCSVBusinessGroupLines());
         verify(mockRepo).save(anyList());
     }
 
+    @Test(expected = GroupCreationException.class)
+    public void testCreateLisTooLong() throws GroupCreationException {
+        Set<CSVBusinessGroupLine> lines = new HashSet<>();
+
+        CSVBusinessGroupLine line = new CSVBusinessGroupLine("ParentbusinessGroupNametoolong", "ParentbusinessGroupNametooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooolong", "BusinessGroupUnit", "BusinessGroupTeam");
+        lines.add(line);
+
+        BusinessGroupService.updateBusinessGroups(lines);
+        verify(mockRepo, times(0)).save(anyList());
+    }
+
     @Test(expected = EntityCreationException.class)
-    public void testCreateListNull() {
+    public void testCreateListNull() throws GroupCreationException {
         BusinessGroupService.updateBusinessGroups(null);
         verify(mockRepo, times(0)).save(anyList());
     }
 
     @Test
-    public void testCreateListNoEntities() {
+    public void testCreateListNoEntities() throws GroupCreationException {
         BusinessGroupService.updateBusinessGroups(new HashSet<>());
         verify(mockRepo, times(0)).save(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
-    public void testRepoDataIntegrityExceptionThrowsEntityCreationException() {
+    public void testRepoDataIntegrityExceptionThrowsEntityCreationException() throws GroupCreationException {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 
@@ -116,7 +127,7 @@ public class BusinessGroupServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void testRepoDataIntegrityExceptionThrowsEntityCreationExceptionTwo() {
+    public void testRepoDataIntegrityExceptionThrowsEntityCreationExceptionTwo() throws GroupCreationException {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 
@@ -127,7 +138,7 @@ public class BusinessGroupServiceTest {
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    public void testRepoDataIntegrityExceptionThrowsDataIntegrityViolationException() {
+    public void testRepoDataIntegrityExceptionThrowsDataIntegrityViolationException() throws GroupCreationException {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 

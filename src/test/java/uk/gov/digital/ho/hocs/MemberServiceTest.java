@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
+import uk.gov.digital.ho.hocs.ingest.members.ListConsumerService;
 import uk.gov.digital.ho.hocs.model.House;
 import uk.gov.digital.ho.hocs.model.Member;
 
@@ -33,6 +34,9 @@ public class MemberServiceTest {
     @Mock
     private MemberRepository mockRepo;
 
+    @Mock
+    private ListConsumerService listConsumerService;
+
     @Captor
     private ArgumentCaptor<House> captor;
 
@@ -41,7 +45,7 @@ public class MemberServiceTest {
 
     @Before
     public void setUp() {
-        memberService = new MemberService(mockRepo);
+        memberService = new MemberService(mockRepo, listConsumerService);
     }
 
     @Test

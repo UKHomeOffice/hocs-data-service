@@ -293,6 +293,16 @@ public class UserServiceTest {
 
     }
 
+    @Test(expected = ListNotFoundException.class)
+    public void testPublishUsersByDepartmentNameNoUsers() throws AlfrescoPostException, ListNotFoundException {
+        when(mockUserRepo.findAllByDepartment("test_users")).thenReturn(new HashSet<User>());
+
+        service.publishUsersByDepartmentName("test_users");
+
+        verify(mockAlfrescoClient, times(0)).postRecords(anyList());
+
+    }
+
     private Set<User> generateTestUsers(int quantity) {
         Set<User> users = new HashSet<>();
         for (int i = 0; i < quantity; i++) {

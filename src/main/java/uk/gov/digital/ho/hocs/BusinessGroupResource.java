@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.dto.legacy.units.BusinessGroupRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.units.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
@@ -31,24 +32,7 @@ public class BusinessGroupResource {
         this.businessGroupService = businessGroupService;
     }
 
-    @RequestMapping(value = "/groups", method = RequestMethod.POST)
-    public ResponseEntity postGroups(@RequestParam("file") MultipartFile file) {
-        if (!file.isEmpty()) {
-            log.info("Parsing Group File - POST");
-            try {
-                Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
-                businessGroupService.createGroupsFromCSV(lines);
-                return ResponseEntity.ok().build();
-            } catch (EntityCreationException e) {
-                log.info("Groups not created");
-                log.info(e.getMessage());
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        return ResponseEntity.badRequest().build();
-    }
-
-    @RequestMapping(value = "/groups", method = RequestMethod.PUT)
+    @RequestMapping(value = "/groups", method = {RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity<UserRecord> putGroups(@RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             log.info("Parsing Group File - PUT");
@@ -56,7 +40,7 @@ public class BusinessGroupResource {
                 Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
                 businessGroupService.updateBusinessGroups(lines);
                 return ResponseEntity.ok().build();
-            } catch (EntityCreationException e) {
+            } catch (EntityCreationException | GroupCreationException e) {
                 log.info("Groups not created");
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
@@ -78,13 +62,12 @@ public class BusinessGroupResource {
         }
     }
 
-    //This is a create script, to be used once per new environment, maybe in the future this could just POST to alfresco directly.
-    @RequestMapping(value = "/groups/export", method = RequestMethod.GET)
+    @RequestMapping(value = "admin/groups/publish", method = RequestMethod.GET)
     public ResponseEntity<UnitCreateRecord> getLegacyUnitsByReference() {
         log.info("export groups requested");
         try {
-            UnitCreateRecord units = businessGroupService.getGroupsCreateList();
-            return ResponseEntity.ok(units);
+            businessGroupService.getGroupsCreateList();
+            return ResponseEntity.ok().build();
         } catch (ListNotFoundException e) {
             log.info("export groups not found");
             log.info(e.getMessage());

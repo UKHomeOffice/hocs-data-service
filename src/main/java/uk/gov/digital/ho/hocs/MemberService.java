@@ -9,7 +9,9 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.exception.IngestException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
+import uk.gov.digital.ho.hocs.ingest.members.ListConsumerService;
 import uk.gov.digital.ho.hocs.model.House;
 import uk.gov.digital.ho.hocs.model.Member;
 
@@ -21,8 +23,13 @@ public class MemberService {
 
     private final MemberRepository repo;
 
+    private final ListConsumerService listConsumerService;
+
     @Autowired
-    public MemberService(MemberRepository repo) { this.repo = repo; }
+    public MemberService(MemberRepository repo, ListConsumerService listConsumerService) {
+        this.repo = repo;
+        this.listConsumerService = listConsumerService;
+    }
 
     @Cacheable(value = "members", key = "#houseName")
     public House getHouseByName(String houseName) throws ListNotFoundException {
@@ -82,6 +89,15 @@ public class MemberService {
     @CacheEvict(value = "members", allEntries = true)
     public void clearCache(){
         log.info("All members cache cleared");
+    }
+
+
+    public void updateWebMemberLists() throws IngestException {
+        updateHouse(listConsumerService.createFromEuropeanParliamentAPI());
+        updateHouse(listConsumerService.createFromIrishParliamentAPI());
+        updateHouse(listConsumerService.createFromScottishParliamentAPI());
+        updateHouse(listConsumerService.createCommonsFromUKParliamentAPI());
+        updateHouse(listConsumerService.createLordsFromUKParliamentAPI());
     }
 
     private void saveMembers(House house) {

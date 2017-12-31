@@ -2,13 +2,18 @@ package uk.gov.digital.ho.hocs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
+import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.UserFileParser;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -45,6 +50,20 @@ public class UserResource {
             log.info("\"{}\" not found", group);
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/users/{group}/publish/", method = RequestMethod.GET)
+    public ResponseEntity<List<UserCreateRecord>> postUsersToAlfresco(@PathVariable("group") String group) {
+        try {
+            userService.publishUsersByDepartmentName(group);
+            return ResponseEntity.ok().build();
+
+        } catch (ListNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        } catch (AlfrescoPostException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

@@ -46,14 +46,6 @@ public class BusinessGroupService {
         return businessGroup;
     }
 
-    @CacheEvict(value = "groups", allEntries = true)
-    public void createGroupsFromCSV(Set<CSVBusinessGroupLine> lines) {
-        List<BusinessGroup> groups = buildBusinessGroups(lines);
-        if (!groups.isEmpty()) {
-            saveGroups(new HashSet<>(groups));
-        }
-    }
-
     @Cacheable(value = "groups", key = "all")
     public Set<BusinessGroup> getAllBusinessGroups() throws ListNotFoundException {
         Set<BusinessGroup> list = repo.findAllByDeletedIsFalse();
@@ -64,7 +56,7 @@ public class BusinessGroupService {
     }
 
     @CacheEvict(value = "groups", allEntries = true)
-    public void updateBusinessGroups(Set<CSVBusinessGroupLine> lines) {
+    public void updateBusinessGroups(Set<CSVBusinessGroupLine> lines) throws GroupCreationException {
         if(lines != null) {
             List<BusinessGroup> newGroups = buildBusinessGroups(lines);
             Set<BusinessGroup> jpaGroups = repo.findAll();
@@ -119,16 +111,12 @@ public class BusinessGroupService {
         log.info("All groups cache cleared");
     }
 
-    private static List<BusinessGroup> buildBusinessGroups(Set<CSVBusinessGroupLine> lines) {
+    private static List<BusinessGroup> buildBusinessGroups(Set<CSVBusinessGroupLine> lines) throws GroupCreationException {
         Map<BusinessGroup, Set<BusinessGroup>> units = new HashMap<>();
-        try {
-            for (CSVBusinessGroupLine line : lines) {
-                BusinessGroup unit = new BusinessGroup(line.getUnitDisplay(), line.getUnitReference());
-                units.putIfAbsent(unit, new HashSet<>());
-                units.get(unit).add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
-            }
-        } catch (GroupCreationException e) {
-            e.printStackTrace();
+        for (CSVBusinessGroupLine line : lines) {
+            BusinessGroup unit = new BusinessGroup(line.getUnitDisplay(), line.getUnitReference());
+            units.putIfAbsent(unit, new HashSet<>());
+            units.get(unit).add(new BusinessGroup(line.getTeamReference(), line.getTeamValue()));
         }
 
         List<BusinessGroup> businessGroups = new ArrayList<>();
