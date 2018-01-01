@@ -52,7 +52,7 @@ public class TopicsService {
            List<TopicGroup> newTopics = buildTopicGroups(lines, caseType);
            Set<TopicGroup> jpaTopics = repo.findAllByCaseType(caseType);
 
-           // Update existing topic groups
+           // Update existing topic teams
            jpaTopics.forEach(jpaTopic -> {
 
                if (newTopics.contains(jpaTopic)) {
@@ -84,7 +84,7 @@ public class TopicsService {
                }
            });
 
-           // Add new topic groups
+           // Add new topic teams
            newTopics.forEach(newTopicGroup -> {
                if (!jpaTopics.contains(newTopicGroup)) {
                    jpaTopics.add(newTopicGroup);

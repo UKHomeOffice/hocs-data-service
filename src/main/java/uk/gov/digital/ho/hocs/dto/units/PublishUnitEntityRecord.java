@@ -3,7 +3,8 @@ package uk.gov.digital.ho.hocs.dto.units;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessTeam;
+import uk.gov.digital.ho.hocs.model.BusinessUnit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class PublishUnitEntityRecord implements Serializable {
     @Getter
     private String teamRefName;
 
-    public static PublishUnitEntityRecord createUnit(BusinessGroup unit) {
+    public static PublishUnitEntityRecord createUnit(BusinessUnit unit) {
 
        String action = "addUnit";
        String unitDisplayName = unit.getDisplayName();
@@ -42,7 +43,7 @@ public class PublishUnitEntityRecord implements Serializable {
         return new PublishUnitEntityRecord(action, unitDisplayName, unitRefName, teamDisplayName, teamRefName);
     }
 
-    public static PublishUnitEntityRecord createTeam(BusinessGroup team, String unitReferenceName) {
+    public static PublishUnitEntityRecord createTeam(BusinessTeam team, String unitReferenceName) {
 
         String action = "addTeam";
         String unitDisplayName = null;
@@ -54,10 +55,10 @@ public class PublishUnitEntityRecord implements Serializable {
     }
 
     // Units and Teams are added at the same level, all in one manageGroups object.
-    public static List<PublishUnitEntityRecord> createGroups(BusinessGroup unit) {
+    public static List<PublishUnitEntityRecord> createGroups(BusinessUnit unit) {
         List<PublishUnitEntityRecord> list = new ArrayList<>();
         list.add(PublishUnitEntityRecord.createUnit(unit));
-        for (BusinessGroup team : unit.getSubGroups()) {
+        for (BusinessTeam team : unit.getTeams()) {
             list.add(PublishUnitEntityRecord.createTeam(team, unit.getReferenceName()));
         }
         return list;

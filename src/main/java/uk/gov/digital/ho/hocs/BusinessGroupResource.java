@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.dto.units.BusinessGroupRecord;
+import uk.gov.digital.ho.hocs.dto.units.BusinessUnitRecord;
 import uk.gov.digital.ho.hocs.dto.units.PublishUnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.units.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.ingest.units.UnitFileParser;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessUnit;
 
 import java.util.List;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class BusinessGroupResource {
             log.info("Parsing Group File - PUT");
             try {
                 Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
-                businessGroupService.updateBusinessGroups(lines);
+                businessGroupService.updateBusinessUnits(lines);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException | GroupCreationException e) {
                 log.info("Groups not created");
@@ -49,11 +49,11 @@ public class BusinessGroupResource {
     }
 
     @RequestMapping(value = {"/groups", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET)
-    public ResponseEntity<List<BusinessGroupRecord>> getGroups(){
+    public ResponseEntity<List<BusinessUnitRecord>> getGroups(){
         log.info("All Groups requested");
         try {
-            Set<BusinessGroup> groups = businessGroupService.getAllBusinessGroups();
-            return ResponseEntity.ok(groups.stream().map(BusinessGroupRecord::create).collect(Collectors.toList()));
+            Set<BusinessUnit> groups = businessGroupService.getAllBusinessUnits();
+            return ResponseEntity.ok(groups.stream().map(BusinessUnitRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
             log.info("\"All Groups\" not found");
             log.info(e.getMessage());
@@ -63,12 +63,12 @@ public class BusinessGroupResource {
 
     @RequestMapping(value = "/groups/publish", method = RequestMethod.GET)
     public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
-        log.info("export groups requested");
+        log.info("export teams requested");
         try {
             businessGroupService.getGroupsCreateList();
             return ResponseEntity.ok().build();
         } catch (ListNotFoundException e) {
-            log.info("export groups not found");
+            log.info("export teams not found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }

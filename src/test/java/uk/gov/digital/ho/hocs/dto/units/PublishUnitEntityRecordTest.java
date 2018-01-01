@@ -2,7 +2,8 @@ package uk.gov.digital.ho.hocs.dto.units;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessTeam;
+import uk.gov.digital.ho.hocs.model.BusinessUnit;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PublishUnitEntityRecordTest {
     @Test
     public void createTeam() throws Exception, GroupCreationException {
-        BusinessGroup group = new BusinessGroup("TeamDisp", "TeamRef");
+        BusinessTeam group = new BusinessTeam("TeamDisp", "TeamRef");
         PublishUnitEntityRecord entityRecord = PublishUnitEntityRecord.createTeam(group, "UnitRef");
 
         assertThat(entityRecord.getAction()).isEqualTo("addTeam");
@@ -25,7 +26,7 @@ public class PublishUnitEntityRecordTest {
 
     @Test
     public void createUnit() throws Exception, GroupCreationException {
-        BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
+        BusinessUnit group = new BusinessUnit("UnitDisp", "UnitRef");
         PublishUnitEntityRecord entityRecord = PublishUnitEntityRecord.createUnit(group);
 
         assertThat(entityRecord.getAction()).isEqualTo("addUnit");
@@ -37,13 +38,13 @@ public class PublishUnitEntityRecordTest {
 
     @Test
     public void createGroups() throws Exception, GroupCreationException {
-        BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
-        BusinessGroup subGroupOne = new BusinessGroup("SubUnitDisp1", "SubUnitRef");
-        BusinessGroup subGroupTwo = new BusinessGroup("SubUnitDisp2", "SubUnitRef");
-        Set<BusinessGroup> subGroups = new HashSet<>();
+        BusinessUnit group = new BusinessUnit("UnitDisp", "UnitRef");
+        BusinessTeam subGroupOne = new BusinessTeam("SubUnitDisp1", "SubUnitRef");
+        BusinessTeam subGroupTwo = new BusinessTeam("SubUnitDisp2", "SubUnitRef");
+        Set<BusinessTeam> subGroups = new HashSet<>();
         subGroups.add(subGroupOne);
         subGroups.add(subGroupTwo);
-        group.setSubGroups(subGroups);
+        group.setTeams(subGroups);
         List<PublishUnitEntityRecord> entityRecords = PublishUnitEntityRecord.createGroups(group);
 
         assertThat(entityRecords).hasSize(3);

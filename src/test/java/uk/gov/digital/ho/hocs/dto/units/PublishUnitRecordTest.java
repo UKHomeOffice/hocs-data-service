@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.dto.units;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessUnit;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,15 +13,15 @@ public class PublishUnitRecordTest {
 
     @Test
     public void createWithEntities() throws GroupCreationException {
-        Set<BusinessGroup> unitList = new HashSet<>();
-        unitList.add(new BusinessGroup("disp"));
+        Set<BusinessUnit> unitList = new HashSet<>();
+        unitList.add(new BusinessUnit("disp"));
         PublishUnitRecord record = PublishUnitRecord.create(unitList);
         assertThat(record.getManageGroups()).hasSize(1);
     }
 
     @Test
     public void createWithoutEntities() {
-        Set<BusinessGroup> unitList = new HashSet<>();
+        Set<BusinessUnit> unitList = new HashSet<>();
         PublishUnitRecord record = PublishUnitRecord.create(unitList);
         assertThat(record.getManageGroups()).hasSize(0);
     }

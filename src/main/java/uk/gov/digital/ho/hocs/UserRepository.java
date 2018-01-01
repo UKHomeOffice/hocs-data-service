@@ -13,7 +13,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
     Set<User> findAllByDepartment(String department);
 
     @Query("select u from User u " +
-            "join u.groups g " +
-            "where g.referenceName = :refName")
+            "join u.teams t " +
+            "where t.referenceName = :refName")
     Set<User> findAllByBusinessGroupReference(@Param("refName") String refName);
 }

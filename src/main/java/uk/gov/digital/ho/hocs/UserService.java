@@ -15,7 +15,7 @@ import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.util.*;
@@ -96,11 +96,11 @@ public class UserService {
         for (CSVUserLine line : lines) {
             User user = new User(line.getFirst(), line.getLast(), line.getEmail(), line.getEmail(), department);
 
-            Set<BusinessGroup> groups = new HashSet<>();
+            Set<BusinessTeam> groups = new HashSet<>();
             for(String group : line.getGroups()) {
-                groups.add(groupService.getGroupByReference(group));
+                groups.add(groupService.getTeamByReference(group));
             }
-            user.setGroups(groups);
+            user.setTeams(groups);
             users.add(user);
         }
         return users;

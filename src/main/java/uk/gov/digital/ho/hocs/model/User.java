@@ -48,13 +48,13 @@ public class User {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "users_groups",
+            name = "users_teams",
             joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+            inverseJoinColumns = { @JoinColumn(name = "team_id") }
     )
     @Getter
     @Setter
-    Set<BusinessGroup> groups = new HashSet<>();
+    Set<BusinessTeam> teams = new HashSet<>();
 
     public User(String firstName, String lastName, String userName, String emailAddress, String department) {
         this.firstName = firstName;
