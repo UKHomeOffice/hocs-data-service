@@ -2,13 +2,6 @@
   "name": "TopicList",
   "entities" : [ {
     "text": "TopText",
-    "value": "TOP_VAL",
-    "subEntities" : [ {
-      "text": "SubText",
-      "value": "SUB_VAL"
-    } ],
-    "properties" : {
-      "Key": "Value"
-    }
+    "value": "TOP_VAL"
   } ]
 }

@@ -19,14 +19,14 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class MemberService {
+public class HouseService {
 
-    private final MemberRepository repo;
+    private final HouseRepository repo;
 
     private final ListConsumerService listConsumerService;
 
     @Autowired
-    public MemberService(MemberRepository repo, ListConsumerService listConsumerService) {
+    public HouseService(HouseRepository repo, ListConsumerService listConsumerService) {
         this.repo = repo;
         this.listConsumerService = listConsumerService;
     }
@@ -60,22 +60,22 @@ public class MemberService {
                 Set<Member> newMembers = newHouse.getMembers();
                 Set<Member> jpaMembers = jpaHouse.getMembers();
 
-                // Update existing topic items
+                // Update existing members
                 jpaMembers.forEach(item -> {
                     item.setDeleted(!newMembers.contains(item));
                 });
 
-                // Add new topic items
-                newMembers.forEach(newTopic -> {
-                    if (!jpaMembers.contains(newTopic)) {
-                        jpaMembers.add(newTopic);
+                // Add new members
+                newMembers.forEach(newMember -> {
+                    if (!jpaMembers.contains(newMember)) {
+                        jpaMembers.add(newMember);
                     }
                 });
 
                 jpaHouse.setMembers(jpaMembers);
 
-                // Set the topic group to deleted if there are no visible topic items
-                jpaHouse.setDeleted(jpaHouse.getMembers().stream().allMatch(topic -> topic.getDeleted()));
+                // Set the house to deleted if there are no visible members
+                jpaHouse.setDeleted(jpaHouse.getMembers().stream().allMatch(member -> member.getDeleted()));
             } else {
                 jpaHouse = newHouse;
             }

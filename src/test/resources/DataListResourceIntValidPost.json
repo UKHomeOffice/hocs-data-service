@@ -3,13 +3,7 @@
   "entities": [
     {
       "text": "Entity",
-      "value": "Value 1",
-      "subEntities": [
-        {
-          "text": "SubEntity",
-          "value": "Value 2"
-        }
-      ]
+      "value": "Value 1"
     }
   ]
 }

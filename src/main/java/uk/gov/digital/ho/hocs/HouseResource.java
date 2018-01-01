@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-public class MemberResource {
-    private final MemberService memberService;
+public class HouseResource {
+    private final HouseService houseService;
 
     @Autowired
-    public MemberResource(MemberService memberService) {
-        this.memberService = memberService;
+    public HouseResource(HouseService houseService) {
+        this.houseService = houseService;
     }
 
     @RequestMapping(value = "/houses", method = {RequestMethod.PUT, RequestMethod.POST})
@@ -31,7 +31,7 @@ public class MemberResource {
         if (house != null) {
             log.info("Parsing House {}", house.getName());
             try {
-                memberService.updateHouse(house);
+                houseService.updateHouse(house);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException e) {
                 log.info("{} House not created", house.getName());
@@ -45,7 +45,7 @@ public class MemberResource {
     @RequestMapping(value = "/houses/refresh", method = RequestMethod.GET)
     public ResponseEntity getFromApi() {
         try {
-            memberService.updateWebMemberLists();
+            houseService.updateWebMemberLists();
             return ResponseEntity.ok().build();
         } catch (IngestException e) {
             e.printStackTrace();
@@ -57,7 +57,7 @@ public class MemberResource {
     public ResponseEntity<House> getHouseByName(@PathVariable("name") String name) {
         log.info("House \"{}\" requested", name);
         try {
-            House house = memberService.getHouseByName(name);
+            House house = houseService.getHouseByName(name);
             return ResponseEntity.ok(house);
         } catch (ListNotFoundException e) {
             log.info("House \"{}\" not found", name);
@@ -70,7 +70,7 @@ public class MemberResource {
     public ResponseEntity<Set<House>> getAllHouses() {
         log.info(" All Houses requested");
         try {
-            Set<House> houses = memberService.getAllHouses();
+            Set<House> houses = houseService.getAllHouses();
             return ResponseEntity.ok(houses);
         } catch (ListNotFoundException e) {
             log.info("Houses not found");
@@ -86,7 +86,7 @@ public class MemberResource {
 
         log.info("House \"{}\" requested", name);
         try {
-            Set<House> houses = memberService.getAllHouses();
+            Set<House> houses = houseService.getAllHouses();
             List<DataListEntityRecord> dataListEntityRecords = houses.stream().map(h -> translateToDataListRecord(h)).flatMap(l -> l.stream()).collect(Collectors.toList());
             DataListRecord list = new DataListRecord("ukvi_member_list", dataListEntityRecords );
             return ResponseEntity.ok(list);

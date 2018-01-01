@@ -10,19 +10,19 @@ public class AdminService {
 
     private final BusinessGroupService businessGroupService;
     private final DataListService dataListService;
-    private final MemberService memberService;
+    private final HouseService houseService;
     private final TopicsService topicsService;
     private final UserService userService;
 
     @Autowired
     public AdminService(BusinessGroupService businessGroupService,
                         DataListService dataListService,
-                        MemberService memberService,
+                        HouseService houseService,
                         TopicsService topicsService,
                         UserService userService) {
         this.businessGroupService = businessGroupService;
         this.dataListService = dataListService;
-        this.memberService = memberService;
+        this.houseService = houseService;
         this.topicsService = topicsService;
         this.userService = userService;
     }
@@ -30,7 +30,7 @@ public class AdminService {
     public void clearCache() {
         businessGroupService.clearCache();
         dataListService.clearCache();
-        memberService.clearCache();
+        houseService.clearCache();
         topicsService.clearCache();
         userService.clearCache();
     }

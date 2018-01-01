@@ -7,7 +7,7 @@ import uk.gov.digital.ho.hocs.model.House;
 import java.util.Set;
 
 @Repository
-public interface MemberRepository extends CrudRepository<House, Long> {
+public interface HouseRepository extends CrudRepository<House, Long> {
 
     House findOneByName(String name);
     House findOneByNameAndDeletedIsFalse(String name);

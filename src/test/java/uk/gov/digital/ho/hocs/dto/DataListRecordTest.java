@@ -2,10 +2,9 @@ package uk.gov.digital.ho.hocs.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.model.DataList;
-import uk.gov.digital.ho.hocs.model.DataListEntity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,8 +12,8 @@ public class DataListRecordTest {
 
     @Test
     public void createWithNoEntities() throws Exception {
-        Set<DataListEntity> entities = new HashSet<>();
-        DataList datalist = new DataList("TEST List", entities);
+        List<DataListEntityRecord> entities = new ArrayList<>();
+        DataList datalist = new DataList(new DataListRecord("TEST List", entities));
         DataListRecord record = DataListRecord.create(datalist);
 
         assertThat(record.getName()).isEqualTo(datalist.getName());
@@ -23,10 +22,10 @@ public class DataListRecordTest {
 
     @Test
     public void createWithEntities() throws Exception {
-        Set<DataListEntity> entities = new HashSet<>();
-        entities.add(new DataListEntity("entity1"));
+        List<DataListEntityRecord> entities = new ArrayList<>();
+        entities.add(new DataListEntityRecord("entity1"));
 
-        DataList datalist = new DataList("TEST List", entities);
+        DataList datalist = new DataList(new DataListRecord("TEST List", entities));
         DataListRecord record = DataListRecord.create(datalist);
 
         assertThat(record.getName()).isEqualTo(datalist.getName());
