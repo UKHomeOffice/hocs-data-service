@@ -9,11 +9,11 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "topic_groups")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id", "deleted", "topicListItems"})
+@EqualsAndHashCode(of = {"name", "caseType"})
 public class TopicGroup {
 
     @Id

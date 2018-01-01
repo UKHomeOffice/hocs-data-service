@@ -59,12 +59,12 @@ public class TopicsResource {
 
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
     public ResponseEntity<List<TopicGroupRecord>> getAllTopics() {
-        log.info("List \"Legacy TopicList\" requested");
+        log.info("List \"Legacy TopicGroup\" requested");
         try {
             Set<TopicGroup> topics = topicsService.getAllTopics();
             return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
-            log.info("List \"Legacy TopicList\" not found");
+            log.info("List \"Legacy TopicGroup\" not found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }

@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE INDEX idx_users_user_name ON users (user_name);
 CREATE INDEX idx_users_department ON users (department);
+CREATE INDEX idx_users_deleted ON users (deleted);
+
 
 CREATE TABLE IF NOT EXISTS groups
 (
@@ -28,8 +30,10 @@ CREATE TABLE IF NOT EXISTS groups
     CONSTRAINT fk_parent_group_id FOREIGN KEY (parent_group_id) REFERENCES groups(id)
 );
 
-CREATE INDEX idx_reference_name ON groups (reference_name);
-CREATE INDEX idx_parent_group_id ON groups (parent_group_id);
+CREATE INDEX idx_group_reference_name ON groups (reference_name);
+CREATE INDEX idx_group_parent_group_id ON groups (parent_group_id);
+CREATE INDEX idx_group_deleted ON groups (deleted);
+
 
 CREATE TABLE IF NOT EXISTS users_groups
 (

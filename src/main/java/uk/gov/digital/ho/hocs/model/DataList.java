@@ -4,18 +4,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "lists")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
-@EqualsAndHashCode(of = "name")
+@EqualsAndHashCode(of = {"name"})
 public class DataList {
 
     @Id

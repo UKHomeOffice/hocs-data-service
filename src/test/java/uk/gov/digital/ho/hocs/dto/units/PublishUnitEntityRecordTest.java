@@ -10,11 +10,11 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnitCreateEntityRecordTest {
+public class PublishUnitEntityRecordTest {
     @Test
     public void createTeam() throws Exception, GroupCreationException {
         BusinessGroup group = new BusinessGroup("TeamDisp", "TeamRef");
-        UnitCreateEntityRecord entityRecord = UnitCreateEntityRecord.createTeam(group, "UnitRef");
+        PublishUnitEntityRecord entityRecord = PublishUnitEntityRecord.createTeam(group, "UnitRef");
 
         assertThat(entityRecord.getAction()).isEqualTo("addTeam");
         assertThat(entityRecord.getTeamDisplayName()).isEqualTo("TeamDisp");
@@ -26,7 +26,7 @@ public class UnitCreateEntityRecordTest {
     @Test
     public void createUnit() throws Exception, GroupCreationException {
         BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
-        UnitCreateEntityRecord entityRecord = UnitCreateEntityRecord.createUnit(group);
+        PublishUnitEntityRecord entityRecord = PublishUnitEntityRecord.createUnit(group);
 
         assertThat(entityRecord.getAction()).isEqualTo("addUnit");
         assertThat(entityRecord.getTeamDisplayName()).isEqualTo(null);
@@ -44,7 +44,7 @@ public class UnitCreateEntityRecordTest {
         subGroups.add(subGroupOne);
         subGroups.add(subGroupTwo);
         group.setSubGroups(subGroups);
-        List<UnitCreateEntityRecord> entityRecords = UnitCreateEntityRecord.createGroups(group);
+        List<PublishUnitEntityRecord> entityRecords = PublishUnitEntityRecord.createGroups(group);
 
         assertThat(entityRecords).hasSize(3);
         assertThat(entityRecords.get(0).getAction()).isEqualTo("addUnit");
@@ -55,7 +55,7 @@ public class UnitCreateEntityRecordTest {
 
     @Test
     public void getStrings() throws Exception {
-        UnitCreateEntityRecord entityRecord = new UnitCreateEntityRecord("addTeam", "UnitDisp", "UnitRef", "TeamDisp", "TeamRef");
+        PublishUnitEntityRecord entityRecord = new PublishUnitEntityRecord("addTeam", "UnitDisp", "UnitRef", "TeamDisp", "TeamRef");
 
         assertThat(entityRecord.getAction()).isEqualTo("addTeam");
         assertThat(entityRecord.getTeamDisplayName()).isEqualTo("TeamDisp");

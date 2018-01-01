@@ -4,18 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
 public class TopicGroupRecord {
 
+    @Getter
     private String name;
 
+    @Getter
     private String caseType;
 
-    private List<TopicRecord> topicListItems;
+    @Getter
+    private List<TopicRecord> topicListItems = new ArrayList<>();
 
     public static TopicGroupRecord create(TopicGroup groupList) {
         return create(groupList, false);

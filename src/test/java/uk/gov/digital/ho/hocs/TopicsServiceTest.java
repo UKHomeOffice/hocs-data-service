@@ -171,13 +171,13 @@ public class TopicsServiceTest {
         topicsService.updateTopics(lines, "Dept");
 
         verify(mockRepo).save(captor.capture());
-        final Set<TopicGroup> topicGroupList = captor.getValue();
+        final Set<TopicGroup> topicListGroup = captor.getValue();
 
         verify(mockRepo, times(1)).save(anyList());
-        assertThat(topicGroupList).isNotNull();
-        assertThat(topicGroupList).hasSize(2);
+        assertThat(topicListGroup).isNotNull();
+        assertThat(topicListGroup).hasSize(2);
 
-        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        TopicGroup topicGroup1 = getTopicGroupByName(topicListGroup,"First1");
         assertThat(topicGroup1).isNotNull();
         assertThat(topicGroup1.getDeleted()).isFalse();
 
@@ -185,7 +185,7 @@ public class TopicsServiceTest {
         assertThat(topic).isNotNull();
         assertThat(topic.getDeleted()).isFalse();
 
-        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        TopicGroup topicGroup2 = getTopicGroupByName(topicListGroup,"First2");
         assertThat(topicGroup2).isNotNull();
         assertThat(topicGroup2.getDeleted()).isFalse();
 
@@ -205,13 +205,13 @@ public class TopicsServiceTest {
         topicsService.updateTopics(lines, "Dept");
 
         verify(mockRepo).save(captor.capture());
-        final Set<TopicGroup> topicGroupList = captor.getValue();
+        final Set<TopicGroup> topicListGroup = captor.getValue();
 
         verify(mockRepo, times(1)).save(anyList());
-        assertThat(topicGroupList).isNotNull();
-        assertThat(topicGroupList).hasSize(1);
+        assertThat(topicListGroup).isNotNull();
+        assertThat(topicListGroup).hasSize(1);
 
-        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        TopicGroup topicGroup1 = getTopicGroupByName(topicListGroup,"First1");
         assertThat(topicGroup1).isNotNull();
         assertThat(topicGroup1.getDeleted()).isFalse();
 
@@ -235,13 +235,13 @@ public class TopicsServiceTest {
         topicsService.updateTopics(lines, "Dept");
 
         verify(mockRepo).save(captor.capture());
-        final Set<TopicGroup> topicGroupList = captor.getValue();
+        final Set<TopicGroup> topicListGroup = captor.getValue();
 
         verify(mockRepo, times(1)).save(anyList());
-        assertThat(topicGroupList).isNotNull();
-        assertThat(topicGroupList).hasSize(2);
+        assertThat(topicListGroup).isNotNull();
+        assertThat(topicListGroup).hasSize(2);
 
-        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        TopicGroup topicGroup1 = getTopicGroupByName(topicListGroup,"First1");
         assertThat(topicGroup1).isNotNull();
         assertThat(topicGroup1.getDeleted()).isFalse();
 
@@ -249,7 +249,7 @@ public class TopicsServiceTest {
         assertThat(topic).isNotNull();
         assertThat(topic.getDeleted()).isFalse();
 
-        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        TopicGroup topicGroup2 = getTopicGroupByName(topicListGroup,"First2");
         assertThat(topicGroup2).isNotNull();
         assertThat(topicGroup2.getDeleted()).isTrue();
 
@@ -272,13 +272,13 @@ public class TopicsServiceTest {
         topicsService.updateTopics(lines, "Dept");
 
         verify(mockRepo).save(captor.capture());
-        final Set<TopicGroup> topicGroupList = captor.getValue();
+        final Set<TopicGroup> topicListGroup = captor.getValue();
 
         verify(mockRepo, times(1)).save(anyList());
-        assertThat(topicGroupList).isNotNull();
-        assertThat(topicGroupList).hasSize(2);
+        assertThat(topicListGroup).isNotNull();
+        assertThat(topicListGroup).hasSize(2);
 
-        TopicGroup topicGroup1 = getTopicGroupByName(topicGroupList,"First1");
+        TopicGroup topicGroup1 = getTopicGroupByName(topicListGroup,"First1");
         assertThat(topicGroup1).isNotNull();
         assertThat(topicGroup1.getDeleted()).isFalse();
 
@@ -286,7 +286,7 @@ public class TopicsServiceTest {
         assertThat(topic).isNotNull();
         assertThat(topic.getDeleted()).isFalse();
 
-        TopicGroup topicGroup2 = getTopicGroupByName(topicGroupList,"First2");
+        TopicGroup topicGroup2 = getTopicGroupByName(topicListGroup,"First2");
         assertThat(topicGroup2).isNotNull();
         assertThat(topicGroup2.getDeleted()).isFalse();
 

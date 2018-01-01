@@ -9,8 +9,8 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.dto.users.UserCreateRecord;
-import uk.gov.digital.ho.hocs.dto.users.UserRecord;
+import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserSetRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -37,12 +37,12 @@ public class UserService {
     }
 
     @Cacheable(value = "usersByDeptName", key = "#departmentRef")
-    public UserCreateRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
+    public PublishUserListRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByDepartment(departmentRef);
         if(users.isEmpty()){
             throw new ListNotFoundException();
         }
-        return UserCreateRecord.create(users);
+        return PublishUserListRecord.create(users);
     }
 
     public void publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {
@@ -54,12 +54,12 @@ public class UserService {
     }
 
     @Cacheable(value = "usersByGroupName", key = "#groupRef")
-    public UserRecord getUsersByGroupName(String groupRef) throws ListNotFoundException {
+    public UserSetRecord getUsersByGroupName(String groupRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByBusinessGroupReference(groupRef);
         if(users.isEmpty()){
             throw new ListNotFoundException();
         }
-        return UserRecord.create(users);
+        return UserSetRecord.create(users);
     }
 
     //TODO: this behaviour is wrong, we should publish the update, deleting the accounts from alfresco, should also unallocate cases too.

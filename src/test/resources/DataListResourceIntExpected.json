@@ -1,5 +1,5 @@
 {
-  "name": "TopicList",
+  "name": "TopicGroup",
   "entities" : [ {
     "text": "TopText",
     "value": "TOP_VAL"

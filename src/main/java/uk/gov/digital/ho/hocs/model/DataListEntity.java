@@ -1,16 +1,15 @@
 package uk.gov.digital.ho.hocs.model;
 
 import lombok.*;
-import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "entities")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of = {"text", "value"})
+@EqualsAndHashCode(of = {"text", "value'"})
 public class DataListEntity {
 
     @Id

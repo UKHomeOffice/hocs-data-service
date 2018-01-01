@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
@@ -27,14 +27,11 @@ public class DataListResourceTest {
     @Mock
     private DataListService dataListService;
 
-    @Mock
-    private HouseService houseService;
-
     private DataListResource dataListResource;
 
     @Before
     public void setUp() {
-        dataListResource = new DataListResource(dataListService, houseService);
+        dataListResource = new DataListResource(dataListService);
     }
 
     @Test
@@ -62,7 +59,7 @@ public class DataListResourceTest {
 
     @Test
     public void shouldReturnBadRequestWhenUnableCreateDep() throws EntityCreationException {
-        DataList emptyDataList = new DataList();
+        DataList emptyDataList = new DataList(new DataListRecord("text", new ArrayList<>()));
         doThrow(new EntityCreationException("")).when(dataListService).updateDataList(emptyDataList);
 
         ResponseEntity httpResponse = dataListResource.postList(DataListRecord.create(emptyDataList));
@@ -72,7 +69,7 @@ public class DataListResourceTest {
 
     @Test
     public void shouldReturnOKtWhenAbleCreateDep() throws EntityCreationException {
-        DataList emptyDataList = new DataList();
+        DataList emptyDataList = new DataList(new DataListRecord("text", new ArrayList<>()));
         ResponseEntity httpResponse = dataListResource.postList(DataListRecord.create(emptyDataList));
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(dataListService).updateDataList(emptyDataList);

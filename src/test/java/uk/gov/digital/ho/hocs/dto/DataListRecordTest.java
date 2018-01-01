@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.hocs.dto;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
 import uk.gov.digital.ho.hocs.model.DataList;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class DataListRecordTest {
     @Test
     public void createWithEntities() throws Exception {
         List<DataListEntityRecord> entities = new ArrayList<>();
-        entities.add(new DataListEntityRecord("entity1"));
+        entities.add(new DataListEntityRecord("entity1", "entity1"));
 
         DataList datalist = new DataList(new DataListRecord("TEST List", entities));
         DataListRecord record = DataListRecord.create(datalist);

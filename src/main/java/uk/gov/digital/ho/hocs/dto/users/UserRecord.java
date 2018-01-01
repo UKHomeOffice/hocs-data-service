@@ -5,16 +5,23 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.io.Serializable;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
 public class UserRecord implements Serializable {
-    private Set<UserEntityRecord> users;
 
-    public static UserRecord create(Set<User> list) {
-        Set<UserEntityRecord> users = list.stream().map(UserEntityRecord::create).collect(Collectors.toSet());
-        return new UserRecord(users);
+    @Getter
+    private String userName;
+
+    @Getter
+    private String firstName;
+
+    @Getter
+    private String lastName;
+
+    @Getter
+    private String email;
+
+    public static UserRecord create(User user) {
+        return new UserRecord(user.getUserName(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
     }
 }

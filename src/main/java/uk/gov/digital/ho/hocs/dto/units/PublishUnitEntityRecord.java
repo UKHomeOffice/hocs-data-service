@@ -10,24 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-@Getter
-public class UnitCreateEntityRecord implements Serializable {
+public class PublishUnitEntityRecord implements Serializable {
 
+    @Getter
     private String action;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Getter
     private String unitDisplayName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Getter
     private String unitRefName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Getter
     private String teamDisplayName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Getter
     private String teamRefName;
 
-    public static UnitCreateEntityRecord createUnit(BusinessGroup unit) {
+    public static PublishUnitEntityRecord createUnit(BusinessGroup unit) {
 
        String action = "addUnit";
        String unitDisplayName = unit.getDisplayName();
@@ -35,10 +39,10 @@ public class UnitCreateEntityRecord implements Serializable {
        String teamDisplayName = null;
        String teamRefName = null;
 
-        return new UnitCreateEntityRecord(action, unitDisplayName, unitRefName, teamDisplayName, teamRefName);
+        return new PublishUnitEntityRecord(action, unitDisplayName, unitRefName, teamDisplayName, teamRefName);
     }
 
-    public static UnitCreateEntityRecord createTeam(BusinessGroup team, String unitReferenceName) {
+    public static PublishUnitEntityRecord createTeam(BusinessGroup team, String unitReferenceName) {
 
         String action = "addTeam";
         String unitDisplayName = null;
@@ -46,15 +50,15 @@ public class UnitCreateEntityRecord implements Serializable {
         String teamDisplayName = team.getDisplayName();
         String teamRefName = team.getReferenceName();
 
-        return new UnitCreateEntityRecord(action, unitDisplayName, unitRefName, teamDisplayName, teamRefName);
+        return new PublishUnitEntityRecord(action, unitDisplayName, unitRefName, teamDisplayName, teamRefName);
     }
 
     // Units and Teams are added at the same level, all in one manageGroups object.
-    public static List<UnitCreateEntityRecord> createGroups(BusinessGroup unit) {
-        List<UnitCreateEntityRecord> list = new ArrayList<>();
-        list.add(UnitCreateEntityRecord.createUnit(unit));
+    public static List<PublishUnitEntityRecord> createGroups(BusinessGroup unit) {
+        List<PublishUnitEntityRecord> list = new ArrayList<>();
+        list.add(PublishUnitEntityRecord.createUnit(unit));
         for (BusinessGroup team : unit.getSubGroups()) {
-            list.add(UnitCreateEntityRecord.createTeam(team, unit.getReferenceName()));
+            list.add(PublishUnitEntityRecord.createTeam(team, unit.getReferenceName()));
         }
         return list;
     }

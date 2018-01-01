@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserCreateEntityRecordTest {
+public class PublishUserRecordTest {
     @Test
     public void createUser() throws Exception, GroupCreationException {
 
@@ -22,7 +22,7 @@ public class UserCreateEntityRecordTest {
 
         User user = new User("first", "last", "user","email", "Dept");
         user.setGroups(groups);
-        UserCreateEntityRecord entityRecord = UserCreateEntityRecord.create(user);
+        PublishUserRecord entityRecord = PublishUserRecord.create(user);
 
         assertThat(entityRecord.getFirstName()).isEqualTo("first");
         assertThat(entityRecord.getLastName()).isEqualTo("last");
@@ -36,7 +36,7 @@ public class UserCreateEntityRecordTest {
     public void getStrings() throws Exception {
         List<String> groups = new ArrayList<>();
         groups.add("group");
-        UserCreateEntityRecord entityRecord = new UserCreateEntityRecord("first", "last", "user", "email", "pass", groups);
+        PublishUserRecord entityRecord = new PublishUserRecord("first", "last", "user", "email", "pass", groups);
 
         assertThat(entityRecord.getFirstName()).isEqualTo("first");
         assertThat(entityRecord.getLastName()).isEqualTo("last");

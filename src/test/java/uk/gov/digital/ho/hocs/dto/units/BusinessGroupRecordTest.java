@@ -17,7 +17,7 @@ public class BusinessGroupRecordTest {
 
         BusinessGroup group = new BusinessGroup("Disp", "Auth");
         Set<BusinessGroup> units = new HashSet<>();
-        units.add(new BusinessGroup());
+        units.add(new BusinessGroup("display"));
         group.setSubGroups(units);
         BusinessGroupRecord unit = BusinessGroupRecord.create(group);
 

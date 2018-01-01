@@ -1,7 +1,6 @@
-package uk.gov.digital.ho.hocs.dto.legacy.topics;
+package uk.gov.digital.ho.hocs.dto.topics;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.dto.topics.TopicRecord;
 import uk.gov.digital.ho.hocs.model.Topic;
 
 import static org.assertj.core.api.Assertions.assertThat;

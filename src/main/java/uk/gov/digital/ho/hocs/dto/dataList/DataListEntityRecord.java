@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto;
+package uk.gov.digital.ho.hocs.dto.dataList;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -8,19 +8,19 @@ import uk.gov.digital.ho.hocs.model.Member;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
-@Getter
 public class DataListEntityRecord implements Serializable {
 
+    @Getter
     private String text;
 
+    @Getter
     private String value;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Getter
     private List<DataListEntityRecordProperty> properties = new ArrayList<>();
 
 
@@ -28,6 +28,7 @@ public class DataListEntityRecord implements Serializable {
         return new DataListEntityRecord(dle.getText(), dle.getValue(), new ArrayList<>());
     }
 
+    @Deprecated()
     public static DataListEntityRecord create(Member dle, String houseName) {
 
         List<DataListEntityRecordProperty> properties = new ArrayList<>();
@@ -36,20 +37,9 @@ public class DataListEntityRecord implements Serializable {
         return new DataListEntityRecord(dle.getDisplayName(), dle.getReferenceName(), properties);
     }
 
-    public DataListEntityRecord(String text) {
-        this(text, text);
-    }
-
+    // This can be removed once we remove the properties field. (see above)
     public DataListEntityRecord(String text, String value){
         this.text = text;
         this.value = value;
-    }
-
-    public Map<String, String> getProperties() {
-        Map<String, String> propMap = new HashMap<>();
-        for (DataListEntityRecordProperty property: this.properties) {
-            propMap.put(property.getKey(), property.getValue());
-        }
-        return propMap;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.dto.units.UnitCreateRecord;
+import uk.gov.digital.ho.hocs.dto.units.PublishUnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -27,10 +27,10 @@ public class BusinessGroupService {
         this.repo = repo;
     }
 
-    public UnitCreateRecord getGroupsCreateList() throws ListNotFoundException {
+    public PublishUnitRecord getGroupsCreateList() throws ListNotFoundException {
         try {
             Set<BusinessGroup> list = repo.findAll();
-            return UnitCreateRecord.create(list);
+            return PublishUnitRecord.create(list);
         } catch (NullPointerException e) {
             throw new ListNotFoundException();
         }

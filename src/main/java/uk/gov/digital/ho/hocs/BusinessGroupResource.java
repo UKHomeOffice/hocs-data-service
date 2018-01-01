@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.dto.units.BusinessGroupRecord;
-import uk.gov.digital.ho.hocs.dto.units.UnitCreateRecord;
-import uk.gov.digital.ho.hocs.dto.users.UserRecord;
+import uk.gov.digital.ho.hocs.dto.units.PublishUnitRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -33,7 +32,7 @@ public class BusinessGroupResource {
     }
 
     @RequestMapping(value = "/groups", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity<UserRecord> putGroups(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity putGroups(@RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             log.info("Parsing Group File - PUT");
             try {
@@ -62,8 +61,8 @@ public class BusinessGroupResource {
         }
     }
 
-    @RequestMapping(value = "admin/groups/publish", method = RequestMethod.GET)
-    public ResponseEntity<UnitCreateRecord> getLegacyUnitsByReference() {
+    @RequestMapping(value = "/groups/publish", method = RequestMethod.GET)
+    public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
         log.info("export groups requested");
         try {
             businessGroupService.getGroupsCreateList();

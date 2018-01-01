@@ -7,11 +7,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "topic")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id", "deleted", "parentTopic"})
+@EqualsAndHashCode(of = {"name", "topicUnit", "topicTeam"})
 public class Topic {
 
     @Id

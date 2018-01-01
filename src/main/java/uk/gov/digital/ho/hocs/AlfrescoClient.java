@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.dto.users.UserCreateEntityRecord;
-import uk.gov.digital.ho.hocs.dto.users.UserCreateRecord;
+import uk.gov.digital.ho.hocs.dto.users.PublishUserRecord;
+import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.model.User;
 
@@ -38,7 +38,7 @@ public class AlfrescoClient {
 
     public void postRecords(List<User> users) throws AlfrescoPostException {
 
-        List<UserCreateRecord> userList = new ArrayList<>();
+        List<PublishUserListRecord> userList = new ArrayList<>();
 
         for (int i = 0; i < users.size(); i += CHUNK_SIZE) {
 
@@ -46,24 +46,24 @@ public class AlfrescoClient {
             for (int j = i; j < i + CHUNK_SIZE && j < users.size(); j++) {
                 usersInChunk.add(users.get(j));
             }
-            userList.add(UserCreateRecord.create(new HashSet<>(usersInChunk)));
+            userList.add(PublishUserListRecord.create(new HashSet<>(usersInChunk)));
         }
 
         postBatchedRecords(userList);
     }
 
-    private void postBatchedRecords(List<UserCreateRecord> recordList) throws AlfrescoPostException {
+    private void postBatchedRecords(List<PublishUserListRecord> recordList) throws AlfrescoPostException {
 
         final String url = API_HOST + API_ENDPOINT_USERS;
 
         int batch = 1;
 
-        for (UserCreateRecord records : recordList) {
+        for (PublishUserListRecord records : recordList) {
 
             log.info("Sending batch number: " + batch + " of " + recordList.size());
 
-            UserCreateRecord asRecord = (UserCreateRecord) records;
-            Set<UserCreateEntityRecord> users = asRecord.getUsers();
+            PublishUserListRecord asRecord = (PublishUserListRecord) records;
+            Set<PublishUserRecord> users = asRecord.getUsers();
             users.stream().forEach(i -> log.info("Sending user -> " + i.getEmail()));
 
             int statusCode = postRequest(url, records).getStatusCodeValue();

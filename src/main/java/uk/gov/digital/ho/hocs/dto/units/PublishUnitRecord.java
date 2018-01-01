@@ -11,17 +11,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
-public class UnitCreateRecord implements Serializable {
-    private List<UnitCreateEntityRecord> manageGroups;
+public class PublishUnitRecord implements Serializable {
 
-    public static UnitCreateRecord create(Set<BusinessGroup> list) {
-        List<UnitCreateEntityRecord> groups = list.stream()
+    @Getter
+    private List<PublishUnitEntityRecord> manageGroups;
+
+    public static PublishUnitRecord create(Set<BusinessGroup> list) {
+        List<PublishUnitEntityRecord> groups = list.stream()
                 .filter(m -> m.getParentGroup() == null)
-                .map(UnitCreateEntityRecord::createGroups)
+                .map(PublishUnitEntityRecord::createGroups)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        return new UnitCreateRecord(groups);
+        return new PublishUnitRecord(groups);
     }
 
 }
