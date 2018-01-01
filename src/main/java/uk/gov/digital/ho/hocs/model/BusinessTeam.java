@@ -12,10 +12,10 @@ import java.util.Set;
 
 @NoArgsConstructor
 @Entity
-@Table(name = "groups")
+@Table(name = "teams")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"displayName", "referenceName"})
-public class BusinessGroup {
+public class BusinessTeam {
 
     @Id
     @Column(name = "id")
@@ -30,31 +30,25 @@ public class BusinessGroup {
     @Getter
     private String referenceName;
 
-    @Column(name = "parent_group_id", nullable = false)
+    @Column(name = "unit_id", nullable = false)
     @Getter
-    private String parentGroup;
+    private String unit;
 
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
     @Getter
     @Setter
     private Set<User> users = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name ="parent_group_id", referencedColumnName = "id")
-    @Getter
-    @Setter
-    private Set<BusinessGroup> subGroups = new HashSet<>();
 
     @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
     private Boolean deleted = false;
 
-    public BusinessGroup(String displayName) throws GroupCreationException {
+    public BusinessTeam(String displayName) throws GroupCreationException {
         this(displayName,displayName);
     }
 
-    public BusinessGroup(String displayName, String referenceName) throws GroupCreationException {
+    public BusinessTeam(String displayName, String referenceName) throws GroupCreationException {
         this.displayName = toDisplayName(displayName);
         this.referenceName = toReferenceName(referenceName);
     }

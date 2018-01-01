@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.dto.users;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.util.ArrayList;
@@ -16,12 +16,12 @@ public class PublishUserRecordTest {
     @Test
     public void createUser() throws Exception, GroupCreationException {
 
-        BusinessGroup group = new BusinessGroup("UnitDisp", "UnitRef");
-        Set<BusinessGroup> groups = new HashSet<>();
+        BusinessTeam group = new BusinessTeam("UnitDisp", "UnitRef");
+        Set<BusinessTeam> groups = new HashSet<>();
         groups.add(group);
 
         User user = new User("first", "last", "user","email", "Dept");
-        user.setGroups(groups);
+        user.setTeams(groups);
         PublishUserRecord entityRecord = PublishUserRecord.create(user);
 
         assertThat(entityRecord.getFirstName()).isEqualTo("first");

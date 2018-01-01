@@ -15,7 +15,7 @@ import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
-import uk.gov.digital.ho.hocs.model.BusinessGroup;
+import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.util.*;
@@ -93,7 +93,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceCreatesUsersFromCSV() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
 
         List<String> groups = new ArrayList<>();
         groups.add("A_GROUP");
@@ -103,25 +103,25 @@ public class UserServiceTest {
 
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockBusinessGroupService, times(1)).getGroupByReference("A_GROUP");
+        verify(mockBusinessGroupService, times(1)).getTeamByReference("A_GROUP");
         verify(mockUserRepo).save(anyList());
     }
 
     @Test
     public void testServiceCreatesUsersFromCSVNoUsers()throws ListNotFoundException {
-        when(mockBusinessGroupService.getGroupByReference("Invalid_Group")).thenThrow(new ListNotFoundException());
+        when(mockBusinessGroupService.getTeamByReference("Invalid_Group")).thenThrow(new ListNotFoundException());
 
         Set<CSVUserLine> lines = new HashSet<>();
 
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockBusinessGroupService, times(0)).getGroupByReference("Invalid_Group");
+        verify(mockBusinessGroupService, times(0)).getTeamByReference("Invalid_Group");
         verify(mockUserRepo, times(0)).save(anyList());
     }
 
     @Test(expected = ListNotFoundException.class)
     public void testServiceCreatesUsersFromCSVInvalidGroup()throws ListNotFoundException {
-        when(mockBusinessGroupService.getGroupByReference("Invalid_Group")).thenThrow(new ListNotFoundException());
+        when(mockBusinessGroupService.getTeamByReference("Invalid_Group")).thenThrow(new ListNotFoundException());
 
         List<String> groups = new ArrayList<>();
         groups.add("Invalid_Group");
@@ -131,7 +131,7 @@ public class UserServiceTest {
 
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockBusinessGroupService, times(1)).getGroupByReference("Invalid_Group");
+        verify(mockBusinessGroupService, times(1)).getTeamByReference("Invalid_Group");
         verify(mockUserRepo, times(0)).save(anyList());
     }
 
@@ -167,7 +167,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVAdd() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -192,7 +192,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVRemove() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -213,7 +213,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVBoth() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -236,7 +236,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVNothingSame() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -259,7 +259,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVNothingNone() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessGroupService.getGroupByReference("A_GROUP")).thenReturn(new BusinessGroup("disp"));
+        when(mockBusinessGroupService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");

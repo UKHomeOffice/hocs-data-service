@@ -31,7 +31,7 @@ public class PublishUserRecord implements Serializable {
     private List<String> groupNameArray;
 
     public static PublishUserRecord create(User user) {
-        List<String> groups = user.getGroups().stream().map(g -> g.getReferenceName()).collect(Collectors.toList());
+        List<String> groups = user.getTeams().stream().map(g -> g.getReferenceName()).collect(Collectors.toList());
         return new PublishUserRecord(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmailAddress(), "Password1", groups);
     }
 }
