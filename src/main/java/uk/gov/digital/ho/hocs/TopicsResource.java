@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
+import uk.gov.digital.ho.hocs.dto.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.topics.CSVTopicLine;
@@ -28,7 +28,7 @@ public class TopicsResource {
     }
 
     @RequestMapping(value = "/topics/{caseType}", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity updateTopicsList(@RequestParam("file") MultipartFile file, @PathVariable("caseType") String caseType) {
+    public ResponseEntity updateTopics(@RequestParam("file") MultipartFile file, @PathVariable("caseType") String caseType) {
         if (!file.isEmpty()) {
             log.info("Parsing topics {}", caseType);
             try {
@@ -45,7 +45,7 @@ public class TopicsResource {
     }
 
     @RequestMapping(value = "/topics/{caseType}", method = RequestMethod.GET)
-    public ResponseEntity<List<TopicGroupRecord>> getTopicListByReference(@PathVariable("caseType") String caseType) {
+    public ResponseEntity<List<TopicGroupRecord>> getTopicsByReference(@PathVariable("caseType") String caseType) {
         log.info("List \"{}\" requested", caseType);
         try {
             Set<TopicGroup> topics = topicsService.getTopicByCaseType(caseType);
@@ -58,7 +58,7 @@ public class TopicsResource {
     }
 
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
-    public ResponseEntity<List<TopicGroupRecord>> getLegacyListByReference() {
+    public ResponseEntity<List<TopicGroupRecord>> getAllTopics() {
         log.info("List \"Legacy TopicList\" requested");
         try {
             Set<TopicGroup> topics = topicsService.getAllTopics();

@@ -1,11 +1,11 @@
-package uk.gov.digital.ho.hocs.dto.legacy.users;
+package uk.gov.digital.ho.hocs.dto.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateEntityRecord;
-import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateEntityRecordPermissionGroup;
-import uk.gov.digital.ho.hocs.dto.legacy.units.UnitCreateEntityRecordPermissions;
+import uk.gov.digital.ho.hocs.dto.units.UnitCreateEntityRecord;
+import uk.gov.digital.ho.hocs.dto.units.UnitCreateEntityRecordPermissionGroup;
+import uk.gov.digital.ho.hocs.dto.units.UnitCreateEntityRecordPermissions;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.io.Serializable;

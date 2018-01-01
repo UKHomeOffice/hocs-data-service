@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.dto.legacy.topics.TopicGroupRecord;
+import uk.gov.digital.ho.hocs.dto.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.Topic;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
@@ -50,7 +50,7 @@ public class TopicsResourceTest {
         topicGroups.add(topicGroup);
 
         when(topicsService.getTopicByCaseType("CaseType")).thenReturn(topicGroups);
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicListByReference("CaseType");
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicsByReference("CaseType");
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(httpResponse.getBody()).hasSize(1);
@@ -60,7 +60,7 @@ public class TopicsResourceTest {
     @Test
     public void shouldReturnNotFoundWhenException() throws ListNotFoundException {
         when(topicsService.getTopicByCaseType("CaseType")).thenThrow(new ListNotFoundException());
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicListByReference("CaseType");
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getTopicsByReference("CaseType");
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(httpResponse.getBody()).isNull();
@@ -79,7 +79,7 @@ public class TopicsResourceTest {
         topicGroups.add(topicGroup);
 
         when(topicsService.getAllTopics()).thenReturn(topicGroups);
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getAllTopics();
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(httpResponse.getBody()).hasSize(1);
@@ -89,7 +89,7 @@ public class TopicsResourceTest {
     @Test
     public void shouldReturnNotFoundWhenExceptionEntity() throws ListNotFoundException {
         when(topicsService.getAllTopics()).thenThrow(new ListNotFoundException());
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getLegacyListByReference();
+        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getAllTopics();
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(httpResponse.getBody()).isNull();

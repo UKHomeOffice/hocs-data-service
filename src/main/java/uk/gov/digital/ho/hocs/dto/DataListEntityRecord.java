@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
@@ -24,14 +23,9 @@ public class DataListEntityRecord implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<DataListEntityRecordProperty> properties = new ArrayList<>();
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<DataListEntityRecord> subEntities = new ArrayList<>();
 
     public static DataListEntityRecord create(DataListEntity dle) {
-        List<DataListEntityRecordProperty> properties = dle.getProperties().stream().map(DataListEntityRecordProperty::create).collect(Collectors.toList());
-        List<DataListEntityRecord> subEntities = dle.getSubEntities().stream().map(DataListEntityRecord::create).collect(Collectors.toList());
-
-        return new DataListEntityRecord(dle.getText(), dle.getValue(), properties, subEntities);
+        return new DataListEntityRecord(dle.getText(), dle.getValue(), new ArrayList<>());
     }
 
     public static DataListEntityRecord create(Member dle, String houseName) {
@@ -39,7 +33,16 @@ public class DataListEntityRecord implements Serializable {
         List<DataListEntityRecordProperty> properties = new ArrayList<>();
         properties.add(new DataListEntityRecordProperty("HOUSE", houseName));
 
-        return new DataListEntityRecord(dle.getDisplayName(), dle.getReferenceName(), properties, null);
+        return new DataListEntityRecord(dle.getDisplayName(), dle.getReferenceName(), properties);
+    }
+
+    public DataListEntityRecord(String text) {
+        this(text, text);
+    }
+
+    public DataListEntityRecord(String text, String value){
+        this.text = text;
+        this.value = value;
     }
 
     public Map<String, String> getProperties() {

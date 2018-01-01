@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "members")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(exclude = {"id", "deleted", "houseId"})
 public class Member {
 

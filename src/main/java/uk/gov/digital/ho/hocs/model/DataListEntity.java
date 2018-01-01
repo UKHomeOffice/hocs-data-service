@@ -1,10 +1,9 @@
 package uk.gov.digital.ho.hocs.model;
 
 import lombok.*;
+import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "entities")
@@ -30,28 +29,14 @@ public class DataListEntity {
     @Getter
     private String value;
 
-    @Column(name = "parent_entity_id")
-    private Long parentId;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name ="parent_entity_id", referencedColumnName = "id")
+    @Column(name = "deleted", nullable = false)
     @Getter
     @Setter
-    private Set<DataListEntity> subEntities = new HashSet<>();
+    private Boolean deleted = false;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name ="entity_id", referencedColumnName = "id")
-    @Getter
-    @Setter
-    private Set<DataListEntityProperty> properties = new HashSet<>();
-
-    public DataListEntity(String text) {
-        this(text, text);
-    }
-
-    public DataListEntity(String text, String value){
-        this.text = toListText(text);
-        this.value = toListValue(value);
+    public DataListEntity(DataListEntityRecord dler){
+        this.text = toListText(dler.getText());
+        this.value = toListValue(dler.getValue());
     }
 
     private static String toListText(String text) {

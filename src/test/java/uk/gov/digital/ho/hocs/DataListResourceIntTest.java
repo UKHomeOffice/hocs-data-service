@@ -12,13 +12,13 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.model.DataList;
-import uk.gov.digital.ho.hocs.model.DataListEntity;
-import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -37,19 +37,11 @@ public class DataListResourceIntTest {
     public void setup() {
         repository.deleteAll();
 
-        Set<DataListEntity> subList = new HashSet<>();
-        subList.add(new DataListEntity("SubText", "sub_val"));
-
-        Set<DataListEntityProperty> properties = new HashSet<>();
-        properties.add(new DataListEntityProperty("Key", "Value"));
-
-        Set<DataListEntity> list = new HashSet<>();
-        DataListEntity dle = new DataListEntity("TopText", "top_val");
-        dle.setProperties(properties);
-        dle.setSubEntities(subList);
+        List<DataListEntityRecord> list = new ArrayList<>();
+        DataListEntityRecord dle = new DataListEntityRecord("TopText", "top_val");
         list.add(dle);
 
-        DataList datalist = new DataList("TopicList", list);
+        DataList datalist = new DataList(new DataListRecord("TopicList", list));
 
         repository.save(datalist);
 

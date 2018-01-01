@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto.legacy.units;
+package uk.gov.digital.ho.hocs.dto.units;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

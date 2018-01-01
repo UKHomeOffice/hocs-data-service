@@ -8,11 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,19 +36,15 @@ public class DataListRepositoryTest {
     public void setup() {
         repository.deleteAll();
 
-        Set<DataListEntity> firstEntityList = new HashSet<>();
-        firstEntityList.add(new DataListEntity("Text", "Value"));
-        repository.save(new DataList("Test List One", firstEntityList));
+        List<DataListEntityRecord> firstEntityList = new ArrayList<>();
+        firstEntityList.add(new DataListEntityRecord("Text", "Value"));
+        repository.save(new DataList(new DataListRecord("Test List One", firstEntityList)));
 
-        Set<DataListEntity> secondSubEntityList = new HashSet<>();
-        secondSubEntityList.add(new DataListEntity("SubText", "sub_val"));
-
-        Set<DataListEntity> secondEntityList = new HashSet<>();
-        DataListEntity dle = new DataListEntity("\"SecondText\"", "se!c,ond va,l");
-        dle.setSubEntities(secondSubEntityList);
+        List<DataListEntityRecord> secondEntityList = new ArrayList<>();
+        DataListEntityRecord dle = new DataListEntityRecord("\"SecondText\"", "se!c,ond va,l");
         secondEntityList.add(dle);
-        repository.save(new DataList("Test List Two", secondEntityList));
-        repository.save(new DataList("Test List Three", null));
+        repository.save(new DataList(new DataListRecord("Test List Two", secondEntityList)));
+        repository.save(new DataList(new DataListRecord("Test List Three", null)));
     }
 
     @Test
@@ -86,17 +83,12 @@ public class DataListRepositoryTest {
         DataListEntity dataListEntityOne = asList(dataList.getEntities()).get(0);
         assertThat(dataListEntityOne.getText()).isEqualTo("SecondText");
         assertThat(dataListEntityOne.getValue()).isEqualTo("SECOND_VAL");
-
-        assertThat(dataListEntityOne.getSubEntities()).size().isEqualTo(1);
-        DataListEntity dataListEntitySub = asList(dataListEntityOne.getSubEntities()).get(0);
-        assertThat(dataListEntitySub.getText()).isEqualTo("SubText");
-        assertThat(dataListEntitySub.getValue()).isEqualTo("SUB_VAL");
     }
 
     @Test
     public void shouldRetrieveListEntitiesNone() {
         final DataList dataList = repository.findOneByName("Test List Three");
         assertThat(dataList.getName()).isEqualTo("Test List Three");
-        assertThat(dataList.getEntities()).isNull();
+        assertThat(dataList.getEntities()).isEmpty();
     }
 }

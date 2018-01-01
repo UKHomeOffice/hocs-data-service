@@ -4,37 +4,38 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
+import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
 import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
-import uk.gov.digital.ho.hocs.model.DataListEntityProperty;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataListServiceTest {
 
     private final static String TEST_LIST = "Test List One";
-    private final static String LIST_A = "LIST_A";
-    private final static String LIST_B = "LIST_B";
-    private final static String LIST_C = "LIST_C";
     private final static String UNAVAILABLE_RESOURCE = "Unavailable Resource";
 
     @Mock
     private DataListRepository mockRepo;
 
-    private DataListService service;
+    @Captor
+    private ArgumentCaptor<DataList> captor;
 
+    private DataListService service;
 
     @Before
     public void setUp() {
@@ -42,67 +43,283 @@ public class DataListServiceTest {
     }
 
     @Test
-    public void testCollaboratorsGettingList() throws ListNotFoundException {
-        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(buildValidDataList(TEST_LIST));
+    public void testCollaboratorsGettingDataLists() throws ListNotFoundException {
+        when(mockRepo.findAllByDeletedIsFalse()).thenReturn(getDataLists());
 
-        DataListRecord dataListRecord = service.getListByName(TEST_LIST);
+        List<DataList> records = service.getAllDataLists().stream().collect(Collectors.toList());
 
-        verify(mockRepo).findOneByName(TEST_LIST);
+        verify(mockRepo).findAllByDeletedIsFalse();
 
-        assertThat(dataListRecord).isNotNull();
-        assertThat(dataListRecord).isInstanceOf(DataListRecord.class);
-        assertThat(dataListRecord.getEntities()).size().isEqualTo(1);
-        assertThat(dataListRecord.getName()).isEqualTo(TEST_LIST);
-        assertThat(dataListRecord.getEntities().get(0).getText()).isEqualTo("Text");
-        assertThat(dataListRecord.getEntities().get(0).getValue()).isEqualTo("VALUE");
+        assertThat(records).isNotNull();
+        assertThat(records).hasOnlyElementsOfType(DataList.class);
+        assertThat(records).hasSize(2);
+
+        assertThat(records.get(1).getName()).isEqualTo(TEST_LIST+"2");
+        assertThat(records.get(1).getEntities()).hasSize(2);
+
+        assertThat(records.get(0).getName()).isEqualTo(TEST_LIST);
+        assertThat(records.get(0).getEntities()).hasSize(1);
     }
 
     @Test(expected = ListNotFoundException.class)
-    public void testListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
+    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
-        DataListRecord dataListRecord = service.getListByName(UNAVAILABLE_RESOURCE);
-        verify(mockRepo).findOneByName(UNAVAILABLE_RESOURCE);
-        assertThat(dataListRecord).isNull();
+        List<DataList> records = service.getAllDataLists().stream().collect(Collectors.toList());
+        verify(mockRepo).findAllByDeletedIsFalse();
+        assertThat(records).isEmpty();
+    }
+
+    @Test
+    public void testCollaboratorsGettingDataList() throws ListNotFoundException {
+        when(mockRepo.findOneByNameAndDeletedIsFalse(TEST_LIST)).thenReturn(getDataList());
+
+        DataList record = service.getDataListByName(TEST_LIST);
+
+        verify(mockRepo).findOneByNameAndDeletedIsFalse(TEST_LIST);
+
+        assertThat(record).isNotNull();
+        assertThat(record.getName()).isEqualTo(TEST_LIST);
+        assertThat(record.getEntities()).hasSize(1);
+    }
+
+    @Test(expected = ListNotFoundException.class)
+    public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
+
+        DataList record = service.getDataListByName(UNAVAILABLE_RESOURCE);
+        verify(mockRepo).findOneByNameAndDeletedIsFalse(UNAVAILABLE_RESOURCE);
+        assertThat(record).isNull();
     }
 
     @Test
     public void testCreateList() {
-        service.createList(buildValidDataList(TEST_LIST));
-        verify(mockRepo).save(buildValidDataList(TEST_LIST));
+        service.updateDataList(getDataList());
+        verify(mockRepo).save(any(DataList.class));
+    }
+
+
+    @Test(expected = EntityCreationException.class)
+    public void testCreateListNull() {
+        service.updateDataList(null);
+        verify(mockRepo, times(0)).save(anyList());
+    }
+
+    @Test
+    public void testCreateListNoEntities() {
+        service.updateDataList(new DataList(new DataListRecord(TEST_LIST, new ArrayList<>())));
+        verify(mockRepo, times(0)).save(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
     public void testRepoDataIntegrityExceptionThrowsEntityCreationException() {
 
-        DataList dataList = buildValidDataList(TEST_LIST);
+        DataList datalist1 = getDataList();
 
-        when(mockRepo.save(dataList)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "list_name_idempotent")));
-        service.createList(dataList);
+        when(mockRepo.save(datalist1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "DataList_name_idempotent")));
+        service.updateDataList(datalist1);
 
-        verify(mockRepo).save(dataList);
+        verify(mockRepo).save(datalist1);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void testRepoDataIntegrityExceptionThrowsEntityCreationExceptionTwo() {
+
+        DataList datalist1 = getDataList();
+
+        when(mockRepo.save(datalist1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "dataListEntity_name_ref_idempotent")));
+        service.updateDataList(datalist1);
+
+        verify(mockRepo).save(datalist1);
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    public void testRepoUnhandledExceptionThrowsDataIntegrityException() {
+    public void testRepoDataIntegrityExceptionThrowsDataIntegrityViolationException() {
 
-        DataList dataList = buildValidDataList(TEST_LIST);
+        DataList datalist1 = getDataList();
 
-        when(mockRepo.save(dataList)). thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
-        service.createList(dataList);
+        when(mockRepo.save(datalist1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
+        service.updateDataList(datalist1);
 
-        verify(mockRepo).save(dataList);
+        verify(mockRepo).save(datalist1);
     }
 
-    private DataList buildValidDataList(String name) {
+    @Test
+    public void testServiceUpdateDataListAdd() throws ListNotFoundException {
+        DataList datalist1 = getDataList();
+
+        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(datalist1);
+
+        DataListEntityRecord dataListEntity1 = new DataListEntityRecord("Text1");
+        DataListEntityRecord dataListEntity2 = new DataListEntityRecord("Text2");
+        DataListEntityRecord dataListEntity3 = new DataListEntityRecord("Text3");
+        List<DataListEntityRecord> datalistEntitys = new ArrayList<>();
+        datalistEntitys.addAll(Arrays.asList(dataListEntity1, dataListEntity2, dataListEntity3));
+        DataList datalist = new DataList(new DataListRecord(TEST_LIST, datalistEntitys));
+        service.updateDataList(datalist);
+
+        verify(mockRepo, times(1)).save(datalist);
+    }
+
+    @Test
+    public void testServiceUpdateDataListAddWhenAlreadyDeleted() {
+        DataList datalist1 = getDataListChildDeleted(true, true);
+        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(datalist1);
+
+        DataListEntityRecord datalistEntity1 = new DataListEntityRecord("Text1");
+        DataListEntityRecord datalistEntity2 = new DataListEntityRecord("Text2");
+        List<DataListEntityRecord> datalistEntitys = new ArrayList<>();
+        datalistEntitys.add(datalistEntity1);
+        datalistEntitys.add(datalistEntity2);
+        DataList newDataList = new DataList(new DataListRecord(TEST_LIST, datalistEntitys));
+        service.updateDataList(newDataList);
+
+        verify(mockRepo).save(captor.capture());
+        final DataList datalist = captor.getValue();
+
+        verify(mockRepo, times(1)).save(newDataList);
+        assertThat(datalist).isNotNull();
+        assertThat(datalist.getEntities()).hasSize(2);
+        assertThat(datalist.getDeleted()).isFalse();
+
+        DataListEntity person1 = getDataListEntityByName(datalist,"Text1");
+        assertThat(person1).isNotNull();
+        assertThat(person1.getDeleted()).isFalse();
+
+
+        DataListEntity person2 = getDataListEntityByName(datalist,"Text2");
+        assertThat(person2).isNotNull();
+        assertThat(person2.getDeleted()).isFalse();
+
+    }
+
+    @Test
+    public void testServiceUpdateDataListEmptyGroupIsDeleted() {
+        DataList datalist1 = getDataListChildDeleted(true, true);
+        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(datalist1);
+
+        List<DataListEntityRecord> dataListEntitys = new ArrayList<>();
+        dataListEntitys.add(new DataListEntityRecord("Text4"));
+        DataList newDataList = new DataList(new DataListRecord(TEST_LIST, dataListEntitys));
+        service.updateDataList(newDataList);
+
+        verify(mockRepo).save(captor.capture());
+        final DataList datalist = captor.getValue();
+
+        verify(mockRepo, times(1)).save(newDataList);
+        assertThat(datalist).isNotNull();
+        assertThat(datalist.getEntities()).hasSize(2);
+        assertThat(datalist.getDeleted()).isFalse();
+
+        DataListEntity person1 = getDataListEntityByName(datalist,"Text1");
+        assertThat(person1).isNotNull();
+        assertThat(person1.getDeleted()).isTrue();
+
+        DataListEntity person2 = getDataListEntityByName(datalist,"Text4");
+        assertThat(person2).isNotNull();
+        assertThat(person2.getDeleted()).isFalse();
+    }
+
+    @Test
+    public void testServiceUpdateDataListRemove() throws ListNotFoundException {
+        DataList datalist1 = getDataList();
+        when(mockRepo.findOneByName(TEST_LIST)).thenReturn(datalist1);
+
+        List<DataListEntityRecord> dataListEntitys = new ArrayList<>();
+        DataList newDataList = new DataList(new DataListRecord(TEST_LIST, dataListEntitys));
+        service.updateDataList(newDataList);
+
+        verify(mockRepo).save(captor.capture());
+        final DataList datalist = captor.getValue();
+
+        verify(mockRepo, times(1)).save(newDataList);
+        assertThat(datalist).isNotNull();
+        assertThat(datalist.getEntities()).hasSize(1);
+        assertThat(datalist.getDeleted()).isTrue();
+
+        DataListEntity person1 = getDataListEntityByName(datalist,"Text1");
+        assertThat(person1).isNotNull();
+        assertThat(person1.getDeleted()).isTrue();
+    }
+
+    @Test
+    public void testServiceUpdateDataListBoth() throws ListNotFoundException {
+        DataListEntityRecord dataListEntity1 = new DataListEntityRecord("Text1");
+        DataListEntityRecord dataListEntity2 = new DataListEntityRecord("Text3");
+        DataListEntityRecord dataListEntity3 = new DataListEntityRecord("Text4");
+
+        List<DataListEntityRecord> datalistEntitys = new ArrayList<>();
+        datalistEntitys.addAll(Arrays.asList(dataListEntity1, dataListEntity2, dataListEntity3));
+        DataList newDataList1 = new DataList(new DataListRecord(TEST_LIST, datalistEntitys));
+        service.updateDataList(newDataList1);
+
+        verify(mockRepo, times(1)).save(newDataList1);
+    }
+
+    @Test
+    public void testServiceUpdateDataListSame() throws ListNotFoundException {
+        DataListEntityRecord datalistEntity1 = new DataListEntityRecord("Text1");
+        List<DataListEntityRecord> dataListEntitys = new ArrayList<>();
+        dataListEntitys.addAll(Arrays.asList(datalistEntity1));
+        DataList newDataList1 = new DataList(new DataListRecord(TEST_LIST, dataListEntitys));
+        service.updateDataList(newDataList1);
+
+        verify(mockRepo, times(1)).save(newDataList1);
+    }
+
+    @Test
+    public void testServiceUpdateDataListNothingNone() throws ListNotFoundException {
+        List<DataListEntityRecord> dataListEntitys = new ArrayList<>();
+        DataList newDataList1 = new DataList(new DataListRecord(TEST_LIST, dataListEntitys));
+        service.updateDataList(newDataList1);
+
+        verify(mockRepo, times(1)).save(newDataList1);
+    }
+
+    private static Set<DataList> getDataLists() {
+        List<DataListEntityRecord> dataListEntities1 = new ArrayList<>();
+        DataListEntityRecord datalistEntity1 = new DataListEntityRecord("Text1", "Value1");
+
+        dataListEntities1.add(datalistEntity1);
+        DataList datalist1 = new DataList(new DataListRecord(TEST_LIST, dataListEntities1));
+
+        List<DataListEntityRecord> dataListEntities2 = new ArrayList<>();
+        DataListEntityRecord datalistEntity2 = new DataListEntityRecord("Text2", "Value2");
+        DataListEntityRecord datalistEntity3 = new DataListEntityRecord("Text3", "Value3");
+
+        dataListEntities2.add(datalistEntity2);
+        dataListEntities2.add(datalistEntity3);
+        DataList datalist2 = new DataList(new DataListRecord(TEST_LIST+"2", dataListEntities2));
+
+        Set<DataList> dataLists = new HashSet<>();
+        dataLists.addAll(Arrays.asList(datalist1, datalist2));
+        return dataLists;
+    }
+
+    private static DataList getDataListChildDeleted(Boolean parent, Boolean child) {
         Set<DataListEntity> dataListEntities = new HashSet<>();
-        DataListEntityProperty property = new DataListEntityProperty("caseType", "CaseValue");
-        Set<DataListEntityProperty> properties = new HashSet<>();
-        properties.add(property);
-        DataListEntity dataListEntity = new DataListEntity("Text", "Value");
-        dataListEntity.setProperties(properties);
+        DataListEntity dataListEntity = new DataListEntity(new DataListEntityRecord("Text1"));
+        dataListEntity.setDeleted(child);
 
         dataListEntities.add(dataListEntity);
-        return new DataList(name, dataListEntities);
+        DataList datalist = new DataList(new DataListRecord(TEST_LIST, null));
+        datalist.setEntities(dataListEntities);
+        datalist.setDeleted(parent);
+
+        return datalist;
+    }
+
+    private static DataList getDataList() {
+        Set<DataListEntity> dataListEntities = new HashSet<>();
+        DataListEntity dataListEntity = new DataListEntity(new DataListEntityRecord("Text1"));
+
+        dataListEntities.add(dataListEntity);
+        DataList datalist = new DataList(new DataListRecord(TEST_LIST, null));
+        datalist.setEntities(dataListEntities);
+        return datalist;
+    }
+
+    private static DataListEntity getDataListEntityByName(DataList entities, String entityName)
+    {
+        return entities.getEntities().stream().filter(t -> t.getText().equals(entityName)).findFirst().orElse(null);
     }
 
 }

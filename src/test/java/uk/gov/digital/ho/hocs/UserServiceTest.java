@@ -8,8 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
-import uk.gov.digital.ho.hocs.dto.legacy.users.UserRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserCreateRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -290,6 +290,16 @@ public class UserServiceTest {
         service.publishUsersByDepartmentName("test_users");
 
         verify(mockAlfrescoClient, times(1)).postRecords(anyList());
+
+    }
+
+    @Test(expected = ListNotFoundException.class)
+    public void testPublishUsersByDepartmentNameNoUsers() throws AlfrescoPostException, ListNotFoundException {
+        when(mockUserRepo.findAllByDepartment("test_users")).thenReturn(new HashSet<User>());
+
+        service.publishUsersByDepartmentName("test_users");
+
+        verify(mockAlfrescoClient, times(0)).postRecords(anyList());
 
     }
 

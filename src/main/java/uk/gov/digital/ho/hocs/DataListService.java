@@ -5,12 +5,17 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.model.DataList;
+import uk.gov.digital.ho.hocs.model.DataListEntity;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,18 +28,67 @@ public class DataListService {
     }
 
     @Cacheable(value = "list", key = "#name")
-    public DataListRecord getListByName(String name) throws ListNotFoundException {
-        try {
-            DataList list = repo.findOneByName(name);
-            return DataListRecord.create(list);
-        } catch (NullPointerException e) {
+    public DataList getDataListByName(String name) throws ListNotFoundException {
+       DataList list = repo.findOneByNameAndDeletedIsFalse(name);
+        if(list == null) {
             throw new ListNotFoundException();
+        }
+        return list;
+    }
+
+    @Cacheable(value = "list")
+    public Set<DataList> getAllDataLists() throws ListNotFoundException {
+        Set<DataList> list = repo.findAllByDeletedIsFalse();
+        if (list.isEmpty()) {
+            throw new ListNotFoundException();
+        }
+        return list;
+    }
+
+    @Caching( evict = {@CacheEvict(value = "list", key = "#newDataList.name"),
+                       @CacheEvict(value = "list")})
+    public void updateDataList(DataList newDataList) {
+        if(newDataList != null) {
+            DataList jpaDataList = repo.findOneByName(newDataList.getName());
+
+            // Update existing list
+            if (jpaDataList != null) {
+                List<DataListEntity> newEntities = newDataList.getEntities().stream().collect(Collectors.toList());
+                Set<DataListEntity> jpaEntities = jpaDataList.getEntities();
+
+                jpaEntities.forEach(item -> {
+                    item.setDeleted(!newEntities.contains(item));
+                });
+
+                // Add new list items
+                newEntities.forEach(newTopic -> {
+                    if (!jpaEntities.contains(newTopic)) {
+                        jpaEntities.add(newTopic);
+                    }
+                });
+
+                jpaDataList.setEntities(jpaEntities);
+
+                // Set the data list to deleted if there are no visible entities
+                jpaDataList.setDeleted(jpaDataList.getEntities().stream().allMatch(entities -> entities.getDeleted()));
+            } else {
+                jpaDataList = newDataList;
+            }
+
+            saveList(jpaDataList);
+        } else{
+            throw new EntityCreationException("Unable to update entity");
         }
     }
 
-    @CacheEvict(value = "list", key = "#dataList.getName()")
-    public void createList(DataList dataList) throws EntityCreationException {
+    @CacheEvict(value = "list", allEntries = true)
+    public void clearCache(){
+        log.info("All lists cache cleared");
+    }
+
+    private void saveList(DataList dataList) throws EntityCreationException {
         try {
+            if(dataList != null && dataList.getName() != null)
             repo.save(dataList);
         } catch (DataIntegrityViolationException e) {
 
@@ -47,10 +101,5 @@ public class DataListService {
 
             throw e;
         }
-    }
-
-    @CacheEvict(value = "list", allEntries = true)
-    public void clearCache(){
-        log.info("All lists cache cleared");
     }
 }

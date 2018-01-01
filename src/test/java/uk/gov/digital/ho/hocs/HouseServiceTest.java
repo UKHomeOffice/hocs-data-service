@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
+import uk.gov.digital.ho.hocs.ingest.members.ListConsumerService;
 import uk.gov.digital.ho.hocs.model.House;
 import uk.gov.digital.ho.hocs.model.Member;
 
@@ -25,30 +26,33 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MemberServiceTest {
+public class HouseServiceTest {
 
     private final static String HOUSENAME = "Test";
     private final static String UNAVAILABLE_RESOURCE = "Unavailable Resource";
 
     @Mock
-    private MemberRepository mockRepo;
+    private HouseRepository mockRepo;
+
+    @Mock
+    private ListConsumerService listConsumerService;
 
     @Captor
     private ArgumentCaptor<House> captor;
 
-    private MemberService memberService;
+    private HouseService houseService;
 
 
     @Before
     public void setUp() {
-        memberService = new MemberService(mockRepo);
+        houseService = new HouseService(mockRepo, listConsumerService);
     }
 
     @Test
     public void testCollaboratorsGettingHouses() throws ListNotFoundException {
         when(mockRepo.findAllByDeletedIsFalse()).thenReturn(getHouses());
 
-        List<House> records = memberService.getAllHouses().stream().collect(Collectors.toList());
+        List<House> records = houseService.getAllHouses().stream().collect(Collectors.toList());
 
         verify(mockRepo).findAllByDeletedIsFalse();
 
@@ -66,7 +70,7 @@ public class MemberServiceTest {
     @Test(expected = ListNotFoundException.class)
     public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
-        List<House> records = memberService.getAllHouses().stream().collect(Collectors.toList());
+        List<House> records = houseService.getAllHouses().stream().collect(Collectors.toList());
         verify(mockRepo).findAllByDeletedIsFalse();
         assertThat(records).isEmpty();
     }
@@ -75,7 +79,7 @@ public class MemberServiceTest {
     public void testCollaboratorsGettingHouse() throws ListNotFoundException {
         when(mockRepo.findOneByNameAndDeletedIsFalse(HOUSENAME)).thenReturn(getHouse());
 
-        House record = memberService.getHouseByName(HOUSENAME);
+        House record = houseService.getHouseByName(HOUSENAME);
 
         verify(mockRepo).findOneByNameAndDeletedIsFalse(HOUSENAME);
 
@@ -87,27 +91,27 @@ public class MemberServiceTest {
     @Test(expected = ListNotFoundException.class)
     public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
 
-        House record = memberService.getHouseByName(UNAVAILABLE_RESOURCE);
+        House record = houseService.getHouseByName(UNAVAILABLE_RESOURCE);
         verify(mockRepo).findOneByNameAndDeletedIsFalse(UNAVAILABLE_RESOURCE);
         assertThat(record).isNull();
     }
 
     @Test
     public void testCreateList() {
-        memberService.updateHouse(getHouse());
+        houseService.updateHouse(getHouse());
         verify(mockRepo).save(any(House.class));
     }
 
 
     @Test(expected = EntityCreationException.class)
     public void testCreateListNull() {
-        memberService.updateHouse(null);
+        houseService.updateHouse(null);
         verify(mockRepo, times(0)).save(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() {
-        memberService.updateHouse(new House(HOUSENAME, new HashSet<>()));
+        houseService.updateHouse(new House(HOUSENAME, new HashSet<>()));
         verify(mockRepo, times(0)).save(anyList());
     }
     
@@ -117,7 +121,7 @@ public class MemberServiceTest {
         House house1 = getHouse();
 
         when(mockRepo.save(house1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "house_name_idempotent")));
-        memberService.updateHouse(house1);
+        houseService.updateHouse(house1);
 
         verify(mockRepo).save(house1);
     }
@@ -128,7 +132,7 @@ public class MemberServiceTest {
         House house1 = getHouse();
 
         when(mockRepo.save(house1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "member_name_ref_idempotent")));
-        memberService.updateHouse(house1);
+        houseService.updateHouse(house1);
 
         verify(mockRepo).save(house1);
     }
@@ -139,7 +143,7 @@ public class MemberServiceTest {
         House house1 = getHouse();
 
         when(mockRepo.save(house1)).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
-        memberService.updateHouse(house1);
+        houseService.updateHouse(house1);
 
         verify(mockRepo).save(house1);
     }
@@ -156,7 +160,7 @@ public class MemberServiceTest {
         Set<Member> members = new HashSet<>();
         members.addAll(Arrays.asList(member1, member2, member3));
         House house = new House(HOUSENAME, members);
-        memberService.updateHouse(house);
+        houseService.updateHouse(house);
 
         verify(mockRepo, times(1)).save(house);
     }
@@ -172,7 +176,7 @@ public class MemberServiceTest {
         members.add(member1);
         members.add(member2);
         House newHouse = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse);
+        houseService.updateHouse(newHouse);
 
         verify(mockRepo).save(captor.capture());
         final House house = captor.getValue();
@@ -201,7 +205,7 @@ public class MemberServiceTest {
         Set<Member> members = new HashSet<>();
         members.add(new Member("Person4"));
         House newHouse = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse);
+        houseService.updateHouse(newHouse);
 
         verify(mockRepo).save(captor.capture());
         final House house = captor.getValue();
@@ -227,7 +231,7 @@ public class MemberServiceTest {
 
         Set<Member> members = new HashSet<>();
         House newHouse = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse);
+        houseService.updateHouse(newHouse);
 
         verify(mockRepo).save(captor.capture());
         final House house = captor.getValue();
@@ -255,7 +259,7 @@ public class MemberServiceTest {
         Set<Member> members = new HashSet<>();
         members.addAll(Arrays.asList(member1, member2, member3));
         House newHouse1 = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse1);
+        houseService.updateHouse(newHouse1);
 
         verify(mockRepo, times(1)).save(newHouse1);
     }
@@ -269,7 +273,7 @@ public class MemberServiceTest {
         Set<Member> members = new HashSet<>();
         members.addAll(Arrays.asList(member1));
         House newHouse1 = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse1);
+        houseService.updateHouse(newHouse1);
 
         verify(mockRepo, times(1)).save(newHouse1);
     }
@@ -281,7 +285,7 @@ public class MemberServiceTest {
 
         Set<Member> members = new HashSet<>();
         House newHouse1 = new House(HOUSENAME, members);
-        memberService.updateHouse(newHouse1);
+        houseService.updateHouse(newHouse1);
 
         verify(mockRepo, times(1)).save(newHouse1);
     }
