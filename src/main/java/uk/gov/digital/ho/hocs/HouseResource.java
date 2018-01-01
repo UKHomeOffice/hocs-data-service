@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
+import uk.gov.digital.ho.hocs.dto.house.HouseRecord;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.IngestException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -54,11 +55,11 @@ public class HouseResource {
     }
 
     @RequestMapping(value = "/houses/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<House> getHouseByName(@PathVariable("name") String name) {
+    public ResponseEntity<HouseRecord> getHouseByName(@PathVariable("name") String name) {
         log.info("House \"{}\" requested", name);
         try {
             House house = houseService.getHouseByName(name);
-            return ResponseEntity.ok(house);
+            return ResponseEntity.ok(HouseRecord.create(house));
         } catch (ListNotFoundException e) {
             log.info("House \"{}\" not found", name);
             log.info(e.getMessage());
@@ -67,11 +68,11 @@ public class HouseResource {
     }
 
     @RequestMapping(value = "/houses/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Set<House>> getAllHouses() {
+    public ResponseEntity<Set<HouseRecord>> getAllHouses() {
         log.info(" All Houses requested");
         try {
             Set<House> houses = houseService.getAllHouses();
-            return ResponseEntity.ok(houses);
+            return ResponseEntity.ok(houses.stream().map(HouseRecord::create).collect(Collectors.toSet()));
         } catch (ListNotFoundException e) {
             log.info("Houses not found");
             log.info(e.getMessage());

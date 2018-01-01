@@ -9,10 +9,10 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
 @EqualsAndHashCode(of = "userName")
 public class User {
 
@@ -40,6 +40,11 @@ public class User {
     @Column(name = "department", nullable = false)
     @Getter
     private String department;
+
+    @Column(name = "deleted", nullable = false)
+    @Getter
+    @Setter
+    private Boolean deleted = false;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

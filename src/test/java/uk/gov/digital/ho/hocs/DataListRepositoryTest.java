@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.dto.DataListEntityRecord;
-import uk.gov.digital.ho.hocs.dto.DataListRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
 import uk.gov.digital.ho.hocs.model.DataList;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
 

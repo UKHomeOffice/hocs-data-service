@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.dto;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
 import uk.gov.digital.ho.hocs.model.DataListEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,7 +10,7 @@ public class DataListEntityRecordTest {
 
     @Test
     public void createWithOneConstructor() throws Exception {
-        DataListEntity dataListEntity = new DataListEntity(new DataListEntityRecord("Text"));
+        DataListEntity dataListEntity = new DataListEntity(new DataListEntityRecord("Text", "Text"));
         DataListEntityRecord record = DataListEntityRecord.create(dataListEntity);
 
         assertThat(record.getText()).isEqualTo(dataListEntity.getText());

@@ -94,8 +94,7 @@ public class DataListService {
 
             if (e.getCause() instanceof ConstraintViolationException &&
                     ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("list_name_idempotent") ||
-                    ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("entity_name_ref_idempotent") ||
-                    ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("entity_id_idempotent")) {
+                    ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("entity_name_ref_idempotent")) {
                 throw new EntityCreationException("Identified an attempt to recreate existing entity, rolling back");
             }
 

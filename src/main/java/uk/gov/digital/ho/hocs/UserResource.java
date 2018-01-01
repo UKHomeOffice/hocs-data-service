@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.dto.users.UserCreateRecord;
-import uk.gov.digital.ho.hocs.dto.users.UserRecord;
+import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserSetRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
@@ -26,7 +26,7 @@ public class UserResource {
     }
 
     @RequestMapping(value = "/users/{group}", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity<UserRecord> putUsersByGroup(@PathVariable("group") String group, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<UserSetRecord> putUsersByGroup(@PathVariable("group") String group, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             log.info("Parsing \"{}\" Users File", group);
             try {
@@ -42,7 +42,7 @@ public class UserResource {
     }
 
     @RequestMapping(value = {"/users/{group}","s/homeoffice/cts/teamUsers"}, method = RequestMethod.GET)
-    public ResponseEntity<UserRecord> getUsersByGroup(@PathVariable String group) {
+    public ResponseEntity<UserSetRecord> getUsersByGroup(@PathVariable String group) {
         log.info("\"{}\" requested", group);
         try {
             return ResponseEntity.ok(userService.getUsersByGroupName(group));
@@ -54,7 +54,7 @@ public class UserResource {
     }
 
     @RequestMapping(value = "/users/{group}/publish/", method = RequestMethod.GET)
-    public ResponseEntity<List<UserCreateRecord>> postUsersToAlfresco(@PathVariable("group") String group) {
+    public ResponseEntity<List<PublishUserListRecord>> postUsersToAlfresco(@PathVariable("group") String group) {
         try {
             userService.publishUsersByDepartmentName(group);
             return ResponseEntity.ok().build();

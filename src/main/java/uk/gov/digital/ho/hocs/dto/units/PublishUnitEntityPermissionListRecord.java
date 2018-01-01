@@ -7,12 +7,13 @@ import java.io.Serializable;
 import java.util.List;
 
 @AllArgsConstructor
-@Getter
-public class UnitCreateEntityRecordPermissionGroup implements Serializable {
+public class PublishUnitEntityPermissionListRecord implements Serializable {
 
+    @Getter
     private String folderName;
 
-    private List<UnitCreateEntityRecordPermissions> permissions;
+    @Getter
+    private List<PublishUnitEntityPermissionRecord> permissions;
 
 
 }

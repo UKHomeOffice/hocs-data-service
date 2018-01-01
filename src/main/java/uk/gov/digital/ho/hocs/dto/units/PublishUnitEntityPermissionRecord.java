@@ -6,11 +6,12 @@ import lombok.Getter;
 import java.io.Serializable;
 
 @AllArgsConstructor
-@Getter
-public class UnitCreateEntityRecordPermissions implements Serializable {
+public class PublishUnitEntityPermissionRecord implements Serializable {
 
+    @Getter
     private String groupName;
-    private String groupPermission;
 
+    @Getter
+    private String groupPermission;
 
 }

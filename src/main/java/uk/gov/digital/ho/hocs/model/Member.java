@@ -4,11 +4,11 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "members")
 @Access(AccessType.FIELD)
-@NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id", "deleted", "houseId"})
+@EqualsAndHashCode(of = {"displayName", "referenceName"})
 public class Member {
 
     @Id

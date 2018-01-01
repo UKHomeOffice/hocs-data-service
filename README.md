@@ -23,7 +23,7 @@ Topics are hierarchical lists of data like so:
 Topic items also hold data about the Hocs Units and Teams the topic relates to. 
 Currently we receive two CSV files from the DCU and UKVI Units which are checked into the hocs-data project. 
 
-We have POST and PUT on the `'/topics/{unitName}'` path and a GET on `'/topics/topicList'` as the lists are only accessible as a combined list at the moment.
+We have POST and PUT on the `'/topics/{unitName}'` path and a GET on `'/topics/topicGroup'` as the lists are only accessible as a combined list at the moment.
 
 ## User Accounts
 User accounts are mastered in the hocs-data-service but are also required to be created in hocs-alfresco. Several CSV files are checked in to the hocs-data project. 

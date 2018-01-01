@@ -10,14 +10,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
 public class BusinessGroupRecord implements Serializable {
 
+    @Getter
     private String authorityName;
 
+    @Getter
     private String displayName;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Getter
     private List<BusinessGroupRecord> teams;
 
     public static BusinessGroupRecord create(BusinessGroup unit) {

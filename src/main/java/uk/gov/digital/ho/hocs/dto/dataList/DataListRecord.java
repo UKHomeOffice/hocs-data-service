@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto;
+package uk.gov.digital.ho.hocs.dto.dataList;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,13 +10,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter
 public class DataListRecord implements Serializable {
+
+    @Getter
     private String name;
+
+    @Getter
     private List<DataListEntityRecord> entities = new ArrayList<>();
 
     public static DataListRecord create(DataList list) {
-        List<DataListEntityRecord> entities = list.getEntities().stream().map(DataListEntityRecord::create).collect(Collectors.toList());
+        return create(list, false);
+    }
+
+    public static DataListRecord create(DataList list, boolean showDeleted) {
+        List<DataListEntityRecord> entities = list.getEntities().stream().filter(topic -> !topic.getDeleted() || showDeleted).map(DataListEntityRecord::create).collect(Collectors.toList());
         return new DataListRecord(list.getName(), entities);
     }
 }
