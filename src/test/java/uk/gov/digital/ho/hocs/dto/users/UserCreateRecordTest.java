@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto.legacy.users;
+package uk.gov.digital.ho.hocs.dto.users;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.model.User;

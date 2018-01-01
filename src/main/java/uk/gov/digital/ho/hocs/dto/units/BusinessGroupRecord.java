@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto.legacy.units;
+package uk.gov.digital.ho.hocs.dto.units;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

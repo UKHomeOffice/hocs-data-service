@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.dto.legacy.topics;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.dto.topics.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.model.Topic;
 import uk.gov.digital.ho.hocs.model.TopicGroup;
 

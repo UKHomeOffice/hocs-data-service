@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateEntityRecord;
-import uk.gov.digital.ho.hocs.dto.legacy.users.UserCreateRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserCreateEntityRecord;
+import uk.gov.digital.ho.hocs.dto.users.UserCreateRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.model.User;
 

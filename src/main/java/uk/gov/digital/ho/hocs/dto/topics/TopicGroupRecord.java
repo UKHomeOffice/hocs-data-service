@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.dto.legacy.topics;
+package uk.gov.digital.ho.hocs.dto.topics;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
