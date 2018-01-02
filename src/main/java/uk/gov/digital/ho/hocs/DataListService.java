@@ -37,18 +37,14 @@ public class DataListService {
     }
 
     @Cacheable(value = "list")
-    public Set<DataList> getAllDataLists() throws ListNotFoundException {
-        Set<DataList> list = repo.findAllByDeletedIsFalse();
-        if (list.isEmpty()) {
-            throw new ListNotFoundException();
-        }
-        return list;
+    public Set<DataList> getAllDataLists() {
+        return repo.findAllByDeletedIsFalse();
     }
 
     @Caching( evict = {@CacheEvict(value = "list", key = "#newDataList.name"),
                        @CacheEvict(value = "list")})
     public void updateDataList(DataList newDataList) {
-        if(newDataList != null) {
+        if(newDataList != null && newDataList.getName() != null && newDataList.getEntities() != null) {
             DataList jpaDataList = repo.findOneByName(newDataList.getName());
 
             // Update existing list

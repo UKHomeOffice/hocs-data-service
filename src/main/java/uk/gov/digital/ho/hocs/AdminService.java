@@ -8,19 +8,19 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AdminService {
 
-    private final BusinessGroupService businessGroupService;
+    private final BusinessUnitService businessUnitService;
     private final DataListService dataListService;
     private final HouseService houseService;
     private final TopicsService topicsService;
     private final UserService userService;
 
     @Autowired
-    public AdminService(BusinessGroupService businessGroupService,
+    public AdminService(BusinessUnitService businessUnitService,
                         DataListService dataListService,
                         HouseService houseService,
                         TopicsService topicsService,
                         UserService userService) {
-        this.businessGroupService = businessGroupService;
+        this.businessUnitService = businessUnitService;
         this.dataListService = dataListService;
         this.houseService = houseService;
         this.topicsService = topicsService;
@@ -28,7 +28,7 @@ public class AdminService {
     }
 
     public void clearCache() {
-        businessGroupService.clearCache();
+        businessUnitService.clearCache();
         dataListService.clearCache();
         houseService.clearCache();
         topicsService.clearCache();

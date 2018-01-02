@@ -20,12 +20,12 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class BusinessGroupService {
+public class BusinessUnitService {
     private final BusinessUnitRepository unitsRepo;
     private final BusinessTeamRepository teamsRepo;
 
     @Autowired
-    public BusinessGroupService(BusinessUnitRepository unitsRepo, BusinessTeamRepository teamsRepo) {
+    public BusinessUnitService(BusinessUnitRepository unitsRepo, BusinessTeamRepository teamsRepo) {
         this.unitsRepo = unitsRepo;
         this.teamsRepo = teamsRepo;
     }

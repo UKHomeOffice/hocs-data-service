@@ -23,24 +23,24 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-public class BusinessGroupResource {
-    private final BusinessGroupService businessGroupService;
+public class BusinessUnitResource {
+    private final BusinessUnitService businessUnitService;
 
     @Autowired
-    public BusinessGroupResource(BusinessGroupService businessGroupService) {
-        this.businessGroupService = businessGroupService;
+    public BusinessUnitResource(BusinessUnitService businessUnitService) {
+        this.businessUnitService = businessUnitService;
     }
 
-    @RequestMapping(value = "/groups", method = {RequestMethod.PUT, RequestMethod.POST})
+    @RequestMapping(value = "/units", method = {RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity putGroups(@RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
-            log.info("Parsing Group File - PUT");
+            log.info("Parsing Unit File");
             try {
                 Set<CSVBusinessGroupLine> lines = getCsvGroupLines(file);
-                businessGroupService.updateBusinessUnits(lines);
+                businessUnitService.updateBusinessUnits(lines);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException | GroupCreationException e) {
-                log.info("Groups not created");
+                log.info("Units not created");
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
@@ -48,27 +48,27 @@ public class BusinessGroupResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = {"/groups", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/units", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET)
     public ResponseEntity<List<BusinessUnitRecord>> getGroups(){
-        log.info("All Groups requested");
+        log.info("All Units requested");
         try {
-            Set<BusinessUnit> groups = businessGroupService.getAllBusinessUnits();
+            Set<BusinessUnit> groups = businessUnitService.getAllBusinessUnits();
             return ResponseEntity.ok(groups.stream().map(BusinessUnitRecord::create).collect(Collectors.toList()));
         } catch (ListNotFoundException e) {
-            log.info("\"All Groups\" not found");
+            log.info("No Units found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
-    @RequestMapping(value = "/groups/publish", method = RequestMethod.GET)
+    @RequestMapping(value = "/units/publish", method = RequestMethod.GET)
     public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
-        log.info("export teams requested");
+        log.info("Export Units requested");
         try {
-            businessGroupService.getGroupsCreateList();
+            businessUnitService.getGroupsCreateList();
             return ResponseEntity.ok().build();
         } catch (ListNotFoundException e) {
-            log.info("export teams not found");
+            log.info("No Units found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
