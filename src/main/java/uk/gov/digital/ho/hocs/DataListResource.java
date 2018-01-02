@@ -29,8 +29,8 @@ public class DataListResource {
         try {
             dataListService.updateDataList(new DataList(dlr));
             return ResponseEntity.ok().build();
-        } catch (EntityCreationException e) {
-            log.info("List \"{}\" not created", dlr.getName());
+        } catch(EntityCreationException e) {
+            log.info("Unable to update List \"{}\" ", dlr.getName());
             log.info(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
@@ -51,15 +51,9 @@ public class DataListResource {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity<List<DataListRecord>> getAllLists() {
-        log.info("List \"Legacy TopicGroup\" requested");
-        try {
-            Set<DataList> lists = dataListService.getAllDataLists();
-            return ResponseEntity.ok(lists.stream().map(DataListRecord::create).collect(Collectors.toList()));
-        } catch (ListNotFoundException e) {
-            log.info("List \"Legacy TopicGroup\" not found");
-            log.info(e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
+        log.info("All Lists requested");
+        Set<DataList> lists = dataListService.getAllDataLists();
+        return ResponseEntity.ok(lists.stream().map(DataListRecord::create).collect(Collectors.toList()));
     }
 
 }

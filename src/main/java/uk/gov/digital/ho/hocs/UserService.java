@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BusinessGroupService groupService;
+    private final BusinessUnitService groupService;
     private final AlfrescoClient alfrescoClient;
 
     @Autowired
-    public UserService(UserRepository userRepository, BusinessGroupService groupService, AlfrescoClient alfrescoClient) {
+    public UserService(UserRepository userRepository, BusinessUnitService groupService, AlfrescoClient alfrescoClient) {
         this.userRepository = userRepository;
         this.groupService = groupService;
         this.alfrescoClient = alfrescoClient;

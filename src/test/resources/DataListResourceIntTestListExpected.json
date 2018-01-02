@@ -1,0 +1,7 @@
+{
+  "name": "TestList",
+  "entities" : [ {
+    "text": "TopText",
+    "value": "TOP_VAL"
+  } ]
+}

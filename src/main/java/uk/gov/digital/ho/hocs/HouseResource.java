@@ -67,14 +67,14 @@ public class HouseResource {
         }
     }
 
-    @RequestMapping(value = "/houses/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/houses", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Set<HouseRecord>> getAllHouses() {
         log.info(" All Houses requested");
         try {
             Set<House> houses = houseService.getAllHouses();
             return ResponseEntity.ok(houses.stream().map(HouseRecord::create).collect(Collectors.toSet()));
         } catch (ListNotFoundException e) {
-            log.info("Houses not found");
+            log.info("No Houses found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }

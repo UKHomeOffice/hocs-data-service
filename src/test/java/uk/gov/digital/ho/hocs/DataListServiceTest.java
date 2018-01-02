@@ -61,14 +61,6 @@ public class DataListServiceTest {
         assertThat(records.get(0).getEntities()).hasSize(1);
     }
 
-    @Test(expected = ListNotFoundException.class)
-    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-
-        List<DataList> records = service.getAllDataLists().stream().collect(Collectors.toList());
-        verify(mockRepo).findAllByDeletedIsFalse();
-        assertThat(records).isEmpty();
-    }
-
     @Test
     public void testCollaboratorsGettingDataList() throws ListNotFoundException {
         when(mockRepo.findOneByNameAndDeletedIsFalse(TEST_LIST)).thenReturn(getDataList());
