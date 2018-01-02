@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS units
     reference_name   TEXT            NOT NULL,
     deleted          BOOLEAN         DEFAULT FALSE NOT NULL,
 
-    CONSTRAINT unit_name_ref_idempotent UNIQUE (display_name, reference_name),
+    CONSTRAINT unit_name_ref_idempotent UNIQUE (display_name, reference_name)
 );
 
 CREATE INDEX idx_units_reference_name ON units (reference_name);
