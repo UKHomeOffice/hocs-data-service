@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS entities
     deleted          BOOLEAN        DEFAULT FALSE NOT NULL,
 
     CONSTRAINT entity_name_ref_idempotent UNIQUE (value, text, list_id),
-    CONSTRAINT fk_list_id FOREIGN KEY (list_id) REFERENCES lists(id),
+    CONSTRAINT fk_list_id FOREIGN KEY (list_id) REFERENCES lists(id)
 );
 
 CREATE INDEX idx_list_id ON entities (list_id);
