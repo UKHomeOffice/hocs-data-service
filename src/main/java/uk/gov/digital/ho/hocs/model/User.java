@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @Table(name = "users")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = "userName")
-public class User {
+public class User implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -46,7 +47,7 @@ public class User {
     @Setter
     private Boolean deleted = false;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "users_teams",
             joinColumns = { @JoinColumn(name = "user_id") },

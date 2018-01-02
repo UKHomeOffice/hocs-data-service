@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @Table(name = "topic_groups")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"name", "caseType"})
-public class TopicGroup {
+public class TopicGroup implements Serializable {
 
     @Id
     @Column(name = "id")

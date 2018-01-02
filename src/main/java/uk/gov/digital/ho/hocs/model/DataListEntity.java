@@ -4,13 +4,14 @@ import lombok.*;
 import uk.gov.digital.ho.hocs.dto.dataList.DataListEntityRecord;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Entity
 @Table(name = "entities")
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(of = {"text", "value'"})
-public class DataListEntity {
+@EqualsAndHashCode(of = {"text", "value"})
+public class DataListEntity implements Serializable {
 
     @Id
     @Column(name = "id")

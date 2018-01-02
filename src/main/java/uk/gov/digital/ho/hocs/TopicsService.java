@@ -5,7 +5,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
@@ -36,17 +35,13 @@ public class TopicsService {
         return list;
     }
 
-    @Cacheable(value = "topics", key = "all")
-    public Set<TopicGroup> getAllTopics() throws ListNotFoundException {
+    @Cacheable(value = "topics")
+    public Set<TopicGroup> getAllTopics() {
         Set<TopicGroup> list = repo.findAllByDeletedIsFalse();
-        if (list.isEmpty()) {
-            throw new ListNotFoundException();
-        }
         return list;
     }
 
-    @Caching( evict = {@CacheEvict(value = "topics", key = "#caseType"),
-                       @CacheEvict(value = "topics", key = "all")})
+    @CacheEvict(value = "topics", allEntries = true)
     public void updateTopics(Set<CSVTopicLine> lines, String caseType) {
        if(lines != null && caseType != null) {
            List<TopicGroup> newTopics = buildTopicGroups(lines, caseType);
@@ -95,11 +90,6 @@ public class TopicsService {
        } else{
            throw new EntityCreationException("Unable to update entity");
        }
-    }
-
-    @CacheEvict(value = "topics", allEntries = true)
-    public void clearCache(){
-        log.info("All topics cache cleared");
     }
 
     private static List<TopicGroup> buildTopicGroups(Set<CSVTopicLine> lines, String caseType) {

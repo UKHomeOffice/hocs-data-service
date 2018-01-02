@@ -82,14 +82,6 @@ public class BusinessTeamServiceTest {
         assertThat(records.get(0).getDisplayName()).isEqualTo("businessGroupName");
     }
 
-    @Test(expected = ListNotFoundException.class)
-    public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-
-        List<BusinessUnit> records = BusinessUnitService.getAllBusinessUnits().stream().collect(Collectors.toList());
-        verify(mockUnitRepo).findAllByDeletedIsFalse();
-        assertThat(records).isEmpty();
-    }
-
     @Test
     public void testCreateList() throws GroupCreationException {
         BusinessUnitService.updateBusinessUnits(buildValidCSVBusinessGroupLines());

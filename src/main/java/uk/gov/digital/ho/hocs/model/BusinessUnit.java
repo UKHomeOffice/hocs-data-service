@@ -7,6 +7,7 @@ import lombok.Setter;
 import uk.gov.digital.ho.hocs.exception.GroupCreationException;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @Table(name = "units")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"displayName", "referenceName"})
-public class BusinessUnit {
+public class BusinessUnit implements Serializable {
 
     @Id
     @Column(name = "id")

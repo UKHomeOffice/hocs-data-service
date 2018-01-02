@@ -5,7 +5,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
@@ -31,7 +30,7 @@ public class HouseService {
         this.listConsumerService = listConsumerService;
     }
 
-    @Cacheable(value = "members", key = "#houseName")
+    @Cacheable(value = "members", key = "#name")
     public House getHouseByName(String houseName) throws ListNotFoundException {
        House house = repo.findOneByNameAndDeletedIsFalse(houseName);
         if (house == null) {
@@ -40,17 +39,13 @@ public class HouseService {
         return house;
     }
 
-    @Cacheable(value = "members", key = "all")
-    public Set<House> getAllHouses() throws ListNotFoundException {
+    @Cacheable(value = "members")
+    public Set<House> getAllHouses() {
         Set<House> list = repo.findAllByDeletedIsFalse();
-        if (list.isEmpty()) {
-            throw new ListNotFoundException();
-        }
         return list;
     }
 
-    @Caching( evict = {@CacheEvict(value = "members", key = "#house.name"),
-                       @CacheEvict(value = "members", key = "all")})
+    @CacheEvict(value = "members", allEntries = true)
     public void updateHouse(House newHouse) {
         if(newHouse != null) {
             House jpaHouse = repo.findOneByName(newHouse.getName());
@@ -87,11 +82,6 @@ public class HouseService {
     }
 
     @CacheEvict(value = "members", allEntries = true)
-    public void clearCache(){
-        log.info("All members cache cleared");
-    }
-
-
     public void updateWebMemberLists() throws IngestException {
         updateHouse(listConsumerService.createFromEuropeanParliamentAPI());
         updateHouse(listConsumerService.createFromIrishParliamentAPI());

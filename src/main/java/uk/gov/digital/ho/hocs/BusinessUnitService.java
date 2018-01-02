@@ -5,7 +5,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.dto.units.PublishUnitRecord;
@@ -38,28 +37,36 @@ public class BusinessUnitService {
             throw new ListNotFoundException();
         }
     }
+    @Cacheable(value = "units", key="#referenceName")
+    public Set<BusinessTeam> getTeamByReference(String referenceName) throws ListNotFoundException {
+        Set<BusinessTeam> teams = new HashSet<>();
 
-    @Cacheable(value = "teams", key = "#referenceName")
-    public BusinessTeam getTeamByReference(String referenceName) throws ListNotFoundException {
         BusinessTeam businessTeam = teamsRepo.findOneByReferenceNameAndDeletedIsFalse(referenceName);
-        if(businessTeam == null)
-        {
-            throw new ListNotFoundException();
+
+        if(businessTeam != null){
+            teams.add(businessTeam);
         }
-        return businessTeam;
+        else{
+            // Might be trying to add permissions to an entire unit
+            BusinessUnit businessUnit = unitsRepo.findOneByReferenceNameAndDeletedIsFalse(referenceName);
+            if(businessUnit != null && businessUnit.getTeams() != null){
+                teams.addAll(businessUnit.getTeams());
+            }
+            else {
+                throw new ListNotFoundException();
+            }
+
+        }
+        return teams;
     }
 
-    @Cacheable(value = "units", key = "all")
-    public Set<BusinessUnit> getAllBusinessUnits() throws ListNotFoundException {
+    @Cacheable(value = "units")
+    public Set<BusinessUnit> getAllBusinessUnits() {
         Set<BusinessUnit> list = unitsRepo.findAllByDeletedIsFalse();
-        if (list.isEmpty()) {
-            throw new ListNotFoundException();
-        }
         return list;
     }
 
-    @Caching( evict = {@CacheEvict(value = "units", allEntries = true),
-                       @CacheEvict(value = "teams", allEntries = true)})
+    @CacheEvict(value = "units", allEntries = true)
     public void updateBusinessUnits(Set<CSVBusinessGroupLine> lines) throws GroupCreationException {
         if(lines != null) {
             List<BusinessUnit> newUnits = buildBusinessUnits(lines);
@@ -108,12 +115,6 @@ public class BusinessUnitService {
             throw new EntityCreationException("Unable to update entity");
         }
 
-    }
-
-    @Caching( evict = {@CacheEvict(value = "units", allEntries = true),
-                       @CacheEvict(value = "teams", allEntries = true)})
-    public void clearCache(){
-        log.info("All teams cache cleared");
     }
 
     private static List<BusinessUnit> buildBusinessUnits(Set<CSVBusinessGroupLine> lines) throws GroupCreationException {

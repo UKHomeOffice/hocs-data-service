@@ -28,7 +28,7 @@ curl -vX POST $target_uri/topics/UKVI -F "file=@$data_dir/UKVI_Topics.csv" \
  -H "Content-Type: multipart/form-data"
 
 echo "Posting Unit and Team structures"
-curl -vX POST $target_uri/groups -F "file=@$data_dir/Unit_Team_Structure.csv" \
+curl -vX POST $target_uri/units -F "file=@$data_dir/Unit_Team_Structure.csv" \
  -H "Content-Type: multipart/form-data"
 
 echo "Posting DCU Users"

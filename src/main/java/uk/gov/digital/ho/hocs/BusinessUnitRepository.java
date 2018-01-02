@@ -10,4 +10,6 @@ import java.util.Set;
 public interface BusinessUnitRepository extends CrudRepository<BusinessUnit, Long> {
     Set<BusinessUnit> findAll();
     Set<BusinessUnit> findAllByDeletedIsFalse();
+
+    BusinessUnit findOneByReferenceNameAndDeletedIsFalse(String referenceName);
 }

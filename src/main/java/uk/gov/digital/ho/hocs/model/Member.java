@@ -3,13 +3,14 @@ package uk.gov.digital.ho.hocs.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Entity
 @Table(name = "members")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"displayName", "referenceName"})
-public class Member {
+public class Member implements Serializable {
 
     @Id
     @Column(name = "id")
