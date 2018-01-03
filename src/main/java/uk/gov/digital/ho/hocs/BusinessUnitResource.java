@@ -60,8 +60,7 @@ public class BusinessUnitResource {
     public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
         log.info("Export Units requested");
         try {
-            businessUnitService.getGroupsCreateList();
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(businessUnitService.getGroupsCreateList());
         } catch (ListNotFoundException e) {
             log.info("No Units found");
             log.info(e.getMessage());

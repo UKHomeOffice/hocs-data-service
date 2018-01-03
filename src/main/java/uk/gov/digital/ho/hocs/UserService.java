@@ -16,9 +16,7 @@ import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
 import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,11 +44,11 @@ public class UserService {
     }
 
     public void publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {
-        List<User> users = new ArrayList<>(userRepository.findAllByDepartment(departmentRef));
+        Set<User> users = userRepository.findAllByDepartment(departmentRef);
         if (users.isEmpty()) {
             throw new ListNotFoundException();
         }
-        alfrescoClient.postRecords(users);
+        alfrescoClient.postRecords(users.stream().collect(Collectors.toList()));
     }
 
     @Cacheable(value = "users", key = "#department")
