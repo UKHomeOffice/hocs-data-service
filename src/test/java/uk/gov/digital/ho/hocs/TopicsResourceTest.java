@@ -85,14 +85,4 @@ public class TopicsResourceTest {
         assertThat(httpResponse.getBody()).hasSize(1);
 
     }
-
-    @Test
-    public void shouldReturnNotFoundWhenExceptionEntity() throws ListNotFoundException {
-        when(topicsService.getAllTopics()).thenThrow(new ListNotFoundException());
-        ResponseEntity<List<TopicGroupRecord>> httpResponse = topicsResource.getAllTopics();
-
-        assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(httpResponse.getBody()).isNull();
-
-    }
 }

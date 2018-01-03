@@ -59,14 +59,6 @@ public class TopicsServiceTest {
         assertThat(records.get(0).getCaseType()).isEqualTo("CaseType");
     }
 
-    @Test(expected = ListNotFoundException.class)
-    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-
-        List<TopicGroup> records = topicsService.getAllTopics().stream().collect(Collectors.toList());
-        verify(mockRepo).findAllByDeletedIsFalse();
-        assertThat(records).isEmpty();
-    }
-
     @Test
     public void testCollaboratorsGettingAllTopics() throws ListNotFoundException {
         when(mockRepo.findAllByCaseTypeAndDeletedIsFalse(CASETYPE)).thenReturn(buildTopicList());

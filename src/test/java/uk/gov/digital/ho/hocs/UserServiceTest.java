@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyList;
@@ -93,7 +94,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceCreatesUsersFromCSV() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
 
         List<String> groups = new ArrayList<>();
         groups.add("A_GROUP");
@@ -167,7 +168,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVAdd() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -192,7 +193,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVRemove() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -213,7 +214,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVBoth() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -236,7 +237,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVNothingSame() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");
@@ -259,7 +260,7 @@ public class UserServiceTest {
 
     @Test
     public void testServiceUpdateUsersFromCSVNothingNone() throws ListNotFoundException, GroupCreationException {
-        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(new BusinessTeam("disp"));
+        when(mockBusinessUnitService.getTeamByReference("A_GROUP")).thenReturn(Arrays.asList(new BusinessTeam("disp")).stream().collect(Collectors.toSet()));
         Set<User> users = new HashSet<>();
         User userOne = new User("First1", "Last1", "Email1", "Email1", "Dept");
         User userTwo = new User("First2", "Last2", "Email2", "Email2", "Dept");

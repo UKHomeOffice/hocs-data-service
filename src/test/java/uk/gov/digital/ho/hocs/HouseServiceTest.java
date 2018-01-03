@@ -67,14 +67,6 @@ public class HouseServiceTest {
         assertThat(records.get(0).getMembers()).hasSize(2);
     }
 
-    @Test(expected = ListNotFoundException.class)
-    public void testLegacyListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-
-        List<House> records = houseService.getAllHouses().stream().collect(Collectors.toList());
-        verify(mockRepo).findAllByDeletedIsFalse();
-        assertThat(records).isEmpty();
-    }
-
     @Test
     public void testCollaboratorsGettingHouse() throws ListNotFoundException {
         when(mockRepo.findOneByNameAndDeletedIsFalse(HOUSENAME)).thenReturn(getHouse());

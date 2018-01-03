@@ -5,7 +5,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,10 @@ import uk.gov.digital.ho.hocs.ingest.users.CSVUserLine;
 import uk.gov.digital.ho.hocs.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +38,6 @@ public class UserService {
         this.alfrescoClient = alfrescoClient;
     }
 
-    @Cacheable(value = "usersByDeptName", key = "#departmentRef")
     public PublishUserListRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByDepartment(departmentRef);
         if(users.isEmpty()){
@@ -53,9 +54,9 @@ public class UserService {
         alfrescoClient.postRecords(users);
     }
 
-    @Cacheable(value = "usersByGroupName", key = "#groupRef")
-    public UserSetRecord getUsersByGroupName(String groupRef) throws ListNotFoundException {
-        Set<User> users = userRepository.findAllByBusinessGroupReference(groupRef);
+    @Cacheable(value = "users", key = "#department")
+    public UserSetRecord getUsersByGroupName(String department) throws ListNotFoundException {
+        Set<User> users = userRepository.findAllByBusinessGroupReference(department);
         if(users.isEmpty()){
             throw new ListNotFoundException();
         }
@@ -64,9 +65,8 @@ public class UserService {
 
     //TODO: this behaviour is wrong, we should publish the update, deleting the accounts from alfresco, should also unallocate cases too.
     @Transactional
-    @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
-    public void updateUsersByDepartment(Set<CSVUserLine> lines,String department) throws ListNotFoundException {
+    @CacheEvict(value = "users", allEntries = true)
+    public void updateUsersByDepartment(Set<CSVUserLine> lines, String department) throws ListNotFoundException {
 
         Set<User> users = getUsers(lines, department);
         Set<User> jpaUsers = userRepository.findAllByDepartment(department);
@@ -85,12 +85,6 @@ public class UserService {
         }
     }
 
-    @Caching( evict = {@CacheEvict(value = "usersByDeptName", allEntries = true),
-                       @CacheEvict(value = "usersByGroupName", allEntries = true)})
-    public void clearCache(){
-        log.info("All user cache cleared");
-    }
-
     private Set<User> getUsers(Set<CSVUserLine> lines, String department) throws ListNotFoundException {
         Set<User> users = new HashSet<>();
         for (CSVUserLine line : lines) {
@@ -98,7 +92,7 @@ public class UserService {
 
             Set<BusinessTeam> groups = new HashSet<>();
             for(String group : line.getGroups()) {
-                groups.add(groupService.getTeamByReference(group));
+                groups.addAll(groupService.getTeamByReference(group));
             }
             user.setTeams(groups);
             users.add(user);

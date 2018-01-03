@@ -53,8 +53,8 @@ public class ListConsumerService {
     }
 
     public House createFromScottishParliamentAPI() throws IngestException {
-        ScottishMembers scottishMembers = getMembersFromAPI(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMembers.class);
-        Set<Member> members = scottishMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+       ScottishMember[] scottishMembers = getMembersFromAPI(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMember[].class);
+        Set<Member> members = Arrays.asList(scottishMembers).stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
         return new House(HOUSE_SCOTTISH_PARLIAMENT, members);
     }
 

@@ -50,8 +50,8 @@ public class HouseResource {
             return ResponseEntity.ok().build();
         } catch (IngestException e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
     @RequestMapping(value = "/houses/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -70,32 +70,19 @@ public class HouseResource {
     @RequestMapping(value = "/houses", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Set<HouseRecord>> getAllHouses() {
         log.info(" All Houses requested");
-        try {
-            Set<House> houses = houseService.getAllHouses();
-            return ResponseEntity.ok(houses.stream().map(HouseRecord::create).collect(Collectors.toSet()));
-        } catch (ListNotFoundException e) {
-            log.info("No Houses found");
-            log.info(e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
+        Set<House> houses = houseService.getAllHouses();
+        return ResponseEntity.ok(houses.stream().map(HouseRecord::create).collect(Collectors.toSet()));
     }
 
     // This is legacy behaviour and just returns all entries in the house table.
     @Deprecated()
     @RequestMapping(value = "/list/ukvi_member_list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<DataListRecord> getUkviMinisterListByName(@PathVariable("name") String name) {
-
-        log.info("House \"{}\" requested", name);
-        try {
-            Set<House> houses = houseService.getAllHouses();
-            List<DataListEntityRecord> dataListEntityRecords = houses.stream().map(h -> translateToDataListRecord(h)).flatMap(l -> l.stream()).collect(Collectors.toList());
-            DataListRecord list = new DataListRecord("ukvi_member_list", dataListEntityRecords );
-            return ResponseEntity.ok(list);
-        } catch (ListNotFoundException e) {
-            log.info("House \"{}\" not found", name);
-            log.info(e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<DataListRecord> getUkviMinisterListByName() {
+    log.info("ukvi_member_list \"{}\" requested");
+    Set<House> houses = houseService.getAllHouses();
+    List<DataListEntityRecord> dataListEntityRecords = houses.stream().map(h -> translateToDataListRecord(h)).flatMap(l -> l.stream()).collect(Collectors.toList());
+    DataListRecord list = new DataListRecord("ukvi_member_list", dataListEntityRecords );
+    return ResponseEntity.ok(list);
 
     }
 

@@ -53,7 +53,7 @@ public class BusinessTeamServiceTest {
         BusinessTeam businessTeamOne = new BusinessTeam("businessGroupName");
         when(mockTeamRepo.findOneByReferenceNameAndDeletedIsFalse(CASETYPE)).thenReturn(businessTeamOne);
 
-        BusinessTeam record = BusinessUnitService.getTeamByReference(CASETYPE);
+        BusinessTeam record = BusinessUnitService.getTeamByReference(CASETYPE).stream().collect(Collectors.toList()).get(0);
 
         verify(mockTeamRepo).findOneByReferenceNameAndDeletedIsFalse(CASETYPE);
 
@@ -80,14 +80,6 @@ public class BusinessTeamServiceTest {
         assertThat(records).hasOnlyElementsOfType(BusinessUnit.class);
         assertThat(records).hasSize(1);
         assertThat(records.get(0).getDisplayName()).isEqualTo("businessGroupName");
-    }
-
-    @Test(expected = ListNotFoundException.class)
-    public void testAllListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-
-        List<BusinessUnit> records = BusinessUnitService.getAllBusinessUnits().stream().collect(Collectors.toList());
-        verify(mockUnitRepo).findAllByDeletedIsFalse();
-        assertThat(records).isEmpty();
     }
 
     @Test

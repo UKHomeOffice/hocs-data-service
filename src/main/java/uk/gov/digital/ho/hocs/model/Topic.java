@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Entity
 @Table(name = "topic")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"name", "topicUnit", "topicTeam"})
-public class Topic {
+public class Topic implements Serializable {
 
     @Id
     @Column(name = "id")

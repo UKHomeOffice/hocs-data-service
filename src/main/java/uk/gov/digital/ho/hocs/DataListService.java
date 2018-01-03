@@ -5,7 +5,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
@@ -41,8 +40,7 @@ public class DataListService {
         return repo.findAllByDeletedIsFalse();
     }
 
-    @Caching( evict = {@CacheEvict(value = "list", key = "#newDataList.name"),
-                       @CacheEvict(value = "list")})
+    @CacheEvict(value = "list", allEntries = true)
     public void updateDataList(DataList newDataList) {
         if(newDataList != null && newDataList.getName() != null && newDataList.getEntities() != null) {
             DataList jpaDataList = repo.findOneByName(newDataList.getName());
@@ -75,11 +73,6 @@ public class DataListService {
         } else{
             throw new EntityCreationException("Unable to update entity");
         }
-    }
-
-    @CacheEvict(value = "list", allEntries = true)
-    public void clearCache(){
-        log.info("All lists cache cleared");
     }
 
     private void saveList(DataList dataList) throws EntityCreationException {

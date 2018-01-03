@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
@@ -36,7 +37,7 @@ public class DataListResource {
         }
     }
 
-    @RequestMapping(value = "/list/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DataListRecord> getListByName(@PathVariable("name") String name) {
         log.info("List \"{}\" requested", name);
         try {
@@ -49,7 +50,7 @@ public class DataListResource {
         }
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<DataListRecord>> getAllLists() {
         log.info("All Lists requested");
         Set<DataList> lists = dataListService.getAllDataLists();

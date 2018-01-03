@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,20 +49,14 @@ public class BusinessUnitResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = {"/units", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/units", "s/homeoffice/cts/allTeams"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<BusinessUnitRecord>> getGroups(){
         log.info("All Units requested");
-        try {
-            Set<BusinessUnit> groups = businessUnitService.getAllBusinessUnits();
-            return ResponseEntity.ok(groups.stream().map(BusinessUnitRecord::create).collect(Collectors.toList()));
-        } catch (ListNotFoundException e) {
-            log.info("No Units found");
-            log.info(e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
+        Set<BusinessUnit> groups = businessUnitService.getAllBusinessUnits();
+        return ResponseEntity.ok(groups.stream().map(BusinessUnitRecord::create).collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "/units/publish", method = RequestMethod.GET)
+    @RequestMapping(value = "/units/publish", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
         log.info("Export Units requested");
         try {

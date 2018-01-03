@@ -7,6 +7,7 @@ import lombok.Setter;
 import uk.gov.digital.ho.hocs.dto.dataList.DataListRecord;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @Table(name = "lists")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"name"})
-public class DataList {
+public class DataList implements Serializable {
 
     @Id
     @Column(name = "id")

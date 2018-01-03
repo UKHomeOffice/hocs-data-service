@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +42,7 @@ public class UserResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = {"/users/{group}","s/homeoffice/cts/teamUsers"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/users/{group}","s/homeoffice/cts/teamUsers"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserSetRecord> getUsersByGroup(@PathVariable String group) {
         log.info("\"{}\" requested", group);
         try {
@@ -53,7 +54,7 @@ public class UserResource {
         }
     }
 
-    @RequestMapping(value = "/users/{group}/publish/", method = RequestMethod.GET)
+    @RequestMapping(value = "/users/{group}/publish/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PublishUserListRecord>> postUsersToAlfresco(@PathVariable("group") String group) {
         try {
             userService.publishUsersByDepartmentName(group);

@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,7 @@ public class TopicsResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = "/topics/{caseType}", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics/{caseType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<TopicGroupRecord>> getTopicsByReference(@PathVariable("caseType") String caseType) {
         log.info("List \"{}\" requested", caseType);
         try {
@@ -57,17 +58,11 @@ public class TopicsResource {
         }
     }
 
-    @RequestMapping(value = "/topics", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<TopicGroupRecord>> getAllTopics() {
         log.info("All TopicGroups requested");
-        try {
-            Set<TopicGroup> topics = topicsService.getAllTopics();
-            return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
-        } catch (ListNotFoundException e) {
-            log.info("No TopicGroups found");
-            log.info(e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
+        Set<TopicGroup> topics = topicsService.getAllTopics();
+        return ResponseEntity.ok(topics.stream().map(TopicGroupRecord::create).collect(Collectors.toList()));
     }
 
     private Set<CSVTopicLine> getCsvTopicLines(MultipartFile file, String unitName) {

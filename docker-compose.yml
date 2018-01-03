@@ -2,6 +2,15 @@ version: '3.1'
 
 services:
 
+  redis:
+    image: redis
+
+    ports:
+      - 6380:6379
+
+    networks:
+      - sls-network
+
   database:
     image: postgres
 
@@ -33,6 +42,8 @@ services:
       sls.schema.name: public
       env.hocs.api.user: admin
       env.hocs.api.password: admin
+      env.hocs.redis.host: redis
+      env.hocs.redis.port: 6379
       env.hocs.api.host: https://vagrant.hocs.homeoffice.gov.uk:8080
 
     depends_on:
