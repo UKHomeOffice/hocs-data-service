@@ -26,15 +26,15 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/users/{group}", method = {RequestMethod.PUT, RequestMethod.POST})
-    public ResponseEntity<UserSetRecord> putUsersByGroup(@PathVariable("group") String group, @RequestParam("file") MultipartFile file) {
+    @RequestMapping(value = "/users/{department}", method = {RequestMethod.PUT, RequestMethod.POST})
+    public ResponseEntity<UserSetRecord> putUsersByGroup(@PathVariable("department") String department, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
-            log.info("Parsing \"{}\" Users File", group);
+            log.info("Parsing \"{}\" Users File", department);
             try {
-                userService.updateUsersByDepartment(new UserFileParser(file).getLines(), group);
+                userService.updateUsersByDepartment(new UserFileParser(file).getLines(), department);
                 return ResponseEntity.ok().build();
             } catch (EntityCreationException | ListNotFoundException e) {
-                log.info("{} Users not created", group);
+                log.info("{} Users not created", department);
                 log.info(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
@@ -42,7 +42,7 @@ public class UserResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = {"/users/{group}","s/homeoffice/cts/teamUsers"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = {"/users/group/{group}",}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserSetRecord> getUsersByGroup(@PathVariable String group) {
         log.info("\"{}\" requested", group);
         try {
@@ -54,10 +54,21 @@ public class UserResource {
         }
     }
 
-    @RequestMapping(value = "/users/{group}/publish/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<PublishUserListRecord>> postUsersToAlfresco(@PathVariable("group") String group) {
+    @RequestMapping(value = "/users/dept/{dept}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<UserSetRecord>> getUsersByDept(@PathVariable("dept") String dept) {
         try {
-            userService.publishUsersByDepartmentName(group);
+            userService.getUsersByDepartmentName(dept);
+            return ResponseEntity.ok().build();
+        } catch (ListNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/users/dept/{dept}/publish/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<PublishUserListRecord>> postUsersToAlfresco(@PathVariable("dept") String dept) {
+        try {
+            userService.publishUsersByDepartmentName(dept);
             return ResponseEntity.ok().build();
 
         } catch (ListNotFoundException e) {
