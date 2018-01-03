@@ -8,7 +8,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.dto.users.UserSetRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
@@ -38,12 +37,12 @@ public class UserService {
         this.alfrescoClient = alfrescoClient;
     }
 
-    public PublishUserListRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
+    public UserSetRecord getUsersByDepartmentName(String departmentRef) throws ListNotFoundException {
         Set<User> users = userRepository.findAllByDepartment(departmentRef);
         if(users.isEmpty()){
             throw new ListNotFoundException();
         }
-        return PublishUserListRecord.create(users);
+        return UserSetRecord.create(users);
     }
 
     public void publishUsersByDepartmentName(String departmentRef) throws ListNotFoundException, AlfrescoPostException {

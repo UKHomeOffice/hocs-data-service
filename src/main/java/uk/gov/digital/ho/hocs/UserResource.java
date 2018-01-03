@@ -7,14 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.dto.users.UserSetRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.ListNotFoundException;
 import uk.gov.digital.ho.hocs.ingest.users.UserFileParser;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -55,10 +52,9 @@ public class UserResource {
     }
 
     @RequestMapping(value = "/users/dept/{dept}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<UserSetRecord>> getUsersByDept(@PathVariable("dept") String dept) {
+    public ResponseEntity<UserSetRecord> getUsersByDept(@PathVariable("dept") String dept) {
         try {
-            userService.getUsersByDepartmentName(dept);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(userService.getUsersByDepartmentName(dept));
         } catch (ListNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
@@ -66,7 +62,7 @@ public class UserResource {
     }
 
     @RequestMapping(value = "/users/dept/{dept}/publish/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<PublishUserListRecord>> postUsersToAlfresco(@PathVariable("dept") String dept) {
+    public ResponseEntity postUsersToAlfresco(@PathVariable("dept") String dept) {
         try {
             userService.publishUsersByDepartmentName(dept);
             return ResponseEntity.ok().build();
