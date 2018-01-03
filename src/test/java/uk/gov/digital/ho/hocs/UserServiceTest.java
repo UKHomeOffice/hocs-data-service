@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.dto.users.UserSetRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
@@ -74,19 +73,19 @@ public class UserServiceTest {
     public void testCollaboratorsGettingDeptList() throws ListNotFoundException {
         when(mockUserRepo.findAllByDepartment(GROUP_REF)).thenReturn(buildValidUserList());
 
-        PublishUserListRecord userRecord = service.getUsersByDepartmentName(GROUP_REF);
+        UserSetRecord userRecord = service.getUsersByDepartmentName(GROUP_REF);
 
         verify(mockUserRepo).findAllByDepartment(GROUP_REF);
 
         assertThat(userRecord).isNotNull();
-        assertThat(userRecord).isInstanceOf(PublishUserListRecord.class);
+        assertThat(userRecord).isInstanceOf(UserSetRecord.class);
         Assertions.assertThat(userRecord.getUsers()).size().isEqualTo(1);
         assertThat(new ArrayList<>(userRecord.getUsers()).get(0).getUserName()).isEqualTo("User");
     }
 
     @Test(expected = ListNotFoundException.class)
     public void testBusinessListNotFoundThrowsListNotFoundException() throws ListNotFoundException {
-        PublishUserListRecord userRecord = service.getUsersByDepartmentName(UNAVAILABLE_RESOURCE);
+        UserSetRecord userRecord = service.getUsersByDepartmentName(UNAVAILABLE_RESOURCE);
 
         verify(mockUserRepo).findAllByDepartment(UNAVAILABLE_RESOURCE);
         assertThat(userRecord).isNull();
