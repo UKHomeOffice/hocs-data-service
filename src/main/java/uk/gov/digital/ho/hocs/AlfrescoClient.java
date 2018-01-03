@@ -61,9 +61,7 @@ public class AlfrescoClient {
         for (PublishUserListRecord records : recordList) {
 
             log.info("Sending batch number: " + batch + " of " + recordList.size());
-
-            PublishUserListRecord asRecord = (PublishUserListRecord) records;
-            Set<PublishUserRecord> users = asRecord.getUsers();
+            Set<PublishUserRecord> users = records.getUsers();
             users.stream().forEach(i -> log.info("Sending user -> " + i.getEmail()));
 
             int statusCode = postRequest(url, records).getStatusCodeValue();
