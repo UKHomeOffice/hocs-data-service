@@ -53,7 +53,7 @@ public class BusinessTeamServiceTest {
         BusinessTeam businessTeamOne = new BusinessTeam("businessGroupName");
         when(mockTeamRepo.findOneByReferenceNameAndDeletedIsFalse(CASETYPE)).thenReturn(businessTeamOne);
 
-        BusinessTeam record = BusinessUnitService.getTeamByReference(CASETYPE);
+        BusinessTeam record = BusinessUnitService.getTeamByReference(CASETYPE).stream().collect(Collectors.toList()).get(0);
 
         verify(mockTeamRepo).findOneByReferenceNameAndDeletedIsFalse(CASETYPE);
 
