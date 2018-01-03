@@ -32,7 +32,7 @@ public class DataListEntityRecord implements Serializable {
     public static DataListEntityRecord create(Member dle, String houseName) {
 
         List<DataListEntityRecordProperty> properties = new ArrayList<>();
-        properties.add(new DataListEntityRecordProperty("HOUSE", houseName));
+        properties.add(new DataListEntityRecordProperty("house", houseName));
 
         return new DataListEntityRecord(dle.getDisplayName(), dle.getReferenceName(), properties);
     }
