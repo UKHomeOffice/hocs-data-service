@@ -23,7 +23,7 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/users/{department}", method = {RequestMethod.PUT, RequestMethod.POST})
+    @RequestMapping(value = "/users/dept/{department}", method = {RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity<UserSetRecord> putUsersByGroup(@PathVariable("department") String department, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             log.info("Parsing \"{}\" Users File", department);
@@ -39,7 +39,7 @@ public class UserResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @RequestMapping(value = {"/users/group/{group}",}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/users/group/{group}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserSetRecord> getUsersByGroup(@PathVariable String group) {
         log.info("\"{}\" requested", group);
         try {
@@ -61,7 +61,7 @@ public class UserResource {
         }
     }
 
-    @RequestMapping(value = "/users/dept/{dept}/publish/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/users/dept/{dept}/publish", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity postUsersToAlfresco(@PathVariable("dept") String dept) {
         try {
             userService.publishUsersByDepartmentName(dept);
