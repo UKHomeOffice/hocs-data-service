@@ -8,7 +8,9 @@ import uk.gov.digital.ho.hocs.model.Member;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 public class DataListEntityRecord implements Serializable {
@@ -20,7 +22,6 @@ public class DataListEntityRecord implements Serializable {
     private String value;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @Getter
     private List<DataListEntityRecordProperty> properties = new ArrayList<>();
 
 
@@ -41,5 +42,13 @@ public class DataListEntityRecord implements Serializable {
     public DataListEntityRecord(String text, String value){
         this.text = text;
         this.value = value;
+    }
+
+    public Map<String, String> getProperties() {
+        Map<String, String> propMap = new HashMap<>();
+        for (DataListEntityRecordProperty property: this.properties) {
+            propMap.put(property.getKey(), property.getValue());
+        }
+        return propMap;
     }
 }
