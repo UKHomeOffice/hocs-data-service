@@ -59,9 +59,5 @@ echo "Posting Minister List"
 curl -vX POST $target_uri/list/ -d "@$data_dir/Minister_List.JSON" \
  -H "Content-Type: application/json"
 
-echo "Posting Welsh Assembly List"
-curl -vX POST $target_uri/houses/ -d "@$data_dir/welsh_assembly_list.json" \
- -H "Content-Type: application/json"
-
 echo "Pulling member information from external API"
 curl -v -o /dev/null -v $target_uri/houses/refresh

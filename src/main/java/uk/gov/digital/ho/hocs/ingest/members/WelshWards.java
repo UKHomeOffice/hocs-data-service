@@ -8,13 +8,13 @@ import lombok.Getter;
 
 import java.util.List;
 
-@JacksonXmlRootElement(localName = "Members")
+@JacksonXmlRootElement(localName = "councillorsbyward")
 @Getter
 @AllArgsConstructor
-public class Members {
+public class WelshWards {
 
-    @JacksonXmlProperty(localName = "Member")
-    @JacksonXmlElementWrapper(localName = "Member", useWrapping = false)
-    private List<UKMember> members;
+    @JacksonXmlProperty(localName = "wards")
+    @JacksonXmlElementWrapper(localName = "wards", useWrapping = true)
+    private List<WelshWard> wards;
 
 }

@@ -84,10 +84,11 @@ public class HouseService {
     @CacheEvict(value = "members", allEntries = true)
     public void updateWebMemberLists() throws IngestException {
         updateHouse(listConsumerService.createFromEuropeanParliamentAPI());
-        updateHouse(listConsumerService.createFromIrishParliamentAPI());
+        updateHouse(listConsumerService.createFromIrishAssemblyAPI());
         updateHouse(listConsumerService.createFromScottishParliamentAPI());
         updateHouse(listConsumerService.createCommonsFromUKParliamentAPI());
         updateHouse(listConsumerService.createLordsFromUKParliamentAPI());
+        updateHouse(listConsumerService.createFromWelshAssemblyAPI());
     }
 
     private void saveMembers(House house) {

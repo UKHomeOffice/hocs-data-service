@@ -23,21 +23,25 @@ public class ListConsumerService {
     final String HOUSE_SCOTTISH_PARLIAMENT = "scottish_parliament";
     final String HOUSE_NORTHERN_IRISH_ASSEMBLY = "northern_irish_assembly";
     final String HOUSE_EUROPEAN_PARLIAMENT = "european_parliament";
+    final String HOUSE_WELSH_ASSEMBLY = "welsh_assembly";
 
     final String API_UK_PARLIAMENT;
     final String API_SCOTTISH_PARLIAMENT;
     final String API_NORTHERN_IRISH_ASSEMBLY;
     final String API_EUROPEAN_PARLIAMENT;
+    final String API_WELSH_ASSEMBLY;
 
     @Autowired
     public ListConsumerService(@Value("${api.uk.parliament}") String apiUkParliament,
                                @Value("${api.scottish.parliament}") String apiScottishParliament,
                                @Value("${api.ni.assembly}") String apiNorthernIrishAssembly,
-                               @Value("${api.european.parliament}") String apiEuropeanParliament) {
+                               @Value("${api.european.parliament}") String apiEuropeanParliament,
+                               @Value("${api.welsh.assembly}") String apiWelshAssembly) {
         this.API_UK_PARLIAMENT = apiUkParliament;
         this.API_SCOTTISH_PARLIAMENT = apiScottishParliament;
         this.API_NORTHERN_IRISH_ASSEMBLY = apiNorthernIrishAssembly;
         this.API_EUROPEAN_PARLIAMENT = apiEuropeanParliament;
+        this.API_WELSH_ASSEMBLY = apiWelshAssembly;
     }
 
     public House createFromEuropeanParliamentAPI() throws IngestException {
@@ -46,7 +50,7 @@ public class ListConsumerService {
         return new House(HOUSE_EUROPEAN_PARLIAMENT, members);
     }
 
-    public House createFromIrishParliamentAPI() throws IngestException {
+    public House createFromIrishAssemblyAPI() throws IngestException {
         IrishMembers irishMembers = getMembersFromAPI(API_NORTHERN_IRISH_ASSEMBLY, MediaType.APPLICATION_XML, IrishMembers.class);
         Set<Member> members = irishMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
         return new House(HOUSE_NORTHERN_IRISH_ASSEMBLY, members);
@@ -54,19 +58,27 @@ public class ListConsumerService {
 
     public House createFromScottishParliamentAPI() throws IngestException {
        ScottishMember[] scottishMembers = getMembersFromAPI(API_SCOTTISH_PARLIAMENT, MediaType.APPLICATION_JSON, ScottishMember[].class);
-        Set<Member> members = Arrays.asList(scottishMembers).stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        Set<Member> members = Arrays.stream(scottishMembers).map(m -> new Member(m.getName())).collect(Collectors.toSet());
         return new House(HOUSE_SCOTTISH_PARLIAMENT, members);
     }
 
     public House createCommonsFromUKParliamentAPI() throws IngestException {
-        Members ukMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_COMMONS), MediaType.APPLICATION_XML, Members.class);
-        Set<Member> members = ukMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        UKMembers ukUKMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_COMMONS), MediaType.APPLICATION_XML, UKMembers.class);
+        Set<Member> members = ukUKMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
         return new House(HOUSE_COMMONS, members);
     }
 
     public House createLordsFromUKParliamentAPI() throws IngestException {
-        Members ukMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_LORDS), MediaType.APPLICATION_XML, Members.class);
-        Set<Member> members = ukMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        UKMembers ukUKMembers = getMembersFromAPI(getFormattedUkEndpoint(HOUSE_LORDS), MediaType.APPLICATION_XML, UKMembers.class);
+        Set<Member> members = ukUKMembers.getMembers().stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
+        return new House(HOUSE_LORDS, members);
+    }
+
+    public House createFromWelshAssemblyAPI() throws IngestException {
+        WelshWards welshWards = getMembersFromAPI(API_WELSH_ASSEMBLY, MediaType.APPLICATION_XML, WelshWards.class);
+        Set<WelshMembers> welshMembers = welshWards.getWards().stream().map(w -> w.getMembers()).collect(Collectors.toSet());
+        Set<WelshMember> welhMemberSet = welshMembers.stream().map(m -> m.getMembers()).flatMap(l -> l.stream()).collect(Collectors.toSet());
+        Set<Member> members = welhMemberSet.stream().map(m -> new Member(m.getName())).collect(Collectors.toSet());
         return new House(HOUSE_LORDS, members);
     }
 
@@ -79,7 +91,7 @@ public class ListConsumerService {
         ResponseEntity<T> response = new RestTemplate().exchange(apiEndpoint, HttpMethod.GET, entity, returnClass);
 
         if (response == null || response.getStatusCodeValue() != 200) {
-            throw new IngestException("Members Not Found at " + apiEndpoint);
+            throw new IngestException("UKMembers Not Found at " + apiEndpoint);
         }
         return response.getBody();
     }

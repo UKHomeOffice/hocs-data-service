@@ -44,7 +44,7 @@ services:
       env.hocs.api.password: admin
       env.hocs.redis.host: redis
       env.hocs.redis.port: 6379
-      env.hocs.api.host: https://vagrant.hocs.homeoffice.gov.uk:8080
+      env.hocs.api.host:
 
     depends_on:
       - database
