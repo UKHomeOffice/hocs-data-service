@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.dto.users.PublishUserRecord;
-import uk.gov.digital.ho.hocs.dto.users.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
-import uk.gov.digital.ho.hocs.model.User;
+import uk.gov.digital.ho.hocs.user.dto.PublishUserListRecord;
+import uk.gov.digital.ho.hocs.user.dto.PublishUserRecord;
+import uk.gov.digital.ho.hocs.user.model.User;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class AlfrescoClient {
 
             log.info("Sending batch number: " + batch + " of " + recordList.size());
             Set<PublishUserRecord> users = records.getUsers();
-            users.stream().forEach(i -> log.info("Sending user -> " + i.getEmail()));
+            users.forEach(i -> log.info("Sending user -> " + i.getEmail()));
 
             int statusCode = postRequest(url, records).getStatusCodeValue();
             if (statusCode != HttpStatus.OK.value()) {
