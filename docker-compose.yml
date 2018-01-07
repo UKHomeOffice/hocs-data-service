@@ -34,7 +34,7 @@ services:
       - postgres
       - redis
     ports:
-      - 8080:8080
+      - 8081:8080
     networks:
       - hocs-network
     command: /app/scripts/run.sh hocs-data-service:8080 /app/data admin admin
