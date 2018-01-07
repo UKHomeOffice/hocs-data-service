@@ -8,12 +8,12 @@ pass=${4}
 # Wait for the hocs data service to become available
 until curl $user:$pass -s $target_uri/healthz
 do
-    echo "Waiting for hocs-data-service to come up"
+    echo "Waiting for $target_uri to come up"
     sleep 2
 done
 
 # Begin POSTs to the service to seed data
-echo "hocs-data-service is up! Seeding data"
+echo "$target_uri is up! Seeding data"
 
 sleep 2
 

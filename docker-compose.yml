@@ -19,16 +19,16 @@ services:
      POSTGRES_USER: root
      POSTGRES_PASSWORD: dev
     volumes:
-      - dbdata:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql
 
-  hocs-data-service:
+  data-service:
     build:
       context: .
     environment:
       spring.profiles.active: postgres
       db.host: postgres
-      db.user: root
-      db.pass: dev
+      db.username: root
+      db.password: dev
       redis.host: redis
     depends_on:
       - postgres
@@ -37,7 +37,7 @@ services:
       - 8081:8080
     networks:
       - hocs-network
-    command: /app/scripts/run.sh hocs-data-service:8080 /app/data admin admin
+    command: /app/scripts/run.sh data-service:8080 /app/data admin admin
     volumes:
       - ../hocs-data/data/:/app/data/
 
@@ -45,4 +45,4 @@ networks:
   hocs-network:
 
 volumes:
-  dbdata: {}
+  pgdata: {}
