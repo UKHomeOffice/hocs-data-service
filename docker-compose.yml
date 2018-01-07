@@ -19,7 +19,7 @@ services:
      POSTGRES_USER: root
      POSTGRES_PASSWORD: dev
     volumes:
-      - pgdata:/var/lib/postgresql
+      - pghdsdata:/var/lib/postgresql
 
   data-service:
     build:
@@ -45,4 +45,4 @@ networks:
   hocs-network:
 
 volumes:
-  pgdata: {}
+  pghdsdata: {}
