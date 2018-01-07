@@ -27,9 +27,9 @@ public class AlfrescoClient {
 
 
     @Autowired
-    public AlfrescoClient(@Value("${hocs.api.user}") String apiUsername,
-                          @Value("${hocs.api.pass}") String apiPassword,
-                          @Value("${hocs.api.host}") String apiHost) {
+    public AlfrescoClient(@Value("${alf.api.user}") String apiUsername,
+                          @Value("${alf.api.pass}") String apiPassword,
+                          @Value("${alf.api.host}") String apiHost) {
 
         this.API_USERNAME = apiUsername;
         this.API_PASSWORD = apiPassword;

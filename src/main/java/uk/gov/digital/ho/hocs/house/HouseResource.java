@@ -46,6 +46,7 @@ public class HouseResource {
 
     @RequestMapping(value = "/houses/refresh", method = RequestMethod.GET)
     public ResponseEntity getFromApi() {
+        log.info("Updating Houses");
         try {
             houseService.updateWebMemberLists();
             return ResponseEntity.ok().build();

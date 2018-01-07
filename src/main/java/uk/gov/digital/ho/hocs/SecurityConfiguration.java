@@ -21,8 +21,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public SecurityConfiguration(AuthenticationEntryPoint authEntryPoint,
-                                 @Value("${hocs.auth.user}") String userName,
-                                 @Value("${hocs.auth.pass}") String pass){
+                                 @Value("${auth.user}") String userName,
+                                 @Value("${auth.pass}") String pass) {
     this.authEntryPoint = authEntryPoint;
     this.userName = userName;
     this.pass = pass;
