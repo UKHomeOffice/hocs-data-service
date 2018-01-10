@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
@@ -30,12 +29,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class DataListResourceIntTest {
 
-    @Value("${auth.user}")
-    private String API_USERNAME;
-
-    @Value("${auth.pass}")
-    private String API_PASSWORD;
-
     @Autowired
     private DataListRepository repository;
     @Autowired
@@ -57,7 +50,7 @@ public class DataListResourceIntTest {
 
     @Test
     public void shouldRetrieveAllEntities() throws IOException, JSONException {
-        String actualList = restTemplate.withBasicAuth(API_USERNAME, API_PASSWORD).getForObject("/list/TestList", String.class);
+        String actualList = restTemplate.getForObject("/list/TestList", String.class);
         String expectedList = IOUtils.toString(getClass().getResourceAsStream("/DataListResourceIntTestListExpected.json"));
 
         JSONAssert.assertEquals(actualList, expectedList, false);
@@ -65,7 +58,7 @@ public class DataListResourceIntTest {
 
     @Test
     public void shouldThrowNotFoundException() throws IOException, JSONException {
-        ResponseEntity<String> response = restTemplate.withBasicAuth(API_USERNAME, API_PASSWORD).getForEntity("/list/TestLisNOTFOUND", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/list/TestLisNOTFOUND", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -77,7 +70,7 @@ public class DataListResourceIntTest {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> httpEntity = new HttpEntity<>(jsonString, httpHeaders);
 
-        ResponseEntity<String> responseEntity = restTemplate.withBasicAuth(API_USERNAME, API_PASSWORD).postForEntity("/list", httpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/list", httpEntity, String.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         DataList dataList = repository.findOneByName("ValidList");
@@ -90,14 +83,14 @@ public class DataListResourceIntTest {
 
     @Test
     public void shouldThrowOnInvalidPost() {
-        ResponseEntity<DataListRecord> responseEntity = restTemplate.withBasicAuth(API_USERNAME, API_PASSWORD).postForEntity("/list", new DataListRecord(null, null), DataListRecord.class);
+        ResponseEntity<DataListRecord> responseEntity = restTemplate.postForEntity("/list", new DataListRecord(null, null), DataListRecord.class);
 
         assertThat(HttpStatus.BAD_REQUEST).isEqualTo(responseEntity.getStatusCode());
     }
 
     @Test
     public void shouldRetrieveAllEntitiesAllLists() throws IOException, JSONException {
-        String actualList = restTemplate.withBasicAuth(API_USERNAME, API_PASSWORD).getForObject("/list", String.class);
+        String actualList = restTemplate.getForObject("/list", String.class);
         String expectedList = IOUtils.toString(getClass().getResourceAsStream("/DataListResourceIntTestListExpectedArray.json"));
 
         JSONAssert.assertEquals(actualList,expectedList, false);
