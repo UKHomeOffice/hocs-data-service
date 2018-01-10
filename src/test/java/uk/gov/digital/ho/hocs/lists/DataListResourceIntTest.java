@@ -85,7 +85,7 @@ public class DataListResourceIntTest {
     public void shouldThrowOnInvalidPost() {
         ResponseEntity<DataListRecord> responseEntity = restTemplate.postForEntity("/list", new DataListRecord(null, null), DataListRecord.class);
 
-        assertThat(HttpStatus.BAD_REQUEST).isEqualTo(responseEntity.getStatusCode());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
