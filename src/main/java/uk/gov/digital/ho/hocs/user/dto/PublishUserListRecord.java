@@ -46,6 +46,8 @@ public class PublishUserListRecord implements Serializable {
         List<PublishUnitEntityPermissionListRecord> permissionGroupList = new ArrayList<>();
         permissionGroupList.add(new PublishUnitEntityPermissionListRecord("Cases", permissions));
         permissionGroupList.add(new PublishUnitEntityPermissionListRecord("Auto Create", permissions));
+        permissionGroupList.add(new PublishUnitEntityPermissionListRecord("Standard Lines", permissions));
+        permissionGroupList.add(new PublishUnitEntityPermissionListRecord("Document Templates", permissions));
 
         return new PublishUserListRecord(users, new HashSet<>(), permissionGroupList);
     }

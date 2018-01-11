@@ -33,28 +33,8 @@ echo "Posting Unit and Team structures"
 curl -u $user:$pass -X POST $target_uri/units -F "file=@$data_dir/Unit_Team_Structure.csv" \
  -H "Content-Type: multipart/form-data"
 
-echo "Posting DCU Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/DCU -F "file=@$data_dir/DCU_Users.csv" \
- -H "Content-Type: multipart/form-data"
-
-echo "Posting FOI Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/FOI -F "file=@$data_dir/FOI_Users.csv" \
- -H "Content-Type: multipart/form-data"
-
-echo "Posting HMPO CCC Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/HMPOCCC -F "file=@$data_dir/HMPO_CCC_Users.csv" \
- -H "Content-Type: multipart/form-data"
-
-echo "Posting HMPO COL Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/HMPOCOL -F "file=@$data_dir/HMPO_Collectives_Users.csv" \
- -H "Content-Type: multipart/form-data"
-
-echo "Posting UKVI Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/UKVI -F "file=@$data_dir/UKVI_Users.csv" \
- -H "Content-Type: multipart/form-data"
-
 echo "Posting Test Users"
-curl -u $user:$pass -X POST $target_uri/users/dept/TEST_USERS -F "file=@$data_dir/Test_Users.csv" \
+curl -u $user:$pass -X POST $target_uri/users/dept/TEST_USERS -F "file=@$data_dir/users/Test_Users.csv" \
  -H "Content-Type: multipart/form-data"
 
 echo "Posting Minister List"
