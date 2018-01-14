@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.businessGroups;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitRecord;
 import uk.gov.digital.ho.hocs.businessGroups.ingest.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.businessGroups.ingest.UnitFileParser;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessUnit;
+import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.EntityNotFoundException;
 
@@ -59,11 +61,14 @@ public class BusinessUnitResource {
     public ResponseEntity<PublishUnitRecord> getLegacyUnitsByReference() {
         log.info("Export Units requested");
         try {
-            return ResponseEntity.ok(businessUnitService.getGroupsCreateList());
+            businessUnitService.publishGroups();
+             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             log.info("No Units found");
             log.info(e.getMessage());
             return ResponseEntity.notFound().build();
+        } catch (AlfrescoPostException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

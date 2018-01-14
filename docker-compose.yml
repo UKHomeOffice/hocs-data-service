@@ -18,8 +18,8 @@ services:
     environment:
      POSTGRES_USER: root
      POSTGRES_PASSWORD: dev
-    volumes:
-      - pghdsdata:/var/lib/postgresql
+    tmpfs:
+      - /var/lib/postgresql
 
   data-service:
     build:
@@ -43,6 +43,3 @@ services:
 
 networks:
   hocs-network:
-
-volumes:
-  pghdsdata: {}

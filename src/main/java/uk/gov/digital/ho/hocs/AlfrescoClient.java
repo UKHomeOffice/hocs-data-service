@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitRecord;
+import uk.gov.digital.ho.hocs.businessGroups.model.BusinessUnit;
 import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.user.dto.PublishUserListRecord;
 import uk.gov.digital.ho.hocs.user.dto.PublishUserRecord;
@@ -17,9 +19,10 @@ import java.util.*;
 @Slf4j
 public class AlfrescoClient {
 
+    private final static String API_ENDPOINT_UNITS = "/alfresco/s/homeoffice/ctsv2/manageGroups";
 
     private final static int CHUNK_SIZE = 50;
-    private final static String API_ENDPOINT_USERS = "/alfresco/s/importUsersAndGroups/";
+    private final static String API_ENDPOINT_USERS = "/alfresco/s/importUsersAndGroups";
 
     private final String API_USERNAME;
     private final String API_PASSWORD;
@@ -36,39 +39,51 @@ public class AlfrescoClient {
         this.API_HOST = apiHost;
     }
 
-    public void postRecords(List<User> users) throws AlfrescoPostException {
+    public void postUnits(Set<BusinessUnit> businessUnits) throws AlfrescoPostException {
+        final String url = API_HOST + API_ENDPOINT_UNITS;
+
+        log.info("Posting to: " + url);
+
+        PublishUnitRecord publishUnitRecord = PublishUnitRecord.create(businessUnits);
+
+        int statusCode = postRequest(url, publishUnitRecord).getStatusCodeValue();
+        if (statusCode != HttpStatus.OK.value()) {
+            throw new AlfrescoPostException("Failed to post request payload to Alfresco");
+        }
+    }
+
+    public void postUsers(List<User> users) throws AlfrescoPostException {
+
+        User[] userArray = new User[users.size()];
+        userArray = users.toArray(userArray);
 
         List<PublishUserListRecord> userList = new ArrayList<>();
 
-        for (int i = 0; i < users.size(); i += CHUNK_SIZE) {
-
-            List<User> usersInChunk = new ArrayList<>();
-            for (int j = i; j < i + CHUNK_SIZE && j < users.size(); j++) {
-                usersInChunk.add(users.get(j));
-            }
-            userList.add(PublishUserListRecord.create(new HashSet<>(usersInChunk)));
+        for (int i = 0; i < userArray.length; i += CHUNK_SIZE) {
+            User[] usersInChunk = Arrays.copyOfRange(userArray, i, Math.min(userArray.length,i+CHUNK_SIZE));
+            userList.add(PublishUserListRecord.create(new HashSet<>(Arrays.asList(usersInChunk))));
         }
 
-        postBatchedRecords(userList);
+        postBatchedUsers(userList);
     }
 
-    private void postBatchedRecords(List<PublishUserListRecord> recordList) throws AlfrescoPostException {
+    private void postBatchedUsers(List<PublishUserListRecord> recordList) throws AlfrescoPostException {
 
         final String url = API_HOST + API_ENDPOINT_USERS;
 
-        int batch = 1;
+        log.info("Posting to: " + url);
 
+        int batch = 1;
         for (PublishUserListRecord records : recordList) {
 
-            log.info("Sending batch number: " + batch + " of " + recordList.size());
+            log.info("Creating batch number: " + batch + " of " + recordList.size());
             Set<PublishUserRecord> users = records.getUsers();
-            users.forEach(i -> log.info("Sending user -> " + i.getEmail()));
+            users.forEach(i -> log.info("Adding user -> " + i.getEmail()));
 
             int statusCode = postRequest(url, records).getStatusCodeValue();
             if (statusCode != HttpStatus.OK.value()) {
                 throw new AlfrescoPostException("Failed to post request payload to Alfresco");
             }
-
             batch++;
         }
 

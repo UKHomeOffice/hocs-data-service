@@ -292,7 +292,7 @@ public class UserServiceTest {
 
         service.publishUsersByDepartmentName("test_users");
 
-        verify(mockAlfrescoClient, times(1)).postRecords(anyList());
+        verify(mockAlfrescoClient, times(1)).postUsers(anyList());
 
     }
 
@@ -302,7 +302,7 @@ public class UserServiceTest {
 
         service.publishUsersByDepartmentName("test_users");
 
-        verify(mockAlfrescoClient, times(0)).postRecords(anyList());
+        verify(mockAlfrescoClient, times(0)).postUsers(anyList());
 
     }
 

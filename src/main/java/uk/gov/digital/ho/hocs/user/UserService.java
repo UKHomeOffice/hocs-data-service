@@ -51,7 +51,7 @@ public class UserService {
         if (users.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        alfrescoClient.postRecords(new ArrayList<>(users));
+        alfrescoClient.postUsers(new ArrayList<>(users));
     }
 
     @Cacheable(value = "users", key = "#department")

@@ -7,10 +7,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitRecord;
+import uk.gov.digital.ho.hocs.AlfrescoClient;
 import uk.gov.digital.ho.hocs.businessGroups.ingest.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessUnit;
+import uk.gov.digital.ho.hocs.exception.AlfrescoPostException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.EntityNotFoundException;
 
@@ -21,21 +22,23 @@ import java.util.*;
 public class BusinessUnitService {
     private final BusinessUnitRepository unitsRepo;
     private final BusinessTeamRepository teamsRepo;
+    private final AlfrescoClient alfrescoClient;
 
     @Autowired
-    public BusinessUnitService(BusinessUnitRepository unitsRepo, BusinessTeamRepository teamsRepo) {
+    public BusinessUnitService(BusinessUnitRepository unitsRepo, BusinessTeamRepository teamsRepo,  AlfrescoClient alfrescoClient) {
         this.unitsRepo = unitsRepo;
         this.teamsRepo = teamsRepo;
+        this.alfrescoClient = alfrescoClient;
     }
 
-    PublishUnitRecord getGroupsCreateList() throws EntityNotFoundException {
-        try {
-            Set<BusinessUnit> list = unitsRepo.findAll();
-            return PublishUnitRecord.create(list);
-        } catch (NullPointerException e) {
+    void publishGroups() throws EntityNotFoundException, AlfrescoPostException {
+        Set<BusinessUnit> list = unitsRepo.findAll();
+        if(list == null) {
             throw new EntityNotFoundException();
         }
+        alfrescoClient.postUnits(list);
     }
+
     @Cacheable(value = "units", key="#referenceName")
     public Set<BusinessTeam> getTeamByReference(String referenceName) throws EntityNotFoundException {
         Set<BusinessTeam> teams = new HashSet<>();

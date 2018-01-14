@@ -5,8 +5,11 @@ data_dir=${2}
 user=${3}
 pass=${4}
 
+alf_uri=${5:''}
+
+echo "Waiting for $target_uri to come up"
 # Wait for the hocs data service to become available
-until curl $user:$pass -s $target_uri/healthz
+until curl $user:$pass -s $target_uri/healthz > /dev/null
 do
     echo "Waiting for $target_uri to come up"
     sleep 2
@@ -43,3 +46,27 @@ curl -u $user:$pass -X POST $target_uri/list/ -d "@$data_dir/Minister_List.JSON"
 
 echo "Pulling member information from external API"
 curl -u $user:$pass $target_uri/houses/refresh
+
+if [[ -n "$alf_uri" ]]
+
+then
+    echo "Waiting for $alf_uri to come up"
+
+    # Wait for the alfresco service to become available
+    until curl -s $alf_uri/alfresco/faces/jsp/login.jsp > /dev/null
+    do
+        echo "Waiting for $alf_uri to come up"
+        sleep 2
+    done
+
+    # Begin POSTs to the service to seed data
+    echo "$alf_uri is up! publishing data"
+
+    sleep 2
+
+    echo "Publishing units to Alfresco"
+    curl -u $user:$pass $target_uri/units/publish
+
+    echo "Publishing test users to Alfresco"
+    curl -u $user:$pass $target_uri/users/dept/TEST_USERS/publish
+fi

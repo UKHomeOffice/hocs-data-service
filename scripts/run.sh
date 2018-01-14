@@ -4,7 +4,7 @@
 ./scripts/start.sh &
 $PROCESS_1 = $! &
 # Start the data seeding process
-./scripts/seed_data.sh ${1} ${2} ${3} ${4} &
+./scripts/seed_data.sh ${1} ${2} ${3} ${4} ${5} &
 $PROCESS_2 = $!
 
 # Wait for processes to complete

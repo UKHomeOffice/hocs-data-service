@@ -44,7 +44,7 @@ public class DataListEntityRecord implements Serializable {
         this.value = value;
     }
 
-    Map<String, String> getProperties() {
+    public Map<String, String> getProperties() {
         Map<String, String> propMap = new HashMap<>();
         for (DataListEntityRecordProperty property: this.properties) {
             propMap.put(property.getKey(), property.getValue());

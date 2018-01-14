@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
+import uk.gov.digital.ho.hocs.AlfrescoClient;
 import uk.gov.digital.ho.hocs.businessGroups.ingest.CSVBusinessGroupLine;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessUnit;
@@ -36,6 +37,9 @@ public class BusinessTeamServiceTest {
     @Mock
     private BusinessTeamRepository mockTeamRepo;
 
+    @Mock
+    private AlfrescoClient alfrescoClient;
+
     @Captor
     private ArgumentCaptor<HashSet<BusinessUnit>> captor;
 
@@ -44,7 +48,7 @@ public class BusinessTeamServiceTest {
 
     @Before
     public void setUp() {
-        BusinessUnitService = new BusinessUnitService(mockUnitRepo, mockTeamRepo);
+        BusinessUnitService = new BusinessUnitService(mockUnitRepo, mockTeamRepo, alfrescoClient);
     }
 
     @Test
