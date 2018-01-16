@@ -5,7 +5,7 @@ data_dir=${2}
 user=${3}
 pass=${4}
 
-alf_uri=${5:''}
+alf_uri=${5}
 
 echo "Waiting for $target_uri to come up"
 # Wait for the hocs data service to become available
@@ -47,7 +47,7 @@ curl -u $user:$pass -X POST $target_uri/list/ -d "@$data_dir/Minister_List.JSON"
 echo "Pulling member information from external API"
 curl -u $user:$pass $target_uri/houses/refresh
 
-if [[ -n "$alf_uri" ]]
+if [ -n "$alf_uri" ]
 
 then
     echo "Waiting for $alf_uri to come up"
