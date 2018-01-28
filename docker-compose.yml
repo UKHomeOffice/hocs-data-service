@@ -37,7 +37,7 @@ services:
       - 8081:8080
     networks:
       - hocs-network
-    command: /app/scripts/run.sh data-service:8080 /app/data admin admin
+    command: /app/scripts/run.sh data-service:8080 /app/data admin admin localhost:8083
     volumes:
       - ../hocs-data/data/:/app/data/
 
