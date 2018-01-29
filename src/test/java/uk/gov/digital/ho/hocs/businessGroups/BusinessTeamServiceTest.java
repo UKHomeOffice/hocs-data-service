@@ -88,7 +88,7 @@ public class BusinessTeamServiceTest {
     @Test
     public void testCreateList() throws EntityCreationException {
         BusinessUnitService.updateBusinessUnits(buildValidCSVBusinessGroupLines());
-        verify(mockUnitRepo).save(anyList());
+        verify(mockUnitRepo).saveAll(any());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -99,19 +99,19 @@ public class BusinessTeamServiceTest {
         lines.add(line);
 
         BusinessUnitService.updateBusinessUnits(lines);
-        verify(mockUnitRepo, times(0)).save(anyList());
+        verify(mockUnitRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
     public void testCreateListNull() throws EntityCreationException {
         BusinessUnitService.updateBusinessUnits(null);
-        verify(mockUnitRepo, times(0)).save(anyList());
+        verify(mockUnitRepo, times(0)).saveAll(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() throws EntityCreationException {
         BusinessUnitService.updateBusinessUnits(new HashSet<>());
-        verify(mockUnitRepo, times(0)).save(anyList());
+        verify(mockUnitRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -119,10 +119,10 @@ public class BusinessTeamServiceTest {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 
-        when(mockUnitRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "group_name_ref_idempotent")));
+        when(mockUnitRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "group_name_ref_idempotent")));
         BusinessUnitService.updateBusinessUnits(BusinessGroup);
 
-        verify(mockUnitRepo).save(anyList());
+        verify(mockUnitRepo).saveAll(any());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -130,10 +130,10 @@ public class BusinessTeamServiceTest {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 
-        when(mockUnitRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "group_name_ref_idempotent")));
+        when(mockUnitRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "group_name_ref_idempotent")));
         BusinessUnitService.updateBusinessUnits(BusinessGroup);
 
-        verify(mockUnitRepo).save(anyList());
+        verify(mockUnitRepo).saveAll(any());
     }
 
     @Test(expected = DataIntegrityViolationException.class)
@@ -141,10 +141,10 @@ public class BusinessTeamServiceTest {
 
         Set<CSVBusinessGroupLine> BusinessGroup = buildValidCSVBusinessGroupLines();
 
-        when(mockUnitRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
+        when(mockUnitRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
         BusinessUnitService.updateBusinessUnits(BusinessGroup);
 
-        verify(mockUnitRepo).save(anyList());
+        verify(mockUnitRepo).saveAll(any());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class BusinessTeamServiceTest {
         lines.add(lineThree);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -176,10 +176,10 @@ public class BusinessTeamServiceTest {
         lines.add(lineTwo);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo).save(captor.capture());
+        verify(mockUnitRepo).saveAll(captor.capture());
         final Set<BusinessUnit> businessUnitList = captor.getValue();
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
         assertThat(businessUnitList).isNotNull();
         assertThat(businessUnitList).hasSize(2);
 
@@ -210,10 +210,10 @@ public class BusinessTeamServiceTest {
         lines.add(lineOne);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo).save(captor.capture());
+        verify(mockUnitRepo).saveAll(captor.capture());
         final Set<BusinessUnit> businessUnitList = captor.getValue();
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
         assertThat(businessUnitList).isNotNull();
         assertThat(businessUnitList).hasSize(1);
 
@@ -240,10 +240,10 @@ public class BusinessTeamServiceTest {
         lines.add(lineOne);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo).save(captor.capture());
+        verify(mockUnitRepo).saveAll(captor.capture());
         final Set<BusinessUnit> businessUnitList = captor.getValue();
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
         assertThat(businessUnitList).isNotNull();
         assertThat(businessUnitList).hasSize(2);
 
@@ -277,10 +277,10 @@ public class BusinessTeamServiceTest {
         lines.add(lineTwo);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo).save(captor.capture());
+        verify(mockUnitRepo).saveAll(captor.capture());
         final Set<BusinessUnit> businessUnitList = captor.getValue();
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
         assertThat(businessUnitList).isNotNull();
         assertThat(businessUnitList).hasSize(2);
 
@@ -319,7 +319,7 @@ public class BusinessTeamServiceTest {
         lines.add(lineFour);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -334,7 +334,7 @@ public class BusinessTeamServiceTest {
         lines.add(lineTwo);
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -345,7 +345,7 @@ public class BusinessTeamServiceTest {
         Set<CSVBusinessGroupLine> lines = new HashSet<>();
         BusinessUnitService.updateBusinessUnits(lines);
 
-        verify(mockUnitRepo, times(1)).save(anyList());
+        verify(mockUnitRepo, times(1)).saveAll(any());
     }
 
     private static Set<BusinessUnit> getBusinessGroups() throws EntityCreationException {

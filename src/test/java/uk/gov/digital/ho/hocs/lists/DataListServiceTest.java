@@ -91,13 +91,13 @@ public class DataListServiceTest {
     @Test(expected = EntityCreationException.class)
     public void testCreateListNull() {
         service.updateDataList(null);
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() {
         service.updateDataList(new DataList(new DataListRecord(TEST_LIST, new ArrayList<>())));
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityCreationException.class)

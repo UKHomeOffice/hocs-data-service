@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.EntityNotFoundException;
@@ -21,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.Silent.class)
 public class HouseServiceTest {
 
     private final static String HOUSENAME = "Test";
@@ -94,13 +93,13 @@ public class HouseServiceTest {
     @Test(expected = EntityCreationException.class)
     public void testCreateListNull() {
         houseService.updateHouse(null);
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() {
         houseService.updateHouse(new House(HOUSENAME, new HashSet<>()));
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
     
     @Test(expected = EntityCreationException.class)

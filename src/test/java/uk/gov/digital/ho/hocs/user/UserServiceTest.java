@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.gov.digital.ho.hocs.AlfrescoClient;
 import uk.gov.digital.ho.hocs.businessGroups.BusinessUnitService;
@@ -26,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.Silent.class)
 public class UserServiceTest {
 
     private final static String GROUP_REF = "GROUP_REF";
@@ -106,7 +105,7 @@ public class UserServiceTest {
         service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessUnitService, times(1)).getTeamByReference("A_GROUP");
-        verify(mockUserRepo).save(anyList());
+        verify(mockUserRepo).saveAll(any());
     }
 
     @Test
@@ -118,7 +117,7 @@ public class UserServiceTest {
         service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessUnitService, times(0)).getTeamByReference("Invalid_Group");
-        verify(mockUserRepo, times(0)).save(anyList());
+        verify(mockUserRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -134,12 +133,12 @@ public class UserServiceTest {
         service.updateUsersByDepartment(lines, "Dept");
 
         verify(mockBusinessUnitService, times(1)).getTeamByReference("Invalid_Group");
-        verify(mockUserRepo, times(0)).save(anyList());
+        verify(mockUserRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
     public void testRepoDataIntegrityExceptionThrowsEntityCreationException() throws EntityNotFoundException {
-        when(mockUserRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "user_name_idempotent")));
+        when(mockUserRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "user_name_idempotent")));
 
         List<String> groups = new ArrayList<>();
         groups.add("Invalid_Group");
@@ -149,12 +148,12 @@ public class UserServiceTest {
 
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo).save(anyList());
+        verify(mockUserRepo).saveAll(any());
     }
 
     @Test(expected = DataIntegrityViolationException.class)
     public void testRepoUnhandledExceptionThrowsDataIntegrityException() throws EntityNotFoundException {
-        when(mockUserRepo.save(anyList())). thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
+        when(mockUserRepo.saveAll(any())). thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
 
         List<String> groups = new ArrayList<>();
         groups.add("Invalid_Group");
@@ -164,7 +163,7 @@ public class UserServiceTest {
 
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo).save(anyList());
+        verify(mockUserRepo).saveAll(any());
     }
 
     @Test
@@ -188,8 +187,8 @@ public class UserServiceTest {
         lines.add(lineThree);
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo, times(1)).save(anyList());
-        verify(mockUserRepo, times(0)).delete(anyList());
+        verify(mockUserRepo, times(1)).saveAll(any());
+        verify(mockUserRepo, times(0)).deleteAll(anyList());
     }
 
     @Test
@@ -209,8 +208,8 @@ public class UserServiceTest {
         lines.add(lineOne);
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo, times(0)).save(anyList());
-        verify(mockUserRepo, times(1)).delete(anyList());
+        verify(mockUserRepo, times(0)).saveAll(anyList());
+        verify(mockUserRepo, times(1)).deleteAll(any());
     }
 
     @Test
@@ -232,8 +231,8 @@ public class UserServiceTest {
         lines.add(lineThree);
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo, times(1)).save(anyList());
-        verify(mockUserRepo, times(1)).delete(anyList());
+        verify(mockUserRepo, times(1)).saveAll(any());
+        verify(mockUserRepo, times(1)).deleteAll(any());
     }
 
     @Test
@@ -255,8 +254,8 @@ public class UserServiceTest {
         lines.add(lineTwo);
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo, times(0)).save(anyList());
-        verify(mockUserRepo, times(0)).delete(anyList());
+        verify(mockUserRepo, times(0)).saveAll(anyList());
+        verify(mockUserRepo, times(0)).deleteAll(anyList());
     }
 
     @Test
@@ -274,8 +273,8 @@ public class UserServiceTest {
         Set<CSVUserLine> lines = new HashSet<>();
         service.updateUsersByDepartment(lines, "Dept");
 
-        verify(mockUserRepo, times(0)).save(anyList());
-        verify(mockUserRepo, times(1)).delete(anyList());
+        verify(mockUserRepo, times(0)).saveAll(anyList());
+        verify(mockUserRepo, times(1)).deleteAll(any());
     }
 
     public Set<User>buildValidUserList(){

@@ -111,7 +111,7 @@ public class TopicsService {
     private void saveTopicGroups(Collection<TopicGroup> topicGroups) {
         try {
             if(!topicGroups.isEmpty()) {
-                repo.save(topicGroups);
+                repo.saveAll(topicGroups);
             }
         } catch (DataIntegrityViolationException e) {
 

@@ -85,19 +85,19 @@ public class TopicsServiceTest {
     @Test
     public void testCreateList() {
         topicsService.updateTopics(buildValidCSVTopicLines(), CASETYPE);
-        verify(mockRepo).save(anyList());
+        verify(mockRepo).saveAll(any());
     }
 
     @Test(expected = EntityCreationException.class)
     public void testCreateListNull() {
         topicsService.updateTopics(null, CASETYPE);
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
 
     @Test
     public void testCreateListNoEntities() {
         topicsService.updateTopics(new HashSet<>(), CASETYPE);
-        verify(mockRepo, times(0)).save(anyList());
+        verify(mockRepo, times(0)).saveAll(anyList());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -105,10 +105,10 @@ public class TopicsServiceTest {
 
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
-        when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_group_name_idempotent")));
+        when(mockRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_group_name_idempotent")));
         topicsService.updateTopics(topics, CASETYPE);
 
-        verify(mockRepo).save(anyList());
+        verify(mockRepo).saveAll(any());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -116,10 +116,10 @@ public class TopicsServiceTest {
 
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
-        when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_name_ref_idempotent")));
+        when(mockRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "topic_name_ref_idempotent")));
         topicsService.updateTopics(topics, CASETYPE);
 
-        verify(mockRepo).save(anyList());
+        verify(mockRepo).saveAll(any());
     }
 
     @Test(expected = DataIntegrityViolationException.class)
@@ -127,10 +127,10 @@ public class TopicsServiceTest {
 
         Set<CSVTopicLine> topics = buildValidCSVTopicLines();
 
-        when(mockRepo.save(anyList())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
+        when(mockRepo.saveAll(any())).thenThrow(new DataIntegrityViolationException("Thrown DataIntegrityViolationException", new ConstraintViolationException("", null, "")));
         topicsService.updateTopics(topics, CASETYPE);
 
-        verify(mockRepo).save(anyList());
+        verify(mockRepo).saveAll(any());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class TopicsServiceTest {
         lines.add(lineThree);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -162,10 +162,10 @@ public class TopicsServiceTest {
         lines.add(lineTwo);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo).save(captor.capture());
+        verify(mockRepo).saveAll(captor.capture());
         final Set<TopicGroup> topicListGroup = captor.getValue();
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
         assertThat(topicListGroup).isNotNull();
         assertThat(topicListGroup).hasSize(2);
 
@@ -196,10 +196,10 @@ public class TopicsServiceTest {
         lines.add(lineOne);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo).save(captor.capture());
+        verify(mockRepo).saveAll(captor.capture());
         final Set<TopicGroup> topicListGroup = captor.getValue();
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
         assertThat(topicListGroup).isNotNull();
         assertThat(topicListGroup).hasSize(1);
 
@@ -226,10 +226,10 @@ public class TopicsServiceTest {
         lines.add(lineOne);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo).save(captor.capture());
+        verify(mockRepo).saveAll(captor.capture());
         final Set<TopicGroup> topicListGroup = captor.getValue();
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
         assertThat(topicListGroup).isNotNull();
         assertThat(topicListGroup).hasSize(2);
 
@@ -263,10 +263,10 @@ public class TopicsServiceTest {
         lines.add(lineTwo);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo).save(captor.capture());
+        verify(mockRepo).saveAll(captor.capture());
         final Set<TopicGroup> topicListGroup = captor.getValue();
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
         assertThat(topicListGroup).isNotNull();
         assertThat(topicListGroup).hasSize(2);
 
@@ -305,7 +305,7 @@ public class TopicsServiceTest {
         lines.add(lineFour);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -320,7 +320,7 @@ public class TopicsServiceTest {
         lines.add(lineTwo);
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
     }
 
     @Test
@@ -331,7 +331,7 @@ public class TopicsServiceTest {
         Set<CSVTopicLine> lines = new HashSet<>();
         topicsService.updateTopics(lines, "Dept");
 
-        verify(mockRepo, times(1)).save(anyList());
+        verify(mockRepo, times(1)).saveAll(any());
     }
 
     private static Set<TopicGroup> getTopicGroups() {

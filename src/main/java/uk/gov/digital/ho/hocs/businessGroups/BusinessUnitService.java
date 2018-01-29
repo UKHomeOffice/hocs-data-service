@@ -138,7 +138,7 @@ public class BusinessUnitService {
     private void saveUnits(Collection<BusinessUnit> units) {
         try {
             if(!units.isEmpty()) {
-                unitsRepo.save(units);
+                unitsRepo.saveAll(units);
             }
         } catch (DataIntegrityViolationException e) {
 

@@ -101,12 +101,12 @@ public class UserService {
     }
 
     private void deleteUsers(Set<User> users) {
-        userRepository.delete(users);
+        userRepository.deleteAll(users);
     }
 
     private void createUsers(Set<User> users) {
         try {
-            userRepository.save(users);
+            userRepository.saveAll(users);
         } catch (DataIntegrityViolationException e) {
 
             if (e.getCause() instanceof ConstraintViolationException &&

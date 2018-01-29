@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitEntityPermissionListRecord;
 import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitEntityPermissionRecord;
 import uk.gov.digital.ho.hocs.businessGroups.dto.PublishUnitEntityRecord;
@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Log4j
+@Slf4j
 public class PublishUserListRecord implements Serializable {
 
     @Getter
