@@ -57,7 +57,7 @@ then
     echo "Waiting for $alf_uri to come up"
 
     # Wait for the alfresco service to become available
-    until curl -s $alf_uri/alfresco/faces/jsp/login.jsp > /dev/null
+    until curl -u $user:$pass -s $alf_uri/alfresco/faces/jsp/login.jsp > /dev/null
     do
         echo "Waiting for $alf_uri to come up"
         sleep 2

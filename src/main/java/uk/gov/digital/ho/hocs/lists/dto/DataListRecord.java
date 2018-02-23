@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.lists.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.lists.model.DataList;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@NoArgsConstructor
 public class DataListRecord implements Serializable {
 
     @Getter
