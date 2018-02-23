@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.lists.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.house.model.Member;
 import uk.gov.digital.ho.hocs.lists.model.DataListEntity;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
+@NoArgsConstructor
 public class DataListEntityRecord implements Serializable {
 
     @Getter

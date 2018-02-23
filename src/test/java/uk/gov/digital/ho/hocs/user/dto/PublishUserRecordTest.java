@@ -5,10 +5,7 @@ import uk.gov.digital.ho.hocs.businessGroups.model.BusinessTeam;
 import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.user.model.User;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +25,7 @@ public class PublishUserRecordTest {
         assertThat(entityRecord.getLastName()).isEqualTo("last");
         assertThat(entityRecord.getUserName()).isEqualTo("user");
         assertThat(entityRecord.getEmail()).isEqualTo("email");
-        assertThat(entityRecord.getPassword()).isEqualTo("Password1");
+        assertThat(entityRecord.getPassword()).isEqualTo(UUID.fromString(entityRecord.getPassword()).toString());
         assertThat(entityRecord.getGroupNameArray()).hasSize(1);
     }
 

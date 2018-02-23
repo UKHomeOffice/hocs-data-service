@@ -32,6 +32,10 @@ echo "Posting UKVI Topics"
 curl -u $user:$pass -X POST $target_uri/topics/UKVI -F "file=@$data_dir/UKVI_Topics.csv" \
  -H "Content-Type: multipart/form-data"
 
+echo "Posting HMPO Topics"
+curl -u $user:$pass -X POST $target_uri/topics/HMPO -F "file=@$data_dir/HMPO_Topics.csv" \
+ -H "Content-Type: multipart/form-data"
+
 echo "Posting Unit and Team structures"
 curl -u $user:$pass -X POST $target_uri/units -F "file=@$data_dir/Unit_Team_Structure.csv" \
  -H "Content-Type: multipart/form-data"
@@ -53,7 +57,7 @@ then
     echo "Waiting for $alf_uri to come up"
 
     # Wait for the alfresco service to become available
-    until curl -s $alf_uri/alfresco/faces/jsp/login.jsp > /dev/null
+    until curl -u $user:$pass -s $alf_uri/alfresco/faces/jsp/login.jsp > /dev/null
     do
         echo "Waiting for $alf_uri to come up"
         sleep 2
