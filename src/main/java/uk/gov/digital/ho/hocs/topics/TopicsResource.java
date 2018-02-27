@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.topics.dto.TopicGroupRecord;
 import uk.gov.digital.ho.hocs.topics.ingest.CSVTopicLine;
 import uk.gov.digital.ho.hocs.topics.ingest.DCUFileParser;
+import uk.gov.digital.ho.hocs.topics.ingest.HMPOFileParser;
 import uk.gov.digital.ho.hocs.topics.ingest.UKVIFileParser;
 import uk.gov.digital.ho.hocs.topics.model.TopicGroup;
 
@@ -74,6 +75,9 @@ public class TopicsResource {
                 break;
             case "UKVI":
                 lines = new UKVIFileParser(file).getLines();
+                break;
+            case "HMPO":
+                lines = new HMPOFileParser(file).getLines();
                 break;
             default:
                 throw new EntityCreationException("Unknown Business Unit");

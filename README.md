@@ -1,5 +1,5 @@
 
-# Hocs Data Service
+# Hocs Data Service.
 
  - See also [kube-hocs-data-service](https://github.com/UKHomeOffice/kube-hocs-data-service).
  - See also [hocs-data](https://github.com/UKHomeOffice/hocs-data) (private repo)
@@ -62,3 +62,4 @@ Parliamentary members are members from several parliaments and assemblies (Commo
 Hocs-data-service has the ability to serve simple KVP data (like that used in a drop down list). These are addressable as named lists.
 
 We have POST and PUT on the `'/list/{name}'` path and a GET on `'/list/{name}'`
+
