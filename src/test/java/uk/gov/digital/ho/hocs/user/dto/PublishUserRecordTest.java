@@ -25,7 +25,6 @@ public class PublishUserRecordTest {
         assertThat(entityRecord.getLastName()).isEqualTo("last");
         assertThat(entityRecord.getUserName()).isEqualTo("user");
         assertThat(entityRecord.getEmail()).isEqualTo("email");
-        assertThat(entityRecord.getPassword()).isEqualTo(UUID.fromString(entityRecord.getPassword()).toString());
         assertThat(entityRecord.getGroupNameArray()).hasSize(1);
     }
 
