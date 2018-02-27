@@ -5,12 +5,14 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "AllMembersList")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 class IrishMembers {
 
     @JacksonXmlProperty(localName = "Member")
