@@ -9,8 +9,6 @@ RUN yum update -y glibc && \
     yum update -y nss && \
     yum update -y bind-license
 
-RUN yum install -y postgresql.x86_64
-
 WORKDIR /app
 
 RUN groupadd -r ${GROUP} && \
