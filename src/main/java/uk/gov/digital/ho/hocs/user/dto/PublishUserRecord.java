@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PublishUserRecord implements Serializable {
 
-    @Value("alf.user.password")
+    @Value("${alf.user.password}")
     private static String DEFAULT_PASSWORD;
 
     @Getter
