@@ -104,7 +104,7 @@ public class UserService {
     }
 
     private void deleteUsers(Set<User> users) {
-        userRepository.deleteAll(users);
+        userRepository.deleteAll();
     }
 
     private void createUsers(Set<User> users) {
