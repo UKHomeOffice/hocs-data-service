@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.AlfrescoClient;
 import uk.gov.digital.ho.hocs.businessGroups.BusinessUnitService;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessTeam;
@@ -63,7 +62,6 @@ public class UserService {
     }
 
     //TODO: this behaviour is wrong, we should publish the update, deleting the accounts from alfresco, should also unallocate cases too.
-    @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public void updateUsersByDepartment(Set<CSVUserLine> lines, String department) throws EntityNotFoundException {
 

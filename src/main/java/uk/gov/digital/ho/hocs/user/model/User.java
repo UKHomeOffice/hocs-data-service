@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 import uk.gov.digital.ho.hocs.businessGroups.model.BusinessTeam;
 
 import javax.persistence.*;
@@ -43,12 +44,8 @@ public class User implements Serializable {
     @Getter
     private String department;
 
-    @Column(name = "deleted", nullable = false)
-    @Getter
-    @Setter
-    private Boolean deleted = false;
-
     @ManyToMany()
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "users_teams",
             joinColumns = { @JoinColumn(name = "user_id") },
