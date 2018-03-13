@@ -21,7 +21,6 @@ import uk.gov.digital.ho.hocs.user.model.User;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,11 +70,15 @@ public class UserService {
         Set<User> users = getUsers(lines, department);
         Set<User> jpaUsers = userRepository.findAllByDepartment(department);
 
+        /*
+        Hack to make this work with alfresco, force user to delete and recreate to ensure groups are correct
+         */
+
         // Get list of users to remove
-        Set<User> usersToDelete = jpaUsers.stream().filter(user -> !users.contains(user)).collect(Collectors.toSet());
+        Set<User> usersToDelete = jpaUsers;//.stream().filter(user -> !users.contains(user)).collect(Collectors.toSet());
 
         // Get list of users to add
-        Set<User> usersToAdd = users.stream().filter(user -> !jpaUsers.contains(user)).collect(Collectors.toSet());
+        Set<User> usersToAdd = users;// .stream().filter(user -> !jpaUsers.contains(user)).collect(Collectors.toSet());
 
         if(!usersToDelete.isEmpty()) {
             deleteUsers(usersToDelete);
