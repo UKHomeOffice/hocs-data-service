@@ -48,6 +48,10 @@ echo "Posting Minister List"
 curl -u $user:$pass -X POST $target_uri/list/ -d "@$data_dir/Minister_List.JSON" \
  -H "Content-Type: application/json"
 
+#echo "Posting Team Email Addresses"
+#curl -u $user:$pass -X POST $target_uri/teamEmail -F "file=@$data_dir/Team_Email.csv" \
+# -H "Content-Type: multipart/form-data"
+
 echo "Pulling member information from external API"
 curl -u $user:$pass $target_uri/houses/refresh
 
