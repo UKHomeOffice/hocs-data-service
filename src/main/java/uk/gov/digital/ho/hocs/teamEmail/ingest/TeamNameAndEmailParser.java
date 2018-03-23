@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.Set;
 
 
-public class TeamEmailParser extends AbstractFilePasrer<CSVTeamEmail> {
+public class TeamNameAndEmailParser extends AbstractFilePasrer<CSVTeamNameAndEmail> {
 
     @Getter
-    private final Set<CSVTeamEmail> lines;
+    private final Set<CSVTeamNameAndEmail> lines;
 
-    public TeamEmailParser(MultipartFile file) {
+    public TeamNameAndEmailParser(MultipartFile file) {
         this.lines = ParseTeamEmailFile(file);
     }
 
-    public static Set<CSVTeamEmail> ParseTeamEmailFile(MultipartFile file) {
-        List<CSVTeamEmail> result = new ArrayList<>();
+    public static Set<CSVTeamNameAndEmail> ParseTeamEmailFile(MultipartFile file) {
+        List<CSVTeamNameAndEmail> result = new ArrayList<>();
         BufferedReader br;
         try {
             String line;
@@ -32,9 +32,10 @@ public class TeamEmailParser extends AbstractFilePasrer<CSVTeamEmail> {
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
                 String[] lineArray = splitLine(line);
-                String name = lineArray[0].trim();
-                String email = lineArray[1].trim();
-                result.add(new CSVTeamEmail(name, email));
+                String displayName = lineArray[0].trim();
+                String name = lineArray[1].trim();
+                String email = lineArray[2].trim();
+                result.add(new CSVTeamNameAndEmail(displayName, name, email));
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

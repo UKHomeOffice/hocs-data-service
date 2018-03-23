@@ -9,23 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import uk.gov.digital.ho.hocs.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.lists.dto.DataListRecord;
-import uk.gov.digital.ho.hocs.lists.model.DataList;
-import uk.gov.digital.ho.hocs.teamEmail.ingest.CSVTeamEmail;
-import uk.gov.digital.ho.hocs.teamEmail.model.TeamEmail;
-import uk.gov.digital.ho.hocs.topics.dto.TopicGroupRecord;
+import uk.gov.digital.ho.hocs.teamEmail.dto.TeamNameAndEmailDto;
+import uk.gov.digital.ho.hocs.teamEmail.model.TeamNameAndEmail;
 
-import javax.validation.constraints.AssertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,33 +24,37 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TeamEmailResourceTest {
+public class TeamNameAndEmailResourceTest {
+
+
+    private TeamNameAndEmailResource teamNameAndEmailResource;
 
     @Mock
-    private TeamEmailResource teamEmailResource;
-
-    @Mock
-    private TeamEmailService teamEmailService;
+    private TeamNameAndEmailService teamNameAndEmailService;
 
     @Before
     public void setUp() {
-        teamEmailResource = new TeamEmailResource(teamEmailService);
+        teamNameAndEmailResource = new TeamNameAndEmailResource(teamNameAndEmailService);
     }
 
     @Test
     public void shouldRetrieveEmailForRequestedTeam() throws EntityNotFoundException {
-        when(teamEmailService.getEmailForTeam("The A-Team")).thenReturn("theAteam@example.com");
+        TeamNameAndEmail response = new TeamNameAndEmail();
+        response.setEmail("theAteam@example.com");
+        response.setDisplayName("ATeam");
+        when(teamNameAndEmailService.getEmailForTeam("The A-Team")).thenReturn(response);
 
-        ResponseEntity<String> httpResponse = (teamEmailResource.getEmailForTeam("The A-Team"));
+        ResponseEntity<TeamNameAndEmailDto> httpResponse = (teamNameAndEmailResource.getEmailForTeam("The A-Team"));
 
-        assertThat(httpResponse.getBody()).isEqualTo("theAteam@example.com");
+        assertThat(httpResponse.getBody().getEmail()).isEqualTo("theAteam@example.com");
+        assertThat(httpResponse.getBody().getDisplayName()).isEqualTo("ATeam");
     }
 
     @Test
     public void shouldReturnNotFoundWhenException() throws EntityNotFoundException {
-        when(teamEmailService.getEmailForTeam("FAKE_TEAM")).thenThrow(new EntityNotFoundException());
+        when(teamNameAndEmailService.getEmailForTeam("FAKE_TEAM")).thenThrow(new EntityNotFoundException());
 
-        ResponseEntity<String> httpResponse = (teamEmailResource.getEmailForTeam("FAKE_TEAM"));
+        ResponseEntity<TeamNameAndEmailDto> httpResponse = (teamNameAndEmailResource.getEmailForTeam("FAKE_TEAM"));
 
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(httpResponse.getBody()).isNull();
@@ -70,15 +64,15 @@ public class TeamEmailResourceTest {
     @Test
     public void ShouldUpdateTeamEmail() throws IOException {
         StringBuilder csvBuilder = new StringBuilder();
-        csvBuilder.append("TeamName,TeamEmail\n");
-        csvBuilder.append("A,A@A.com\n");
-        csvBuilder.append("B,B@B.com\n");
+        csvBuilder.append("DisplayName,TeamName,TeamNameAndEmail\n");
+        csvBuilder.append("A,A,A@A.com\n");
+        csvBuilder.append("A,B,B@B.com\n");
         InputStream is = new ByteArrayInputStream(csvBuilder.toString().getBytes());
 
         MockMultipartFile file = new MockMultipartFile("file", "orig", MediaType.TEXT_PLAIN_VALUE, is);
-        ResponseEntity httpResponse = teamEmailResource.updateTeamEmail(file);
+        ResponseEntity httpResponse = teamNameAndEmailResource.updateTeamEmail(file);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(teamEmailService, times(1)).updateTeamEmail(any());
+        verify(teamNameAndEmailService, times(1)).updateTeamEmail(any());
     }
 
 

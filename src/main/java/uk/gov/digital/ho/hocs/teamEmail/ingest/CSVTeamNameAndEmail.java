@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Getter
 @Slf4j
-public class CSVTeamEmail {
+public class CSVTeamNameAndEmail {
+
+    @Getter
+    private String displayName;
 
     @Getter
     private String name;

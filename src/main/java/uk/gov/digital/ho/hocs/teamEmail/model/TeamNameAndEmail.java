@@ -1,9 +1,6 @@
 package uk.gov.digital.ho.hocs.teamEmail.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "team_email")
 @Access(AccessType.FIELD)
 @EqualsAndHashCode(of = {"name"})
-public class TeamEmail {
+public class TeamNameAndEmail {
 
     @Id
     @Column(name = "id")
@@ -23,6 +20,11 @@ public class TeamEmail {
     @Getter
     @Setter
     private String name;
+
+    @Column(name = "display_name", nullable = false)
+    @Getter
+    @Setter
+    private String displayName;
 
     @Column(name = "email", nullable = false)
     @Getter
