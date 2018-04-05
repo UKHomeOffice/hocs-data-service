@@ -52,6 +52,8 @@ curl -u $user:$pass -X POST $target_uri/users/dept/BICS -F "file=@$data_dir/user
  -H "Content-Type: multipart/form-data"
 curl -u $user:$pass -X POST $target_uri/users/dept/Border_Force -F "file=@$data_dir/users/Border_Force.csv" \
  -H "Content-Type: multipart/form-data"
+ curl -u $user:$pass -X POST $target_uri/users/dept/CD -F "file=@$data_dir/users/CD.csv" \
+ -H "Content-Type: multipart/form-data"
 curl -u $user:$pass -X POST $target_uri/users/dept/CPFG -F "file=@$data_dir/users/CPFG.csv" \
  -H "Content-Type: multipart/form-data"
 curl -u $user:$pass -X POST $target_uri/users/dept/CR -F "file=@$data_dir/users/CR.csv" \
@@ -71,6 +73,8 @@ curl -u $user:$pass -X POST $target_uri/users/dept/HO_Legal_Advisors -F "file=@$
 curl -u $user:$pass -X POST $target_uri/users/dept/Immigration_Enforcement -F "file=@$data_dir/users/Immigration_Enforcement.csv" \
  -H "Content-Type: multipart/form-data"
 curl -u $user:$pass -X POST $target_uri/users/dept/OSCT -F "file=@$data_dir/users/OSCT.csv" \
+ -H "Content-Type: multipart/form-data"
+ curl -u $user:$pass -X POST $target_uri/users/dept/Press_Office -F "file=@$data_dir/users/Press_Office.csv" \
  -H "Content-Type: multipart/form-data"
 curl -u $user:$pass -X POST $target_uri/users/dept/Private_Office -F "file=@$data_dir/users/Private_Office.csv" \
  -H "Content-Type: multipart/form-data"
@@ -109,6 +113,7 @@ then
     echo "Publishing users to Alfresco"
     curl -u $user:$pass $target_uri/users/dept/BICS/publish
     curl -u $user:$pass $target_uri/users/dept/Border_Force/publish
+    curl -u $user:$pass $target_uri/users/dept/CD/publish
     curl -u $user:$pass $target_uri/users/dept/CPFG/publish
     curl -u $user:$pass $target_uri/users/dept/CR/publish
     curl -u $user:$pass $target_uri/users/dept/DCU/publish
@@ -119,6 +124,7 @@ then
     curl -u $user:$pass $target_uri/users/dept/HO_Legal_Advisors/publish
     curl -u $user:$pass $target_uri/users/dept/Immigration_Enforcement/publish
     curl -u $user:$pass $target_uri/users/dept/OSCT/publish
+    curl -u $user:$pass $target_uri/users/dept/Press_Office/publish
     curl -u $user:$pass $target_uri/users/dept/Private_Office/publish
     curl -u $user:$pass $target_uri/users/dept/UKVI_ALS/publish
     curl -u $user:$pass $target_uri/users/dept/UKVI_CCT/publish
