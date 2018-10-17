@@ -1,6 +1,7 @@
 FROM quay.io/ukhomeofficedigital/openjdk8
 
 ENV USER user_hocs_data
+ENV USER_ID 1000
 ENV GROUP group_hocs_data
 ENV NAME hocs-data-service
 ENV JAR_PATH build/libs
@@ -12,7 +13,7 @@ RUN yum update -y glibc && \
 WORKDIR /app
 
 RUN groupadd -r ${GROUP} && \
-    useradd -r -g ${GROUP} ${USER} -d /app && \
+    useradd -r -u ${USER_ID} -g ${GROUP} ${USER} -d /app && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
@@ -24,6 +25,6 @@ RUN chmod a+x /app/scripts/*
 
 EXPOSE 8000
 
-USER ${USER}
+USER ${USER_ID}
 
 CMD /app/scripts/start.sh
