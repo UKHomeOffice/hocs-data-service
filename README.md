@@ -1,4 +1,3 @@
-
 # Hocs Data Service.
 
  - See also [kube-hocs-data-service](https://github.com/UKHomeOffice/kube-hocs-data-service).
