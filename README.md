@@ -1,7 +1,6 @@
 # Hocs Data Service.
  - See also [kube-hocs-data-service](https://github.com/UKHomeOffice/kube-hocs-data-service).
- - See also [hocs-data](https://github.com/UKHomeOffice/hocs-data) (private repo)
-
+ 
 hocs-data-service is part of a larger series of work to replace functionality currently in [hocs-alfresco](https://github.com/UKHomeOffice/hocs-alfresco).
 It serves a set infrequently-updated data specific to hocs although any individual data type is usable in isolation.
 This data was previously stored in an Alfresco instance but storing it as relational data is much more appropriate as it allows better management and easier querying.
