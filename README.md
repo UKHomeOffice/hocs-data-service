@@ -6,6 +6,9 @@ It serves a set infrequently-updated data specific to hocs although any individu
 This data was previously stored in an Alfresco instance but storing it as relational data is much more appropriate as it allows better management and easier querying.
  It should be noted that this solution meets the immediate needs of the Hocs project and was written under time pressure. It is not in its current form part of the target architecture for Hocs. There is plenty of scope to improve this service in the future.
 
+⚠️ *This repository is deprecated.* Changes are made rarely and only to fix urgent issues that arise with the live hocs-alfresco service run by the Home Office.
+The project has been mothballed in favour of [hocs-info-service](https://github.com/UKHomeOffice/hocs-info-service).
+
 ## Topics
 A Hocs case has one or more topics associated with it. Topics are stored against a list name. The list name is typically the a Hocs business unit name e.g. 'DCU', 'UKVI'.
 Topics are hierarchical lists of data like so:
